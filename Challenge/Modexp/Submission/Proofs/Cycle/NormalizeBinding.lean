@@ -12,14 +12,14 @@ open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 def normalizerBlock : Block Artifact.artifact .Osaka 10538 normalizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7970 101 10538 normalizeProgram
-    (by change 7970+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7969 101 10538 normalizeProgram
+    (by change 7969+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def returnBlock : Block Artifact.artifact .Osaka 10659 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8071 1 10659 jumpProgram
-    (by change 8071+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8070 1 10659 jumpProgram
+    (by change 8070+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -35,7 +35,7 @@ def returned (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : L
 noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true) :
     GasSteps {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) := by
@@ -54,7 +54,7 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt
 noncomputable def correct (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true)
     (ha : ∀ i < 8,(a i).toNat < 2^240)
     (hn : ∀ i < 9,(n i).toNat < 2^240)

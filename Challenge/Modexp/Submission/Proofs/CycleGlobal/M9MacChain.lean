@@ -50,7 +50,7 @@ def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt2
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
     (hcarry : b = 0 → m.carry = UInt256.ofNat 0)
     (htop : b = 0 → MachineState.readWord m.memory 2336 = UInt256.ofNat 0)
     (hb1 : 1 ≤ b) :
@@ -177,7 +177,7 @@ def gasSteps_run : (m b : Nat) → b + m = 8 →
     s.fork = .Osaka →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false →
-    88 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
+    87 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
     (b = 0 → q.carry = UInt256.ofNat 0) →
     (b = 0 → MachineState.readWord q.memory 2336 = UInt256.ofNat 0) →
     1 ≤ b →
@@ -220,7 +220,7 @@ def gasSteps_blockC (b : Nat) (hb : b < 8) (hb5 : 5 ≤ b) (s : State) (m : MacS
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
     (hcarry : b = 0 → m.carry = UInt256.ofNat 0)
     (htop : b = 0 → MachineState.readWord m.memory 2336 = UInt256.ofNat 0)
     (hb1 : 1 ≤ b) :
@@ -279,7 +279,7 @@ def gasSteps_runC : (m b : Nat) → b + m = 8 →
     s.fork = .Osaka →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false →
-    88 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
+    87 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
     (b = 0 → q.carry = UInt256.ofNat 0) →
     (b = 0 → MachineState.readWord q.memory 2336 = UInt256.ofNat 0) →
     1 ≤ b → 5 ≤ b →
@@ -328,7 +328,7 @@ def gasSteps_block0 (s : State) (um : ByteArray) (q : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (setupState s (UInt256.ofNat 2960) um q (maxWord::rest))
       (chainState s (UInt256.ofNat 2978) (SquareModel.l1StepOn ⟨um,UInt256.ofNat 0⟩ q 1280 8 0) q rest) := by
@@ -352,7 +352,7 @@ def gasSteps_zero4 (s : State) (um : ByteArray) (q : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (setupState s (UInt256.ofNat 10812) um q (maxWord::rest))
       (chainState s (UInt256.ofNat 10830) (SquareModel.l1StepOn ⟨um,UInt256.ofNat 0⟩ q 1280 4 0) q rest) := by
@@ -377,7 +377,7 @@ def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArr
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (setupState s (UInt256.ofNat (sectionPC n)) um q (maxWord::rest))
       (chainState s (UInt256.ofNat (sectionEndPC n)) (l1Step um q 1280 n n) q rest) :=

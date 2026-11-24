@@ -27,7 +27,7 @@ theorem model10_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
   rfl
 theorem run10 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory10 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions productColumn10Program
       {s with pc := UInt256.ofNat 7239,stack := frame10 inv a b n rest} =
       some (result10 s inv a b n rest) := by

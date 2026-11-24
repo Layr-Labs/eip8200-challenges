@@ -156,7 +156,7 @@ def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msiz
              outer n bsize esize msize
            memory := M }
 def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
-  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2720
+  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2624
     (UInt256.ofNat 0 - preDodd d * newton8W (preDodd d * n0))
 def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
   UInt256.land

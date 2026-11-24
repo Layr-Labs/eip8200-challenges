@@ -29,7 +29,7 @@ def result (s : State) (hd next stride target inv m0 m96 m64 m32 : UInt256)
                next stride maxWord target inv m0 m96 m64 m32 (MachineState.readWord s.memory 2592) rest }
 theorem run_program (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     runInstructions (program next) (initial s pc hd ent stride target inv m0 m96 m64 m32 aprev rest) =
       some (result s hd next stride target inv m0 m96 m64 m32 rest) := by
@@ -72,7 +72,7 @@ theorem run_program (s : State)
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 theorem run_program_bridge (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     runInstructions (program next) (initial s pc hd ent stride target inv m0 m96 m64 m32 aprev rest) =
         some (result s hd next stride target inv m0 m96 m64 m32 rest) ∧

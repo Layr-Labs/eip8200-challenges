@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 noncomputable def step0 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8397,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 8).toNat < (n 8).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8404,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -53,7 +53,7 @@ noncomputable def step0 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step1 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8404,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 8).toNat < (a 8).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8411,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -91,7 +91,7 @@ noncomputable def step1 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step2 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8411,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 7).toNat < (n 7).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8420,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -129,7 +129,7 @@ noncomputable def step2 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step3 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8420,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 7).toNat < (a 7).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8429,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -167,7 +167,7 @@ noncomputable def step3 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step4 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8429,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 6).toNat < (n 6).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8438,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -205,7 +205,7 @@ noncomputable def step4 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step5 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8438,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 6).toNat < (a 6).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8447,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -243,7 +243,7 @@ noncomputable def step5 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step6 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8447,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 5).toNat < (n 5).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8456,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -281,7 +281,7 @@ noncomputable def step6 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step7 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8456,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 5).toNat < (a 5).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8465,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -319,7 +319,7 @@ noncomputable def step7 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step8 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8465,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 4).toNat < (n 4).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8474,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -357,7 +357,7 @@ noncomputable def step8 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step9 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8474,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 4).toNat < (a 4).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8483,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -395,7 +395,7 @@ noncomputable def step9 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
 noncomputable def step10 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8483,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 3).toNat < (n 3).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8492,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -433,7 +433,7 @@ noncomputable def step10 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step11 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8492,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 3).toNat < (a 3).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8501,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -471,7 +471,7 @@ noncomputable def step11 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step12 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8501,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 2).toNat < (n 2).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8508,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -509,7 +509,7 @@ noncomputable def step12 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step13 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8508,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 2).toNat < (a 2).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8515,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -547,7 +547,7 @@ noncomputable def step13 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step14 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8515,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 1).toNat < (n 1).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8525,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -585,7 +585,7 @@ noncomputable def step14 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step15 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8525,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 1).toNat < (a 1).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8535,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -623,7 +623,7 @@ noncomputable def step15 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step16 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8535,stack := frame a n slot0 slot1 rest}
       {s with pc := if (a 0).toNat < (n 0).toNat then UInt256.ofNat 8568 else UInt256.ofNat 8548,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with
@@ -661,7 +661,7 @@ noncomputable def step16 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt
 noncomputable def step17 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8548,stack := frame a n slot0 slot1 rest}
       {s with pc := if (n 0).toNat < (a 0).toNat then UInt256.ofNat 8558 else UInt256.ofNat 8558,stack := frame a n slot0 slot1 rest} := by
   let tested : State := {s with pc := UInt256.ofNat 8558,stack := frame a n slot0 slot1 rest}

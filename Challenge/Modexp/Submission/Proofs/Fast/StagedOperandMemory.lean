@@ -43,7 +43,7 @@ theorem represents_stageW_four (mem : ByteArray) (ptr cnt v : Nat)
   · rw [read_stageW_four_outside mem _ (Or.inr (by omega))]
   · rw [read_stageW_four_member mem j (by omega)]
 def eligible (mem : ByteArray) (n : Nat) : Prop :=
-  (n = 4 ∨ n = 8) ∧ MachineState.readWord mem 2720 ≠ UInt256.ofNat 1
+  (n = 4 ∨ n = 8) ∧ MachineState.readWord mem 2624 ≠ UInt256.ofNat 1
 instance (mem : ByteArray) (n : Nat) : Decidable (eligible mem n) := by
   unfold eligible
   infer_instance
@@ -74,14 +74,14 @@ theorem read_inputMemory_outside (mem : ByteArray) (pa n addr : Nat)
     exact read_stage_outside mem pa n addr (by rcases hn.1 with rfl | rfl <;> omega)
   · rfl
 theorem eligible_preserved (a b : ByteArray) (n : Nat)
-    (h : MachineState.readWord a 2720 = MachineState.readWord b 2720) :
+    (h : MachineState.readWord a 2624 = MachineState.readWord b 2624) :
     eligible a n ↔ eligible b n := by simp only [eligible,h]
 theorem eligible_zeroed (s : State) (mem : ByteArray) (n : Nat) (hn : n ≤ 8) :
     eligible (Monpro.mpZeroed s mem n) n ↔ eligible mem n :=
-  eligible_preserved _ _ n (Monpro.readWord_mpZeroed s mem n 2720 hn (Or.inr (by decide)))
+  eligible_preserved _ _ n (Monpro.readWord_mpZeroed s mem n 2624 hn (Or.inr (by decide)))
 theorem eligible_inputMemory (mem : ByteArray) (pa n : Nat) :
     eligible (inputMemory mem pa n) n ↔ eligible mem n :=
-  eligible_preserved _ _ n (read_inputMemory_outside mem pa n 2720 (Or.inr (by decide)))
+  eligible_preserved _ _ n (read_inputMemory_outside mem pa n 2624 (Or.inr (by decide)))
 theorem fastRepresents_inputMemory (mem : ByteArray) (pa n ptr count value : Nat)
     (hptr : ptr + 32*count ≤ 2048) :
     Model.FastRepresents (inputMemory mem pa n) ptr count value ↔

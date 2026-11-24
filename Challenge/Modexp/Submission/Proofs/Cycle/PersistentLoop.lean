@@ -38,7 +38,7 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  (env : Environment Artifact.artifact .Osaka s)
  (hm : LimbMemory.Holds s.memory inv a zeroWords n)
  (hc : entryCounter s = UInt256.ofNat 0-UInt256.ofNat (k-1))
- (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+ (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat)
  (ha : ∀ i < 9,(a i).toNat < radix) (hn : ∀ i < 9,(n i).toNat < radix)
  (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
  (hinv : (N*inv.toNat+1) % 2^256 = 0)
@@ -52,7 +52,7 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  have hci : PersistentSquareLoop.counter si = UInt256.ofNat 0-UInt256.ofNat (k-1) := by
   change PersistentSquareLoop.counter (PersistentBinding.installed s inv a n rest) = _
   rw [installed_counter,hc]
- have hacti : 88 ≤ si.activeWords.toNat := by simpa only [si,PersistentBinding.installed] using hact
+ have hacti : 87 ≤ si.activeWords.toNat := by simpa only [si,PersistentBinding.installed] using hact
  obtain ⟨st,out,ht0,hmOut,hsOut,hpOut,heOut,hhOut,haOut,hboundOut,hsmOut,hfmOut,hkeepOut,hcallsOut⟩ := PersistentSquareLoop.run 3520 5837 PersistentRound.certificate si inv a n rest k N x
   hk hk16 ei hmi hci hcache hcap hacti ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
  have hstart : {si with pc := UInt256.ofNat 3520,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter si::rest)} = si := by
@@ -63,7 +63,7 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  have ht := ht0
  rw [hstart] at ht
  have eout : Environment Artifact.artifact .Osaka st := ei.transfer heOut hhOut
- have hactout : 88 ≤ st.activeWords.toNat := by rw [haOut]; exact hacti
+ have hactout : 87 ≤ st.activeWords.toNat := by rw [haOut]; exact hacti
  have hr := PersistentBinding.restore_steps st inv out n rest eout hcap hactout hcache hmOut.at2720
  have hrestore : {st with pc := UInt256.ofNat 5837,stack := PersistentSquareLoop.frame inv out n (PersistentSquareLoop.counter st::rest)} = st :=
   PersistentSquareLoop.reset_self _ _ _ hpOut hsOut

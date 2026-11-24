@@ -65,9 +65,9 @@ def preMemOf (mem : ByteArray) (d : UInt256) : ByteArray :=
     PRE_X (preS d)) PRE_L (preK d)) PRE_DODD (preDodd d)) PRE_BMOD (preBmod d))
     PRE_DINV (preDinv d)
 def preMem (mem : ByteArray) : ByteArray :=
-  Exp.storeWord (preMemOf mem (MachineState.readWord mem 0)) 2720
+  Exp.storeWord (preMemOf mem (MachineState.readWord mem 0)) 2624
     (UInt256.ofNat 0 - newton8W
-      (MachineState.readWord mem (MachineState.readWord mem 2752).toNat))
+      (MachineState.readWord mem (MachineState.readWord mem 2720).toNat))
 /-! ## Phase 4: one shift step -/
 def uMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord (Exp.mcopyMem mem 2080 2112 (32 * n)) (2080 + 32 * n) (UInt256.ofNat 0)
@@ -400,25 +400,25 @@ theorem fastRepresents_preMemOf (mem : ByteArray) (d : UInt256) (ptr cnt v : Nat
   refine (Model.fastRepresents_congr ?_ v).2 hrep
   intro i hi
   exact preMemOf_readWord_disjoint mem d _ (by unfold PRE_L PRE_DINV at hdisj ⊢; omega)
-theorem preMem_readWord_low (mem : ByteArray) (addr : Nat) (h : addr + 32 ≤ 2720) :
+theorem preMem_readWord_low (mem : ByteArray) (addr : Nat) (h : addr + 32 ≤ 2624) :
     MachineState.readWord (preMem mem) addr =
       MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) addr := by
   unfold preMem Exp.storeWord
   exact Csub.readWord_write_disjoint _ _ _ _ (Or.inl h)
 theorem preMem_readWord_disjoint (mem : ByteArray) (addr : Nat)
     (hdisj : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr)
-    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
+    (h2720 : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
     MachineState.readWord (preMem mem) addr = MachineState.readWord mem addr := by
   unfold preMem Exp.storeWord
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
   exact preMemOf_readWord_disjoint mem _ addr hdisj
 theorem preMem_readWord_minv (mem : ByteArray) :
-    MachineState.readWord (preMem mem) 2720 = UInt256.ofNat 0 - newton8W
-      (MachineState.readWord mem (MachineState.readWord mem 2752).toNat) := by
+    MachineState.readWord (preMem mem) 2624 = UInt256.ofNat 0 - newton8W
+      (MachineState.readWord mem (MachineState.readWord mem 2720).toNat) := by
   unfold preMem Exp.storeWord
   exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
 theorem fastRepresents_preMem (mem : ByteArray) (ptr cnt v : Nat)
-    (hdisj : ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr) (hhi : ptr + 32 * cnt ≤ 2720)
+    (hdisj : ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr) (hhi : ptr + 32 * cnt ≤ 2624)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (preMem mem) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -1585,7 +1585,7 @@ theorem PreOK_preMemOf (mem : ByteArray) : PreOK (preMemOf mem (MachineState.rea
     exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
 theorem PreOK_preMem (mem : ByteArray) : PreOK (preMem mem) := by
   obtain ⟨h1,h2,h3,h4,h5⟩ := PreOK_preMemOf mem
-  have hlow : ∀ a : Nat,a + 32 ≤ 2720 → MachineState.readWord (preMem mem) a =
+  have hlow : ∀ a : Nat,a + 32 ≤ 2624 → MachineState.readWord (preMem mem) a =
       MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) a :=
     preMem_readWord_low mem
   have hz := hlow 0 (by omega)

@@ -45,7 +45,7 @@ noncomputable def prologue_steps (s : State) (mem : ByteArray) (tn m128 : UInt25
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hi : i < n) (hn : n ≤ 8)
+    (hact : 87 ≤ s.activeWords.toNat) (hi : i < n) (hn : n ≤ 8)
     (hjump : Decode.isValidJumpDest TnM128Candidate.bytecode e = true)
     (he : e + 37 < 2 ^ 256) :
     Challenge.EvmProof.GasSteps

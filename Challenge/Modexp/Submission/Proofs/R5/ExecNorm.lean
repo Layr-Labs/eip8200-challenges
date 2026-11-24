@@ -32,7 +32,7 @@ def normpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest
   let v0 : W := UInt256.lt x4 x8
   {s with pc := N 10176,memory := s.memory,stack := v0::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::rest}
 theorem normpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions normpart0Program {s with pc := N 10172,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::rest} =
       some (normpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 rest) := by
   have hc (j : Nat) (hj : j ≤ 27) : rest.length + j < 1024 := by omega
@@ -48,7 +48,7 @@ def normModel (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : Li
   let v0 : W := UInt256.lt a4 n4
   {s with pc := N 10176,memory := s.memory,stack := v0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
 theorem norm_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions normProgram {s with pc := N 10172,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (normModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) := by
   let v0 : W := UInt256.lt a4 n4
@@ -78,7 +78,7 @@ def preparedpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (
   let v1 : W := x0 - v0
   {s with pc := N 10188,memory := s.memory,stack := (N 255)::v1::x5::v1::(N 255)::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::rest}
 theorem preparedpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = x11) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = x11) :
     runInstructions preparedpart0Program {s with pc := N 10180,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::rest} =
       some (preparedpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -104,7 +104,7 @@ def preparedpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v3 : W := UInt256.shiftRight v2 x4
   {s with pc := N 10196,memory := s.memory,stack := v3::x11::v2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hk_x0 : x0 = N 255) (hk_x4 : x4 = N 255) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hk_x0 : x0 = N 255) (hk_x4 : x4 = N 255) :
     runInstructions preparedpart1Program {s with pc := N 10188,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -128,7 +128,7 @@ def preparedpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v3 : W := UInt256.land v1 v2
   {s with pc := N 10205,memory := s.memory,stack := v3::v2::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hk_x4 : x4 = N 255) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hk_x4 : x4 = N 255) :
     runInstructions preparedpart2Program {s with pc := N 10196,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -153,7 +153,7 @@ def preparedpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v2 : W := UInt256.shiftRight x2 x5
   {s with pc := N 10213,memory := s.memory,stack := x9::v2::x0::v0::v1::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem preparedpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hk_x5 : x5 = N 255) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hk_x5 : x5 = N 255) :
     runInstructions preparedpart3Program {s with pc := N 10205,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (preparedpart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -176,7 +176,7 @@ def preparedpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v2 : W := UInt256.shiftRight v1 (N 255)
   {s with pc := N 10222,memory := s.memory,stack := v1::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions preparedpart4Program {s with pc := N 10213,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedpart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -199,7 +199,7 @@ def preparedpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v2 : W := x9 - x1
   {s with pc := N 10231,memory := s.memory,stack := v2::x13::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions preparedpart5Program {s with pc := N 10222,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedpart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -219,7 +219,7 @@ def preparedpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v1 : W := UInt256.shiftRight v0 (N 255)
   {s with pc := N 10236,memory := s.memory,stack := v1::v0::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem preparedpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions preparedpart6Program {s with pc := N 10231,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (preparedpart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -303,7 +303,7 @@ def preparedModel (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest 
   let v20 : W := UInt256.shiftRight v19 (N 255)
   {s with pc := N 10236,memory := s.memory,stack := v20::v19::v17::v9::v10::v11::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
 theorem prepared_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp) :
     runInstructions preparedProgram {s with pc := N 10180,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (preparedModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) := by
   let v0 : W := MachineState.readWord s.memory 160
@@ -373,7 +373,7 @@ private theorem prepared_model_eq (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv 
     preparedModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest = blk5192Model s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest := by
   simp (disch := decide) only [preparedModel,blk5192Model,addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint]
 theorem blk5192_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp) :
     runInstructions blk5192Program {s with pc := N 10180,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (blk5192Model s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) := by
   exact (prepared_run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact hcache).trans
@@ -411,7 +411,7 @@ def blk5265part0Program : List Instr :=
 def blk5265part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   {s with pc := N 10248,memory := s.memory,stack := x4::x5::x3::x2::x1::x0::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem blk5265part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions blk5265part0Program {s with pc := N 10240,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (blk5265part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 30) : rest.length + j < 1024 := by omega
@@ -424,7 +424,7 @@ def blk5265part1Program : List Instr :=
 def blk5265part1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : W) (rest : List W) : State :=
   {s with pc := N 10250,memory := s.memory,stack := x0::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::rest}
 theorem blk5265part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions blk5265part1Program {s with pc := N 10248,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::rest} =
       some (blk5265part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 rest) := by
   have hc (j : Nat) (hj : j ≤ 26) : rest.length + j < 1024 := by omega
@@ -445,7 +445,7 @@ def blk5265Program : List Instr :=
 def blk5265Model (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
   {s with pc := N 10250,memory := s.memory,stack := d0::d1::d2::d3::d4::n1::n2::n3::n4::P::inv::cntp::rest}
 theorem blk5265_run (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions blk5265Program {s with pc := N 10240,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (blk5265Model s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) := by
   have h0 : runInstructions blk5265part0Program {s with pc := N 10240,memory := s.memory,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 10248,memory := s.memory,stack := d0::a0::d1::d2::d3::d4::n1::n2::n3::n4::P::inv::cntp::rest} := by
@@ -469,7 +469,7 @@ def negpart0Program : List Instr :=
 def negpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   {s with pc := N 10260,memory := s.memory,stack := x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem negpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions negpart0Program {s with pc := N 10254,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (negpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 30) : rest.length + j < 1024 := by omega
@@ -486,7 +486,7 @@ def negProgram : List Instr :=
 def negModel (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
   {s with pc := N 10260,memory := s.memory,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
 theorem neg_run (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions negProgram {s with pc := N 10254,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (negModel s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) := by
   have h0 : runInstructions negpart0Program {s with pc := N 10254,memory := s.memory,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 10260,memory := s.memory,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} := by
@@ -501,7 +501,7 @@ def doneProgram : List Instr := OverlapPackRaw5.program
 def doneModel (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
  OverlapPackRaw5.model s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest
 theorem done_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
- (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+ (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions doneProgram {s with pc := N 10260,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} =
  some (doneModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest) :=
  OverlapPackRaw5.run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact

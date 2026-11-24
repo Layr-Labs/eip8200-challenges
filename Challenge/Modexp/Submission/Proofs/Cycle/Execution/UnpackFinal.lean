@@ -28,7 +28,7 @@ def unpackFinalpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : UInt256 := MachineState.readWord v2 450
   {s with pc := UInt256.ofNat 5896,memory := v2,stack := v3::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem unpackFinalpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart0Program {s with pc := UInt256.ofNat 5882,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (unpackFinalpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -58,7 +58,7 @@ def unpackFinalpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : UInt256 := UInt256.land x11 v2
   {s with pc := UInt256.ofNat 5908,memory := v1,stack := v3::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem unpackFinalpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart1Program {s with pc := UInt256.ofNat 5896,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (unpackFinalpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -86,7 +86,7 @@ def unpackFinalpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : ByteArray := MachineState.writeBytes v0 (Data.Bytes.natToBytesPadded v2.toNat 32) 1888
   {s with pc := UInt256.ofNat 5922,memory := v3,stack := x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem unpackFinalpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart2Program {s with pc := UInt256.ofNat 5908,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (unpackFinalpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -116,7 +116,7 @@ def unpackFinalpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : UInt256 := MachineState.readWord v2 330
   {s with pc := UInt256.ofNat 5936,memory := v2,stack := v3::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem unpackFinalpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart3Program {s with pc := UInt256.ofNat 5922,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (unpackFinalpart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -146,7 +146,7 @@ def unpackFinalpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : UInt256 := UInt256.land x11 v2
   {s with pc := UInt256.ofNat 5948,memory := v1,stack := v3::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem unpackFinalpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart4Program {s with pc := UInt256.ofNat 5936,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (unpackFinalpart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -174,7 +174,7 @@ def unpackFinalpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v3 : ByteArray := MachineState.writeBytes v0 (Data.Bytes.natToBytesPadded v2.toNat 32) 2016
   {s with pc := UInt256.ofNat 5962,memory := v3,stack := x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem unpackFinalpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart5Program {s with pc := UInt256.ofNat 5948,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (unpackFinalpart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -201,7 +201,7 @@ def unpackFinalpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 2048
   {s with pc := UInt256.ofNat 5973,memory := v2,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem unpackFinalpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalpart6Program {s with pc := UInt256.ofNat 5962,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (unpackFinalpart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -298,7 +298,7 @@ def unpackFinalModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : U
   let v26 : ByteArray := MachineState.writeBytes v23 (Data.Bytes.natToBytesPadded v25.toNat 32) 2048
   {s with pc := UInt256.ofNat 5973,memory := v26,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest}
 theorem unpackFinal_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalProgram {s with pc := UInt256.ofNat 5882,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (unpackFinalModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 480

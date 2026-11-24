@@ -108,14 +108,14 @@ Every address this subroutine touches lies below `0x2500`, so once the setup
 block has made `0x2500` bytes active no access here extends the high-water
 mark. -/
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
+    (hoff : off + sz ≤ 2784) (hcurr : 87 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -646,7 +646,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 8)) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry8
       (subEntryState s memory pdst ret rest) =
@@ -679,7 +679,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_0 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_0
       (csFixedState s memory 8 0 4037 pdst ret rest) =
       some (csFixedState s memory 8 1 4053 pdst ret rest) := by
@@ -712,7 +712,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_1 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_1
       (csFixedState s memory 8 1 4053 pdst ret rest) =
       some (csFixedState s memory 8 2 4074 pdst ret rest) := by
@@ -743,7 +743,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_2 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_2
       (csFixedState s memory 8 2 4074 pdst ret rest) =
       some (csFixedState s memory 8 3 4095 pdst ret rest) := by
@@ -774,7 +774,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_3 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_3
       (csFixedState s memory 8 3 4095 pdst ret rest) =
       some (csFixedState s memory 8 4 4116 pdst ret rest) := by
@@ -805,7 +805,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_4 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_4
       (csFixedState s memory 8 4 4116 pdst ret rest) =
       some (csFixedState s memory 8 5 4137 pdst ret rest) := by
@@ -836,7 +836,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_5 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_5
       (csFixedState s memory 8 5 4137 pdst ret rest) =
       some (csFixedState s memory 8 6 4159 pdst ret rest) := by
@@ -867,7 +867,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_6 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_6
       (csFixedState s memory 8 6 4159 pdst ret rest) =
       some (csFixedState s memory 8 7 4180 pdst ret rest) := by
@@ -898,7 +898,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep8_7 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_7
       (csFixedState s memory 8 7 4180 pdst ret rest) =
       some (csFixedState s memory 8 8 4200 pdst ret rest) := by
@@ -931,11 +931,11 @@ theorem run_csFixedTailSub8 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 =
       UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (huse : (csUse memory 8 8).toNat ≠ 0)
     (hsrc : (csSrc memory 8 8).toNat = 1792) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTailSub
@@ -982,11 +982,11 @@ theorem run_csFixedTailKeep8 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 =
       UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (huse : (csUse memory 8 8).toNat = 0)
     (hsrc : (csSrc memory 8 8).toNat = 2112) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTailKeep
@@ -1033,11 +1033,11 @@ def gasSteps_csFixedTail8 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 =
       UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
@@ -1067,13 +1067,13 @@ def gasSteps_csFixedTail8 (s : State) (memory : ByteArray)
 def gasSteps_csFixedFrom8 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 = UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (htn : (MachineState.readWord (csStep memory 8 8).memory 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (csFixedState s memory 8 0 4037 pdst ret rest)
       (subReturnedState s memory 8 8 pdst ret rest) := by
@@ -1147,11 +1147,11 @@ theorem run_csFixedTailSubFlag8 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 =
       UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (huse : (csUse memory 8 8).toNat ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTailSub
       (csFixedState s memory 8 8 4200 pdst ret rest) =
@@ -1195,13 +1195,13 @@ theorem run_csFixedTailSubFlag8 (s : State) (memory : ByteArray)
 def gasSteps_csFixedFrom8Flag (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 = UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (hflag : (MachineState.readWord (csStep memory 8 8).memory 2080).toNat ≠ 0) :
     Challenge.EvmProof.GasSteps (csFixedState s memory 8 0 4037 pdst ret rest)
       (subFlagReturnedState s memory 8 pdst ret rest) := by
@@ -1277,14 +1277,14 @@ def gasSteps_csFixedFrom8Flag (s : State) (memory : ByteArray) (pdst ret : UInt2
 def gasSteps_csFixed8 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hs : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 8))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 = UInt256.ofNat (32 * 8))
-    (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 8 ≤ 2784)
     (htn : (MachineState.readWord (csStep memory 8 8).memory 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (subEntryState s memory pdst ret rest)
       (subReturnedState s memory 8 8 pdst ret rest) := by
@@ -1301,7 +1301,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4)) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry4
       (subEntryState s memory pdst ret rest) =
@@ -1334,7 +1334,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep4_0 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_0
       (csFixedState s memory 4 0 3923 pdst ret rest) =
       some (csFixedState s memory 4 1 4137 pdst ret rest) := by
@@ -1369,7 +1369,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep4_1 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_1
       (csFixedState s memory 4 1 4137 pdst ret rest) =
       some (csFixedState s memory 4 2 4159 pdst ret rest) := by
@@ -1400,7 +1400,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep4_2 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_2
       (csFixedState s memory 4 2 4159 pdst ret rest) =
       some (csFixedState s memory 4 3 4180 pdst ret rest) := by
@@ -1431,7 +1431,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_csFixedStep4_3 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_3
       (csFixedState s memory 4 3 4180 pdst ret rest) =
       some (csFixedState s memory 4 4 4200 pdst ret rest) := by
@@ -1464,11 +1464,11 @@ theorem run_csFixedTailSub4 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 4 4).memory 2688 =
       UInt256.ofNat (32 * 4))
-    (hdstFit : pdst.toNat + 32 * 4 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 4 ≤ 2784)
     (huse : (csUse memory 4 4).toNat ≠ 0)
     (hsrc : (csSrc memory 4 4).toNat = 1792) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTailSub
@@ -1515,11 +1515,11 @@ theorem run_csFixedTailKeep4 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 4 4).memory 2688 =
       UInt256.ofNat (32 * 4))
-    (hdstFit : pdst.toNat + 32 * 4 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 4 ≤ 2784)
     (huse : (csUse memory 4 4).toNat = 0)
     (hsrc : (csSrc memory 4 4).toNat = 2112) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTailKeep
@@ -1566,11 +1566,11 @@ def gasSteps_csFixedTail4 (s : State) (memory : ByteArray)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 4 4).memory 2688 =
       UInt256.ofNat (32 * 4))
-    (hdstFit : pdst.toNat + 32 * 4 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 4 ≤ 2784)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
@@ -1600,14 +1600,14 @@ def gasSteps_csFixedTail4 (s : State) (memory : ByteArray)
 def gasSteps_csFixed4 (s : State) (memory : ByteArray) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hs : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 4 4).memory 2688 = UInt256.ofNat (32 * 4))
-    (hdstFit : pdst.toNat + 32 * 4 ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * 4 ≤ 2784)
     (htn : (MachineState.readWord (csStep memory 4 4).memory 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (subEntryState s memory pdst ret rest)
       (subReturnedState s memory 4 4 pdst ret rest) := by
@@ -1656,13 +1656,13 @@ def gasSteps_csub_sub (s : State) (memory : ByteArray) (n : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hml : MachineState.readWord memory 2752 = UInt256.ofNat (32 * n - 32))
-    (htl : MachineState.readWord memory 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord memory 2720 = UInt256.ofNat (32 * n - 32))
+    (htl : MachineState.readWord memory 2752 = UInt256.ofNat (2080 + 32 * n))
     (hs32 : MachineState.readWord (csStep memory n n).memory 2688 =
       UInt256.ofNat (32 * n))
-    (hdstFit : pdst.toNat + 32 * n ≤ 2816)
+    (hdstFit : pdst.toNat + 32 * n ≤ 2784)
     (htn : (MachineState.readWord (csStep memory n n).memory 2080).toNat ≤ 1)
     -- the rewritten dispatcher admits only four or eight limbs, so the general-width
     -- conditional subtraction below it is unreachable

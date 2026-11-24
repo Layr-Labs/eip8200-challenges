@@ -9,14 +9,14 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.EarlyCsub
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
+    (hoff : off + sz ≤ 2784) (hcurr : 87 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -48,7 +48,7 @@ def copiedState (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
     stack := rest
     memory := MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32*n)) dst.toNat }
 theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1008) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions checkProgram (atState s mem 3902 dst ret rest) =
       some (atState s mem (if Skip mem then 4223 else 3918) dst ret rest) := by
@@ -88,11 +88,11 @@ theorem run_jump (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List 
   simp [jumpProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
     atState,hc2,hc3,Nat.add_assoc,hcode,h4925,jumpDestSub,heq4925]
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1008) (hact : 87 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
-    (hdstFit : dst.toNat+32*n ≤ 2816)
+    (hdstFit : dst.toNat+32*n ≤ 2784)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true) :
     runInstructions copyProgram (atState s mem 4223 dst ret rest) =
       some (copiedState s mem n dst ret rest) := by

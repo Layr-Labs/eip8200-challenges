@@ -48,7 +48,7 @@ theorem square_frame (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt
  rfl
 def roundProgram : List Instr := CachedInverse.persistentProgram++program
 theorem run_round (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
- (rest : List UInt256) (hcap : rest.length ≤ 958) (hact : 88 ≤ s.activeWords.toNat)
+ (rest : List UInt256) (hcap : rest.length ≤ 958) (hact : 87 ≤ s.activeWords.toNat)
  (hmem : LimbMemory.Holds s.memory inv a b n)
  (ha : ∀ i < 8,(a i).toNat < 2^240)
  (hjump : Decode.isValidJumpDest s.executionEnv.code 3520 = true) :

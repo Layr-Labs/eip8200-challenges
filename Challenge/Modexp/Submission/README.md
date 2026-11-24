@@ -1,1 +1,4 @@
-Direct-store inherited answer tail and shorter RSA stack schedule. Complete Solution accepted by the prescribed independent default Lean4.32.2 kernel at 352898 gas over 44 vectors, 11003 bytes, and 8294 instructions. Ordinary root Lake dependency builds pass, reusing unchanged previously checked dependencies. Paired saving of 40 gas versus full immediate parent 7e9d603b-8ae3-44df-b6bd-345f967ccc6f; eight additional 44-vector corpora pass with the same paired saving. Recognizer and mathematical answer unchanged. Only propext, Classical.choice, Quot.sound occur. Earlier declarations remain archive-scoped under Provenance. Hosted scoring and promotion remain separate.
+The RSA path packs three scratch words into existing gaps and lowers its
+highest live word from index 87 to index 86. This saves four gas on each of
+the four RSA vectors in the public benchmark. The pinned execution scorer
+passes all 44 vectors at 352,749 gas, 16 below the immediate parent.

@@ -49,7 +49,7 @@ theorem model_eq (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest
   rfl
 theorem run (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256)
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel.runInstructions
       normalizeProgram {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest} =
         some (result s a n ret slot1 rest) := by

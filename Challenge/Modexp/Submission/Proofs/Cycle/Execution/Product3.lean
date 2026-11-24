@@ -26,7 +26,7 @@ def productColumn3Model (s : State) (carry word0 word1 word2 word3 word4 word5 w
   let v13 : UInt256 := MachineState.readWord s.memory 0
   let v14 : UInt256 := UInt256.mulMod v13 word11 word9
   let v15 : UInt256 := v14 + v12
-  let v16 : UInt256 := MachineState.readWord s.memory 2720
+  let v16 : UInt256 := MachineState.readWord s.memory 2624
   let v17 : UInt256 := v5 * v16
   let v18 : UInt256 := UInt256.land word12 v17
   let v19 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v18.toNat 32) 224

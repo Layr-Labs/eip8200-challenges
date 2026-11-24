@@ -155,7 +155,7 @@ def blk2919b :
    opAt 1975 .MSTORE]
 def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1976 2 2752,
+  [pushAt 1976 2 2720,
    opAt 1977 .MLOAD,
    opAt 1978 .MLOAD,
    opAt 1979 (.Dup dA0),
@@ -217,7 +217,7 @@ def blkNbTail :
    opAt 2031 .MUL,
    pushAt 2032 0 0,
    opAt 2033 .SUB,
-   pushAt 2034 2 2720,
+   pushAt 2034 2 2624,
    opAt 2035 .MSTORE,
    opAt 2036 .POP,
    opAt 2037 .POP,
@@ -261,7 +261,7 @@ def blk3018 :
    pushAt 2096 2 2080,
    opAt 2097 .MCOPY,
    pushAt 2098 0 0,
-   pushAt 2099 2 2784,
+   pushAt 2099 2 2752,
    opAt 2100 .MLOAD,
    opAt 2101 .MSTORE]
 def blk3026 :
@@ -351,7 +351,7 @@ def blk3153 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2405 .JUMPDEST,
    pushAt 2406 0 0,
-   pushAt 2407 2 2784,
+   pushAt 2407 2 2752,
    opAt 2408 .MLOAD]
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=

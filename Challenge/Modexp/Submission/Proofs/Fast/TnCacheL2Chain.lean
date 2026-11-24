@@ -20,7 +20,7 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat)
     (pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k+4 = n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k+4 = n)
     (hc : TnCacheExtraTrace.ExtraCache mem m96 m64 m32) :
     runInstructions suffix
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 n k
@@ -54,7 +54,7 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
 theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : TnCacheExtraTrace.ExtraCache mem m96 m64 m32) :
     runInstructions prefixProgram
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 8 0
@@ -98,7 +98,7 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (n : Nat) (hn : n = 4 ∨ n = 8)
     (pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : TnCacheExtraTrace.ExtraCache mem m96 m64 m32) :
     runInstructions (fullProgram n)
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 n 0
