@@ -130,7 +130,7 @@ private abbrev i84 : Instr := .push 2 256
 private abbrev i85 : Instr := .op .ISZERO
 private abbrev i86 : Instr := .push 2 2208
 private def instructionsPart0 : List Instr :=
-  [.push 1 34,i31,i39,i31,i3,.push 3 2097184,.op .XOR,.push 2 530,i34,i37,i31,i36,i31,i38,i31,i5,i5,i29,.push 2 8191,i55,i31,i29,i43,.push 2 934,i34,i23,i31,i35,.op .XOR,.push 1 63,i34,i5,i5,.op .EQ,.push 2 934,i34,.push 2 10660,i44,.op .STOP,.op .STOP,.op .STOP,.op .STOP,i20,i35,i23,i31,i5,i5,i46,.push 1 174,i34,i16,i29,i37,i31,i5,i81,i53,i43,i5,i36,i29,i31,i14,i38,i29,i31,.push 2 10947,i44,i20,i11,i31,i7,i35,i29,i81,i53,i43,i0,.push 1 116,i34,i7,i23,i65,i20,i23,i23,i20,i7,i5,.op .EQ,.push 1 147,i34,i14,i5,i25,i3,i31,i23,.op .BYTE,i19,i84,i55,i49,i1,.op .ADDMOD,i15,i3,.push 1 119,i44,i20,i40,i5,i23,i85,i52,i23,i20,i11,i5,.op .EQ,.push 2 10447,i34,i0,i4,i3,i0,i31]
+  [.push 1 34,i31,i39,i31,i3,.push 3 2097184,.op .XOR,.push 2 530,i34,i37,i31,i36,i31,i38,i31,i5,i5,i29,.push 2 8191,i55,i31,i29,i43,.push 2 934,i34,i23,i31,i35,.op .XOR,.push 1 63,i34,i5,i5,.op .EQ,.push 2 934,i34,.push 2 10660,i44,.op .STOP,.op .STOP,.op .STOP,.op .STOP,i20,i23,i31,i35,i0,i14,i46,.push 1 174,i34,i29,i37,i31,i5,i81,i53,i43,i5,i36,i29,i31,i14,i38,i29,i31,.push 2 10947,i44,.op .STOP,i20,i11,i31,i7,i35,i29,i81,i53,i43,i0,.push 1 116,i34,i7,i23,i65,i20,i23,i23,i20,i7,i5,.op .EQ,.push 1 147,i34,i14,i5,i25,i3,i31,i23,.op .BYTE,i19,i84,i55,i49,i1,.op .ADDMOD,i15,i3,.push 1 119,i44,i20,i40,i5,i23,i85,i52,i23,i20,i11,i5,.op .EQ,.push 2 10447,i34,i0,i4,i3,i0,i31]
 
 private theorem instructionsPart0_wf :
     instructionsPart0.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by

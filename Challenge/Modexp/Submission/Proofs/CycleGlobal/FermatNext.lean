@@ -72,25 +72,23 @@ def fastJoinProgram : List Instr :=
 def toPrimeProgram : List Instr := [
   .push 2 10660,
    .op .JUMP]
-/-- General-width entry at 74 (exponent and modulus sizes 32, base size not 32):
-a base size above 32 leaves for the wide fallback at 238. -/
+/-- Keep 32 above the base length for the subtraction at PC 74. A base longer
+than 32 bytes branches to the generic fallback at PC 174. -/
 def genCheckProgram : List Instr :=
   [
   .op .JUMPDEST,
-   .push 1 32,
    .push 0 0,
    .op .CALLDATALOAD,
-   .op (.Dup dA1),
-   .op (.Dup dA1),
+   .push 1 32,
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .GT,
    .push 1 174,
    .op .JUMPI]
-/-- 112: with `k = 32 - baseSize`, push `k`, the base word shifted right by `8 k`, the exponent
-word at `128 - k` and the modulus word at `160 - k`, then join at 48. -/
+/-- At PC 74 compute `k = 32 - baseSize`, shift the base right by `8 * k`,
+load the exponent and modulus at the adjusted offsets, then jump to PC 10947. -/
 def genLoadProgram : List Instr :=
-  [
-  .op (.Swap ⟨0,by decide⟩),
-   .op .SUB,
+  [.op .SUB,
    .push 1 96,
    .op .CALLDATALOAD,
    .op (.Dup ⟨1,by decide⟩),
@@ -370,7 +368,7 @@ theorem run_gen_check (template : State) (rest : List UInt256) (hrest : rest.len
     some (framed template
       (if (UInt256.gt (MachineState.readWord template.executionEnv.calldata 0)
           (UInt256.ofNat 32)).toNat = 0 then UInt256.ofNat 74 else UInt256.ofNat 174)
-      (MachineState.readWord template.executionEnv.calldata 0::UInt256.ofNat 32::rest)) := by
+      (UInt256.ofNat 32::MachineState.readWord template.executionEnv.calldata 0::rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
   have hk2 : rest.length + 2 < 1024 := by omega
@@ -394,7 +392,7 @@ theorem run_gen_load (template : State) (b : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 10947 = true) :
     runInstructions genLoadProgram
-      (framed template (UInt256.ofNat 74) (b::UInt256.ofNat 32::rest)) =
+      (framed template (UInt256.ofNat 74) (UInt256.ofNat 32::b::rest)) =
     some (framed template (UInt256.ofNat 10947)
       (MachineState.readWord template.executionEnv.calldata
           (UInt256.ofNat 160 - (UInt256.ofNat 32 - b)).toNat ::

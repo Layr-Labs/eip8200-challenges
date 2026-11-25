@@ -83,11 +83,11 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     exact ⟨final,⟨(Main.gasSteps_entryHop input).trans ((s1.trans (s2.trans s3)).trans tail)⟩,
       done,result⟩
 /-- Where a base size above 32 (exponent and modulus sizes 32) leaves the general-width
-entry: the wide fallback at 219 with the base size, 32 and the three loaded words on the stack. -/
+entry: the wide fallback at 219 with 32, the base size and the three loaded words on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
     pc := UInt256.ofNat 174
-    stack := [UInt256.ofNat (baseSize input),UInt256.ofNat 32]++loaded input }
+    stack := [UInt256.ofNat 32,UInt256.ofNat (baseSize input)]++loaded input }
 def genBig (input : ByteArray) (hvalid : ValidInput input)
     (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
     (hb : 32 < baseSize input) :

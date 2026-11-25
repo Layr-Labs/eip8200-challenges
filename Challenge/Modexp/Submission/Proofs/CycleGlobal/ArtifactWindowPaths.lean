@@ -212,8 +212,8 @@ private def fermat_genCheck :
     (by decide)
 private def fermat_genLoad :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 74 FermatNext.genLoadProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 51 18 74 FermatNext.genLoadProgram
-    (by change 51+18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 51 17 74 FermatNext.genLoadProgram
+    (by change 51+17 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

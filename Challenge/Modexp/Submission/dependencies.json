@@ -1,1 +1,23 @@
-[{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","rationale":"Complete literal-mask and compaction implementation parent, including all inherited algorithms, memo recognizer and answer certificate, RSA arithmetic, dispatch, fallbacks, and universal correctness proofs. This child changes only the existing constant-return mechanism, early code relocations, and one RSA stack schedule. Inherited dependency declarations remain archive-scoped under Provenance.","evidence":"The existing certified answer is written directly with PUSH32/PUSH0/MSTORE/MSIZE, saving 6 paired gas. The RSA stack schedule saves 34 paired gas over 17 local visits. The full isolated Solution, normal root Lake dependency builds, and prescribed independent default Lean4.32.2 kernel accept the exact 11003-byte, 8294-instruction child at 352898 gas over 44 vectors. Eight additional 44-vector corpora pass with exact 40 paired gas versus this complete parent.","citations":[{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","path":"Challenge/Modexp/Submission/Proofs/Prepared/MemoAnswer.lean","fileSha256":"3baeaabf62e606b59b96c965088c1f91d1cec41cb4d4dbcda0e5650a2d75ad80","startLine":13,"endLine":112},{"submissionId":null,"path":"Challenge/Modexp/Submission/Proofs/Prepared/MemoAnswer.lean","fileSha256":"919781482892aa5c161257351c05518299caf243c8aaa01420bcc8c6235d084e","startLine":13,"endLine":79},{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","path":"Challenge/Modexp/Submission/Proofs/Prepared/R5CacheRaw.lean","fileSha256":"075606e8079b34028b2305137421a7da0565fd6903ff91929caf11b93a52c219","startLine":1109,"endLine":1151},{"submissionId":null,"path":"Challenge/Modexp/Submission/Proofs/Prepared/R5CacheRaw.lean","fileSha256":"940faf06a847b8d5fb345244a97a553f11e979a6853595e863d6d82d3ee4d552","startLine":1152,"endLine":1162}]}]
+[
+  {
+    "submissionId": "8ec1b35f-870b-400a-9712-f09652eee6bf",
+    "rationale": "The complete promoted implementation supplies the word and wide arithmetic, dispatcher, fallback and universal proof. This child reschedules the base-width check to leave the subtract operands in the required order.",
+    "evidence": "The parent and child change stack order at the general-width exit. PC 74 then executes SUB directly instead of SWAP1 followed by SUB. Both fixed EIP-198 examples save three gas in paired local execution.",
+    "citations": [
+      {
+        "submissionId": "8ec1b35f-870b-400a-9712-f09652eee6bf",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/FermatNext.lean",
+        "fileSha256": "a8f1c4c3432ad3f3aa524dc55580e11b44a8f1581c9ceeb49fcb514ffdd624f9",
+        "startLine": 77,
+        "endLine": 109
+      },
+      {
+        "submissionId": null,
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/FermatNext.lean",
+        "fileSha256": "bc47675ce684d6d1642c9caad3ca4f812fb61e64ab691bf946b237213fbc2ff3",
+        "startLine": 77,
+        "endLine": 107
+      }
+    ]
+  }
+]

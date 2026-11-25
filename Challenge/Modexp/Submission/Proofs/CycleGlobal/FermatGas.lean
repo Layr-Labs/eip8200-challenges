@@ -437,10 +437,10 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
   rw [hbw] at hl
   have gc : GasSteps (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 63) rest)
       (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 74)
-        (UInt256.ofNat (baseSize input)::UInt256.ofNat 32::rest)) :=
+        (UInt256.ofNat 32::UInt256.ofNat (baseSize input)::rest)) :=
     paths.genCheck.steps (ec.transfer rfl rfl) rfl hc
   have gl : GasSteps (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 74)
-        (UInt256.ofNat (baseSize input)::UInt256.ofNat 32::rest))
+        (UInt256.ofNat 32::UInt256.ofNat (baseSize input)::rest))
       (joinState template input (UInt256.ofNat (32 - baseSize input)::rest)) :=
     paths.genLoad.steps (ec.transfer rfl rfl) rfl hl
   exact gc.trans gl
