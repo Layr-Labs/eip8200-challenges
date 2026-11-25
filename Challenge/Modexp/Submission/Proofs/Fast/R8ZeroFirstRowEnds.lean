@@ -16,7 +16,7 @@ def diagonalTail (next : UInt256) : List Instr :=
 def diagonalProgram (next : UInt256) : List Instr :=
   R8RowZero.coreProgram++diagonalTail next
 theorem run_diagonalTail (s : State) (pc c lo bi P hd ent next : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1013) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1013) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions (diagonalTail next)
       { s with pc := pc,stack := c::lo::bi::P::hd::UInt256.ofNat 2336::ent::rest } =
     some { s with pc := advancePC 8 pc,
@@ -42,7 +42,7 @@ theorem subtract_hi (a : UInt256) :
   simpa only [SquareDiag.diagHi,lt_self_word,hs] using h
 theorem run_diagonal (s : State)
     (pc hd ent next stride target inv m0 tl m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory 2592
     runInstructions (diagonalProgram next)
       { s with pc := pc,
@@ -84,7 +84,7 @@ theorem writeBytes_comm_disjoint (bs b1 b2 : ByteArray) (a1 a2 : Nat)
 def finishStore : List Instr :=
   [.push 2 2080,.op .MSTORE,.push 2 2112,.op .MSTORE,.op .POP,.push 0 0]
 theorem run_finishStore (s : State) (pc c u bi : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1019) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1019) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions finishStore
       { s with pc := pc,stack := c::u::bi::rest } =
     some { s with pc := advancePC 10 pc,stack := UInt256.ofNat 0::rest,
@@ -119,7 +119,7 @@ private theorem sub_sub_comm_diag (a b c : UInt256) : (a - b) - c = (a - c) - b 
   change ((a.val - b.val) - c.val).val = ((a.val - c.val) - b.val).val
   rw [sub_right_comm]
 theorem run_diagonalMathTailM128 (s : State) (pc bi P hd ent next stride target inv m0 tl m96 m64 m32 x : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat) :
     let lo := x * x
     let mm := UInt256.mulMod x x maxWord
     runInstructions (diagonalMathTailM128 next)
@@ -145,7 +145,7 @@ theorem run_diagonalMathTailM128 (s : State) (pc bi P hd ent next stride target 
   exact ⟨congrArg (pc + ·) (by decide),trivial⟩
 theorem run_diagonalM128 (s : State)
     (pc hd ent next stride target inv m0 tl m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory 2592
     runInstructions (diagonalProgramM128 next)
       { s with pc := pc,

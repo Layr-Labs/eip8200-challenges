@@ -231,7 +231,7 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
     (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2LastProgram w x tl ts)
       (CiosCachedL2.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =
@@ -267,7 +267,7 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
     List.cons_append,List.nil_append] using hall
 theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1005) (hact : 87 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 8) (hn : 2 ≤ n) :
     runInstructions (l2LastProgram 0 0 2112 2144)
       (l2At 3823 s mid bi mu c0 pb n i (n-2) hd ent pdst ret rest) =

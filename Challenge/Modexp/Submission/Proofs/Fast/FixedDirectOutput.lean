@@ -59,10 +59,6 @@ structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   squareBase : Model.FastRepresents mem 2112 n squareBase
   oneBlock : ∃ one,one < Limbs.radix ∧
     Model.FastRepresents mem 768 n one
-theorem countStore_frame {mem : ByteArray} {n bsize minv : Nat} (c : Nat)
-    (hframe : Exp.Frame mem n bsize minv) :
-    Exp.Frame (Exp.storeWord mem 2624 (UInt256.ofNat c)) n bsize minv :=
-  Exp.frame_storeWord (UInt256.ofNat c) (by omega) hframe
 theorem countStore_inv {mem : ByteArray} {n mm rawBase squareBase : Nat} (c : Nat)
     (hn32 : n ≤ 8) (hinv : Inv mem n mm rawBase squareBase) :
     Inv (Exp.storeWord mem 2624 (UInt256.ofNat c)) n mm rawBase squareBase := by

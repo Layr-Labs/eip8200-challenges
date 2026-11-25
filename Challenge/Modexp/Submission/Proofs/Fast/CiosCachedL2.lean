@@ -58,7 +58,7 @@ theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray
     (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2Program w x tl ts)
       (state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =

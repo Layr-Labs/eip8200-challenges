@@ -69,7 +69,7 @@ def pushState (s : State) (mem : ByteArray) (rest : List UInt256) : State :=
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := ret,stack := rest,memory := mem }
 theorem run_entry (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256)
-    (hret : ret = UInt256.ofNat 2554) (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
+    (hret : ret = UInt256.ofNat 2554) (hcap : rest.length ≤ 1008) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true) :
     runInstructions entryProgram (entryState s mem ret rest) =
@@ -124,11 +124,11 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true)
     (hret : ret = UInt256.ofNat 2554)
-    (hml : MachineState.readWord memory 2752 = UInt256.ofNat (32*n-32))
-    (htl : MachineState.readWord memory 2784 = UInt256.ofNat (2080+32*n))
+    (hml : MachineState.readWord memory 2720 = UInt256.ofNat (32*n-32))
+    (htl : MachineState.readWord memory 2752 = UInt256.ofNat (2080+32*n))
     (hs32 : MachineState.readWord (Csub.csStep memory n n).memory 2688 = UInt256.ofNat (32*n))
     (htn : (MachineState.readWord (Csub.csStep memory n n).memory 2080).toNat ≤ 1)
     (hfast : n = 4 ∨ n = 8) :

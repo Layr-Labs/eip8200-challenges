@@ -65,7 +65,7 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (l1Program off t)
       (qState template pc q bi pbi hd pbEnd flag tn destination returnPC rest) =
@@ -109,7 +109,7 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t)
       (qState template pc q bi pbi hd pbEnd flag tn destination returnPC rest) =
@@ -156,7 +156,7 @@ theorem run_stepW3 (template : State) (pc : UInt256) (q : MacState)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgramW3 off t)
       (qState template pc q bi pbi hd pbEnd flag tn destination returnPC rest) =

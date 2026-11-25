@@ -26,7 +26,7 @@ def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : St
   {s with pc := UInt256.ofNat 4010,memory := mem,stack := [UInt256.ofNat 2412,UInt256.ofNat (32*n)]++rest}
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
+    (hact : 87 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 4010 = true) :
     runInstructions hitProgram (frame s mem 2398 n rest) =
       some (csubEntry s (hitMemory mem input n) n rest) := by
@@ -47,7 +47,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt2
     Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions copyProgram (frame s mem 2412 n rest) =
       some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2421 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
@@ -57,7 +57,7 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
   have hsz : 32*n % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 32*n := Nat.mod_eq_of_lt (by omega)
   have haD := Monpro.activeWords_fix s 256 (32*n) (by omega) (by omega) (by omega)
   have haB := Monpro.activeWords_fix s 2112 (32*n) (by omega) (by omega) (by omega)
-  have haL := Monpro.activeWords_fix s 2752 32 (by decide) (by omega) (by omega)
+  have haL := Monpro.activeWords_fix s 2720 32 (by decide) (by omega) (by omega)
   have haDN := Exp.activeWordsAfter_fix s.activeWords.toNat 256 (32*n) (by omega) (by omega) hact
   have haBN := Exp.activeWordsAfter_fix s.activeWords.toNat 2112 (32*n) (by omega) (by omega) hact
   have hamod : s.activeWords.toNat % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.activeWords.toNat :=

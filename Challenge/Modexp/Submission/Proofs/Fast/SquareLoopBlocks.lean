@@ -29,6 +29,6 @@ abbrev lastBlock := TnM128SquareExit.lastBlock
 abbrev jumpDestLazy := TnM128SquareExit.jumpDestLazy
 def countMem (mem : ByteArray) (_c : Nat) : ByteArray := mem
 theorem readWord_countMem_disjoint (mem : ByteArray) (c addr : Nat)
-    (_hd : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
+    (_hd : addr + 32 ≤ 2624 ∨ 2624 ≤ addr) :
     MachineState.readWord (countMem mem c) addr = MachineState.readWord mem addr := rfl
 end Challenge.Modexp.Submission.Proofs.Fast.SquareLoopBlocks

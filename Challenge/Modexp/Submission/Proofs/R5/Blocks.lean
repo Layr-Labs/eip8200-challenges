@@ -293,12 +293,12 @@ noncomputable def ctl5275_steps (s : State) (rest : List UInt256)
     (ctl5275_run s rest hcap (by rw [env.code]; exact jumpDest5184))
 def ctl5330_result (s : State) (rest : List UInt256) : State := OverlapFinalReturn.result5 s rest
 theorem ctl5330_run (s : State) (rest : List UInt256) (hcap : rest.length < 1000)
- (hact : 88 ≤ s.activeWords.toNat) :
+ (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions ctl5330Program {s with pc := UInt256.ofNat 10275,stack := rest} =
  some (ctl5330_result s rest) := OverlapFinalReturn.run5 s rest (by omega) hact
 noncomputable def ctl5330_steps (s : State) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length < 1000)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 10275,stack := rest} (ctl5330_result s rest) :=
   ctl5330Block.steps (s := {s with pc := UInt256.ofNat 10275,stack := rest}) (env.transfer rfl rfl) rfl
     (ctl5330_run s rest hcap hact)

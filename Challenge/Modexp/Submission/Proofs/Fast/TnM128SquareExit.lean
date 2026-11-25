@@ -150,7 +150,7 @@ theorem run_n8a_rare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8b_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode) (hc15 : c + 1 ≤ 15) :
     runInstructions n8bProgram
       (dropAt (UInt256.ofNat 0) m128 3948 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
@@ -178,7 +178,7 @@ theorem run_n8b_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8b_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions n8bProgram
       (dropAt (UInt256.ofNat 0) m128 3948 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
         (UInt256.ofNat 0) ret rest) =
@@ -217,7 +217,7 @@ def s8At (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : S
   framed {s with memory := mem} (UInt256.ofNat 4037) ([UInt256.ofNat 2368,ret]++rest)
 theorem run_rare_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode) (hc15 : c + 1 ≤ 15) :
     runInstructions rareProgram
       (dropAt (UInt256.ofNat 0) m128 3973 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
@@ -245,7 +245,7 @@ theorem run_rare_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_rare_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions rareProgram
       (dropAt (UInt256.ofNat 0) m128 3973 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
         (UInt256.ofNat 0) ret rest) =
@@ -313,7 +313,7 @@ def gasSteps_n8aRare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (run_n8a_rare tn m128 s mem n w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode htn)
 def gasSteps_n8bMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
@@ -330,7 +330,7 @@ def gasSteps_n8bMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (run_n8b_more m128 s mem n c w3 ent tl inv m0 m96 m64 m32 aprev ret rest hcap hact hcode hc15)
 def gasSteps_n8bLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
@@ -352,7 +352,7 @@ def gasSteps_n8bLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
       m32 aprev allOnes ret rest hcap hcode))
 def gasSteps_rareMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
@@ -370,7 +370,7 @@ def gasSteps_rareMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (run_rare_more m128 s mem n c w3 ent tl inv m0 m96 m64 m32 aprev ret rest hcap hact hcode hc15)
 def gasSteps_rareLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 87 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)

@@ -107,11 +107,11 @@ theorem preserves_frame (memory : ByteArray) (n bsize inverse : Nat)
   refine ⟨?_,?_,?_,?_,?_⟩
   · rw [preserves_high memory n 2688 hn hn8 (by decide)]
     exact hf.s32
-  · rw [preserves_high memory n 2720 hn hn8 (by decide)]
+  · rw [preserves_high memory n 2624 hn hn8 (by decide)]
     exact hf.minvW
-  · rw [preserves_high memory n 2752 hn hn8 (by decide)]
+  · rw [preserves_high memory n 2720 hn hn8 (by decide)]
     exact hf.ml
-  · rw [preserves_high memory n 2784 hn hn8 (by decide)]
+  · rw [preserves_high memory n 2752 hn hn8 (by decide)]
     exact hf.tl
   · rw [preserves_high memory n 2656 hn hn8 (by decide)]
     exact hf.eoff

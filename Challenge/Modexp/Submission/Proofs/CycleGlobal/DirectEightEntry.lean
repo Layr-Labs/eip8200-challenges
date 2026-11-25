@@ -29,7 +29,7 @@ theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
 def bailState (s : State) (mem : ByteArray) (bsize esize k : Nat) : State :=
  DirectEightRaw.state s mem 174 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize
 def hit (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
- (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
+ (hact : 87 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
  (hg : (DirectEightRaw.guardWord mem).toNat ≠ 0) :
  GasSteps (SlimFrames.special s mem 8 bsize esize 256 k)
  (DirectEightRaw.entered s mem (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize) := by
@@ -44,7 +44,7 @@ def hit (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16
   (env.transfer rfl rfl) rfl (DirectEightRaw.run_finish s mem _ bsize esize hact)
  exact (gc.trans gg).trans gf
 def miss (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
- (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
+ (hact : 87 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
  (hg : (DirectEightRaw.guardWord mem).toNat = 0) :
  GasSteps (SlimFrames.special s mem 8 bsize esize 256 k) (bailState s mem bsize esize k) := by
  have gc := DirectR5Entry.classify8 s mem k hk hk16

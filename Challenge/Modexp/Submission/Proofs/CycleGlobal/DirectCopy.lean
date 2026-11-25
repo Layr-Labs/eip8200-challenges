@@ -30,9 +30,9 @@ theorem invariant (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8)
     · rw [readWord mem n PRE_DINV (Or.inr (by simp only [PRE_DINV]; omega)),hz]; exact p5
   frame := {
     s32 := (readWord mem n 2688 (Or.inr (by omega))).trans inv.frame.s32
-    minvW := (readWord mem n 2720 (Or.inr (by omega))).trans inv.frame.minvW
-    ml := (readWord mem n 2752 (Or.inr (by omega))).trans inv.frame.ml
-    tl := (readWord mem n 2784 (Or.inr (by omega))).trans inv.frame.tl
+    minvW := (readWord mem n 2624 (Or.inr (by omega))).trans inv.frame.minvW
+    ml := (readWord mem n 2720 (Or.inr (by omega))).trans inv.frame.ml
+    tl := (readWord mem n 2752 (Or.inr (by omega))).trans inv.frame.tl
     eoff := (readWord mem n 2656 (Or.inr (by omega))).trans inv.frame.eoff }
   modulus := preserves mem n 0 n mm (Or.inr (by omega)) inv.modulus
   neg := preserves mem n NEG n _ (Or.inl (by unfold NEG; omega)) inv.neg

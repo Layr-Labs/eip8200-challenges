@@ -47,7 +47,7 @@ theorem eq_toNat (a b : UInt256) : (UInt256.eq a b).toNat = if a.toNat = b.toNat
 def entry (s : State) (em : ByteArray) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 8639,memory := em,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}
 theorem prologue_route (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (em : ByteArray) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256)
+    (hact : 87 ≤ s.activeWords.toNat) (em : ByteArray) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 100) (k N A B : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (hf14 : f14 = UInt256.ofNat (k - 1))
     (hmod : Model.FastRepresents em 0 4 N) (ha : Model.FastRepresents em 2112 4 A)

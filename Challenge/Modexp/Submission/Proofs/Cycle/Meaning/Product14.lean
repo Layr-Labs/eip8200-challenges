@@ -30,7 +30,7 @@ theorem model14_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
   rfl
 theorem run14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory14 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions productColumn14Program
       {s with pc := UInt256.ofNat 7734,stack := frame14 inv a b n rest} =
       some (result14 s inv a b n rest) := by

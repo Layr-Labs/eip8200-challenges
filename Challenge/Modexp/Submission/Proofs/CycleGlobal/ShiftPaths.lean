@@ -146,7 +146,7 @@ def blk2919b :
    opAt 2076 .MSTORE]
 def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [pushAt 2077 2 2752,
+  [pushAt 2077 2 2720,
    opAt 2078 .MLOAD,
    opAt 2079 .MLOAD,
    opAt 2080 (.Dup ⟨0,by decide⟩),
@@ -204,7 +204,7 @@ def blkNbTailHead : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Os
    opAt 2129 .MUL,
    pushAt 2130 0 0,
    opAt 2131 .SUB,
-   pushAt 2132 2 2720,
+   pushAt 2132 2 2624,
    opAt 2133 .MSTORE,
    pushAt 2134 2 2522,
    opAt 2135 (.Dup ⟨4,by decide⟩),
@@ -497,7 +497,7 @@ def blk3153 :
     List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   [opAt 2489 .JUMPDEST,
    pushAt 2490 0 0,
-   pushAt 2491 2 2784,
+   pushAt 2491 2 2752,
    opAt 2492 .MLOAD]
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=

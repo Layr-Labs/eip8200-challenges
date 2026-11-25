@@ -31,7 +31,7 @@ def oldModel (s : State) (rest : List UInt256) : State :=
   let v2 : UInt256 := UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 5)
   {s with pc := UInt256.ofNat 8489,memory := v1,stack := v2::rest}
 theorem old_run (s : State) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions oldProgram {s with pc := UInt256.ofNat 8477,stack := rest} =
       some (oldModel s rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -56,7 +56,7 @@ def newModel (s : State) (rest : List UInt256) : State :=
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 224
   {s with pc := UInt256.ofNat 8489,memory := v1,stack := (UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247)::rest}
 theorem new_run (s : State) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions newProgram {s with pc := UInt256.ofNat 8477,stack := rest} =
       some (newModel s rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -74,7 +74,7 @@ theorem boundary_eq (s : State) (rest : List UInt256) :
   simp only [newModel,oldModel,mask_old,modulus_old,mask_new]
 /-- All entry stack words are opaque; neither window inspects them. -/
 theorem replacement_run (s : State) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions newProgram {s with pc := UInt256.ofNat 8477,stack := rest} =
     runInstructions oldProgram {s with pc := UInt256.ofNat 8477,stack := rest} := by
   rw [old_run s rest hcap hact,new_run s rest hcap hact,boundary_eq]
@@ -96,7 +96,7 @@ def prologuePairProgram : List Instr := newProgram++tailProgram
 /-- This is a congruence theorem for the complete historical two-part prologue,
 not merely an isolated arithmetic identity. -/
 theorem prologue_pair_run_eq (s : State) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions prologuePairProgram {s with pc := UInt256.ofNat 8477,stack := rest} =
     runInstructions (preparedProloguepart1Program++preparedProloguepart2Program)
       {s with pc := UInt256.ofNat 8477,stack := rest} := by
@@ -129,7 +129,7 @@ theorem compose_splice (pre old new suffix : List Instr) (entry middle : State)
   simp only [runInstructions_append,hprefix,Option.bind_some,hbody]
 /-- The prefix establishes the exact entry contract for the proved constant fold. -/
 theorem prefix_model_pair_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions prologuePairProgram (preparedProloguepart0Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) =
     runInstructions (preparedProloguepart1Program++preparedProloguepart2Program)
       (preparedProloguepart0Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) := by
@@ -145,7 +145,7 @@ theorem prefix_model_pair_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 
 /-- Whole prologue state equality at its real entry, including the prefix store.
 The 960-tail capacity and 88-word memory bound are exactly the existing contract. -/
 theorem full_prologue_run_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions foldedPrologueProgram
       {s with pc := UInt256.ofNat 8467,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest} =
     runInstructions preparedPrologueProgram
@@ -156,7 +156,7 @@ theorem full_prologue_run_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 
     (prefix_model_pair_eq s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact)
 /-- Folded bytes implement the complete pre-existing 5334..5489 state model. -/
 theorem folded_prologue_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions foldedPrologueProgram
       {s with pc := UInt256.ofNat 8467,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest} =
       some (preparedPrologueModel s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) := by
@@ -166,7 +166,7 @@ theorem folded_prologue_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f
 #print axioms folded_prologue_run
 /-- Drop-in executor theorem for the existing R5 proSeg caller contract. -/
 theorem folded_proSeg_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions foldedPrologueProgram {s with pc := UInt256.ofNat 8467,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest} =
       some {s with pc := UInt256.ofNat 8585,memory := (proSegM7 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15),stack := (proSegV8_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV8_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_2 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_3 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_4 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV0_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::f14::f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest} := by
   rw [full_prologue_run_eq s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact]

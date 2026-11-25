@@ -17,7 +17,7 @@ def tail : List Instr := TnCacheStoreAt.tail16++TnCacheFrameOps.advance
 theorem run_middle8 (pc0 : Nat) (s : State)
     (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory 8 tl inv m0)
     (hminv : inverseInvariant s.memory 8) :
     runInstructions middle8
@@ -38,7 +38,7 @@ theorem run_middle8 (pc0 : Nat) (s : State)
 theorem run_middle4 (pc0 : Nat) (s : State)
     (c pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n = 4)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
     (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
     (hminv : inverseInvariant s.memory n) :
@@ -59,7 +59,7 @@ theorem run_middle4 (pc0 : Nat) (s : State)
     Nat.add_zero,Nat.add_assoc,Nat.reduceAdd] using both
 theorem run_tail (pc0 : Nat) (s : State)
     (c f pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 87 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions tail
       (framed s (UInt256.ofNat pc0)
@@ -78,7 +78,7 @@ theorem run_tail (pc0 : Nat) (s : State)
     Nat.add_zero,Nat.add_assoc,Nat.reduceAdd] using both
 theorem run_tailShort (pc0 : Nat) (s : State)
     (c f pbi hd pb ent tn target inv : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 87 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions tailShort
       (framed s (UInt256.ofNat pc0)

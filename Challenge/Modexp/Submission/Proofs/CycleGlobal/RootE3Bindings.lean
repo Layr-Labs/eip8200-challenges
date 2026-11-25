@@ -249,15 +249,15 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     unfold R1.TopBitSet at ht
     rw [h] at ht
     norm_num at ht
-  have hm1ml : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m1Of mem input n) 2752 = UInt256.ofNat (32 * n - 32) := by
-    rw [CycleSubmission.Global.Fast.Shift.m1_readWord_disjoint mem input n 2752 (by omega) hn8
+  have hm1ml : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m1Of mem input n) 2720 = UInt256.ofNat (32 * n - 32) := by
+    rw [CycleSubmission.Global.Fast.Shift.m1_readWord_disjoint mem input n 2720 (by omega) hn8
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]
     exact hframe.ml
   have heoff : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m2Of mem input n) 2656 = UInt256.ofNat (96 + bsize) := by
     rw [CycleSubmission.Global.Fast.Shift.m2_readWord_disjoint mem input n 2656 (by omega) hn8
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega),Or.inr (by omega),Or.inr (by omega)⟩
-      (Or.inl (by omega))]
+      (Or.inr (by omega))]
     exact hframe.eoff
   have heoff' : MachineState.readWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 2656 =
       UInt256.ofNat (96 + bsize) :=

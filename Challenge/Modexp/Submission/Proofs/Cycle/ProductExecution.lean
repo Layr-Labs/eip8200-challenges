@@ -303,7 +303,7 @@ theorem memory20_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt25
   exact h.trans (memory19_keeps mem inv a b n start count hs)
 theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions program
       {s with pc := UInt256.ofNat 5973,stack := frame0 inv a b n rest} =
       some (state20 s inv a b n rest) := by
@@ -500,7 +500,7 @@ def block : Block Artifact.artifact .Osaka 5973 program :=
 noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 5973,stack := frame0 inv a b n rest}
       (state20 s inv a b n rest) :=
   block.steps
@@ -509,7 +509,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix)
     (hb : ∀ i < 9,(b i).toNat < radix)
     (hn : ∀ i < 9,(n i).toNat < radix)

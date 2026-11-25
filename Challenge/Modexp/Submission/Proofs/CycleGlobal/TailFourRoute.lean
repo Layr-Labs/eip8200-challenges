@@ -13,11 +13,11 @@ open CycleSubmission CycleSubmission.Global CycleSubmission.Global.TailFour
 theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hmod : Model.FastRepresents mem 0 4 N)
     (ha : Model.FastRepresents mem 2112 4 A)
     (hb : Model.FastRepresents mem 256 4 B)
-    (hinv : (N % Limbs.radix * (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
+    (hinv : (N % Limbs.radix * (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0)
     (hodd : N % 2 = 1) (hA : A < N) (hB : B < N) :
     Nonempty (CycleSubmission.Finish.Outcome (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
         (Precompile.natToBytes (R5Route.result N A B k) 128)) ∨
@@ -32,7 +32,7 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
  (MachineState.readWord mem 1376) (MachineState.readWord mem 1408)
  (MachineState.readWord mem 1440) (MachineState.readWord mem 1472)
  (MachineState.readWord mem 1504) (MachineState.readWord mem 1632)
- (MachineState.readWord mem 2720) (MachineState.readWord mem 1568)
+ (MachineState.readWord mem 2624) (MachineState.readWord mem 1568)
  (CycleSubmission.Global.Fast.Shift.aprevSlot mem) (UInt256.ofNat (k-1)) (CycleSubmission.Global.Fast.Shift.headWord mem 4)
  ((SlimFrames.outer mem 4 bsize esize 128).drop 13)
       (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer])
@@ -40,7 +40,7 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
 theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
+    (hact : 87 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hcalls : s.callStack = []) (hdata : s.executionEnv.calldata = input)
     (hvalid : Challenge.Modexp.ValidInput input)
@@ -56,7 +56,7 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
   have hlow : (MachineState.readWord mem 96).toNat = N % Limbs.radix := by
     have h := Model.readWord_of_fastRepresents hmod (j := 3) (by decide)
     simpa using h
-  have hmiw : (MachineState.readWord mem 2720).toNat = mi := by
+  have hmiw : (MachineState.readWord mem 2624).toNat = mi := by
     rw [hf.minvW,Exp.toNat_ofNat_self hmi]
   have hmachine : ((MachineState.readWord mem 96).toNat * mi + 1) % 2^256 = 0 := by
     rw [hlow]; exact hinv

@@ -24,7 +24,7 @@ def cellB : List Instr := ((cellProgram 0 0).drop 9).take 12
 def cellC (t : UInt256) : List Instr := (cellProgram 0 t).drop 21
 theorem run_cellA (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
     (a : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (ha : a + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ha : a + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory a
     runInstructions (cellA (UInt256.ofNat a))
       { s with pc := pc,stack := c::bi::w0::w1::w2::w3::w4::M::rest } =
@@ -56,7 +56,7 @@ theorem run_cellB (s : State) (pc mm lo c : UInt256)
     List.exchange,h3,h4,h5,h6,advancePC]
 theorem run_cellC (s : State) (pc c u : UInt256) (t : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1020)
-    (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ht : t + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions (cellC (UInt256.ofNat t))
       { s with pc := pc,stack := c::u::rest } =
     some { s with pc := advancePC 5 pc,stack := c::rest,
@@ -72,7 +72,7 @@ theorem run_cellC (s : State) (pc c u : UInt256) (t : Nat)
   rfl
 theorem run_cell (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
     (a t : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (ha : a + 32 ≤ 2816) (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ha : a + 32 ≤ 2784) (ht : t + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory a
     runInstructions (cellProgram (UInt256.ofNat a) (UInt256.ofNat t))
       { s with pc := pc,stack := c::bi::w0::w1::w2::w3::w4::M::rest } =
@@ -90,7 +90,7 @@ theorem run_cell (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
 def cellAB (a : UInt256) : List Instr := cellA a++cellB
 theorem run_cellAB (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
     (a : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (ha : a + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ha : a + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory a
     runInstructions (cellAB (UInt256.ofNat a))
       { s with pc := pc,stack := c::bi::w0::w1::w2::w3::w4::M::rest } =
@@ -107,7 +107,7 @@ def cellsProgram : Nat → List Instr
       (UInt256.ofNat (Monpro.tAddr 8 (k+1)))
 theorem run_cells (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
     (q : MacState) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     ∀ k,k ≤ 7 →
       runInstructions (cellsProgram k)
         { s with pc := pc,stack := q.carry::bi::w0::w1::w2::w3::w4::maxWord::rest,
@@ -146,7 +146,7 @@ def cellProgramM128 (a t : UInt256) : List Instr :=
   cellA a++cellFastBC t
 theorem run_cellFastBC (s : State) (pc mm lo c : UInt256) (t : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1017)
-    (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ht : t + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions (cellFastBC (UInt256.ofNat t))
       { s with pc := pc,stack := mm::lo::c::rest } =
     some { s with pc := advancePC 16 pc,
@@ -165,7 +165,7 @@ theorem run_cellFastBC (s : State) (pc mm lo c : UInt256) (t : Nat)
   exact ⟨trivial,congrArg (pc + ·) (by decide),trivial⟩
 theorem run_cellM128 (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
     (a t : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (ha : a + 32 ≤ 2816) (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (ha : a + 32 ≤ 2784) (ht : t + 32 ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     let x := MachineState.readWord s.memory a
     runInstructions (cellProgramM128 (UInt256.ofNat a) (UInt256.ofNat t))
       { s with pc := pc,stack := c::bi::w0::w1::w2::w3::w4::M::rest } =
@@ -183,7 +183,7 @@ def cellsProgramM128 : Nat → List Instr
       (UInt256.ofNat (Monpro.tAddr 8 (k+1)))
 theorem run_cellsM128 (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
     (q : MacState) (rest : List UInt256) (hcap : rest.length ≤ 1010)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     ∀ k,k ≤ 7 →
       runInstructions (cellsProgramM128 k)
         { s with pc := pc,stack := q.carry::bi::w0::w1::w2::w3::w4::maxWord::rest,
