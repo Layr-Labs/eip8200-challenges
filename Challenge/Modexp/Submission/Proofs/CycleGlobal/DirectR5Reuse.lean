@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 def program : List Instr :=
  [
   .op (.Swap ⟨12,by decide⟩),
-   .push 2 2720,
+   .push 2 2624,
    .op .MLOAD,
    .op (.Swap ⟨10,by decide⟩)]
 def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat) : State :=
@@ -22,14 +22,14 @@ def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : 
  (MachineState.readWord mem 1376) (MachineState.readWord mem 1408)
  (MachineState.readWord mem 1440) (MachineState.readWord mem 1472)
  (MachineState.readWord mem 1504) (MachineState.readWord mem 1632)
- (MachineState.readWord mem 2720) (MachineState.readWord mem 1568)
+ (MachineState.readWord mem 2624) (MachineState.readWord mem 1568)
  (CycleSubmission.Global.Fast.Shift.aprevSlot mem) count (CycleSubmission.Global.Fast.Shift.headWord mem 4)
  ((SlimFrames.outer mem 4 bsize esize msize).drop 13)
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) :
+ (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions program {s with pc := UInt256.ofNat 8633,memory := mem,stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize} =
  some (result s mem count bsize esize msize) := by
- have hf := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
+ have hf := Monpro.activeWords_fix s 2624 32 (by decide) (by norm_num) hact
  simp [program,result,R5Route.entry,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,
   Exp.outer,runInstructions,Stepper.runInstr,List.exchange,State.activeWordsAfterUInt256,hf,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]

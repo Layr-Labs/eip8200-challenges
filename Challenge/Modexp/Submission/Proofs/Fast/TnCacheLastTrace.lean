@@ -52,7 +52,7 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
     (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (pbi paEnd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2LastProgram w x tl ts)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn destination returnPC rest) =

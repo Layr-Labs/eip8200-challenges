@@ -48,7 +48,7 @@ def persistentFrame15 (inv : W) (a b n : Nat → W) (rest : List W) : List W :=
 def initialFrame (inv : W) (a b n : Nat → W) (rest : List W) : List W :=
  ((CycleSubmission.SquareMeaning.frame0 inv a b n ((a 8)::rest)).set 10 (a 5)).set 13 (a 7)
 theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hmem : CycleSubmission.LimbMemory.Holds s.memory inv a b n)
     (ha : ∀ i < 8,(a i).toNat < 2^240) :
     runInstructions program {s with pc := N 3521,stack := initialFrame inv a b n rest} =
@@ -219,7 +219,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
   have hm0_32 : MachineState.readWord M0 32 = (a 3) := hmem.at32
   have hm0_64 : MachineState.readWord M0 64 = (a 4) := hmem.at64
   have hm0_128 : MachineState.readWord M0 128 = (a 6) := hmem.at128
-  have hm0_2720 : MachineState.readWord M0 2720 = inv := hmem.at2720
+  have hm0_2720 : MachineState.readWord M0 2624 = inv := hmem.at2720
   have hm0_1344 : MachineState.readWord M0 1344 = (n 0) := hmem.at1344
   have hm0_1376 : MachineState.readWord M0 1376 = (n 1) := hmem.at1376
   have hm0_1568 : MachineState.readWord M0 1568 = (n 7) := hmem.at1568
@@ -235,7 +235,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M1,readWord_writeWord,read_disjoint,hm0_64]
   have hm1_128 : MachineState.readWord M1 128 = (a 6) := by
     simp (disch := decide) only [M1,readWord_writeWord,read_disjoint,hm0_128]
-  have hm1_2720 : MachineState.readWord M1 2720 = inv := by
+  have hm1_2720 : MachineState.readWord M1 2624 = inv := by
     simp (disch := decide) only [M1,readWord_writeWord,read_disjoint,hm0_2720]
   have hm1_1344 : MachineState.readWord M1 1344 = (n 0) := by
     simp (disch := decide) only [M1,readWord_writeWord,read_disjoint,hm0_1344]
@@ -256,7 +256,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M2,readWord_writeWord,read_disjoint,hm1_64]
   have hm2_128 : MachineState.readWord M2 128 = (a 6) := by
     simp (disch := decide) only [M2,readWord_writeWord,read_disjoint,hm1_128]
-  have hm2_2720 : MachineState.readWord M2 2720 = inv := by
+  have hm2_2720 : MachineState.readWord M2 2624 = inv := by
     simp (disch := decide) only [M2,readWord_writeWord,read_disjoint,hm1_2720]
   have hm2_1344 : MachineState.readWord M2 1344 = (n 0) := by
     simp (disch := decide) only [M2,readWord_writeWord,read_disjoint,hm1_1344]
@@ -277,7 +277,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M3,readWord_writeWord,read_disjoint,hm2_64]
   have hm3_128 : MachineState.readWord M3 128 = (a 6) := by
     simp (disch := decide) only [M3,readWord_writeWord,read_disjoint,hm2_128]
-  have hm3_2720 : MachineState.readWord M3 2720 = inv := by
+  have hm3_2720 : MachineState.readWord M3 2624 = inv := by
     simp (disch := decide) only [M3,readWord_writeWord,read_disjoint,hm2_2720]
   have hm3_1344 : MachineState.readWord M3 1344 = (n 0) := by
     simp (disch := decide) only [M3,readWord_writeWord,read_disjoint,hm2_1344]
@@ -300,7 +300,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M4,readWord_writeWord,read_disjoint,hm3_64]
   have hm4_128 : MachineState.readWord M4 128 = (a 6) := by
     simp (disch := decide) only [M4,readWord_writeWord,read_disjoint,hm3_128]
-  have hm4_2720 : MachineState.readWord M4 2720 = inv := by
+  have hm4_2720 : MachineState.readWord M4 2624 = inv := by
     simp (disch := decide) only [M4,readWord_writeWord,read_disjoint,hm3_2720]
   have hm4_1344 : MachineState.readWord M4 1344 = (n 0) := by
     simp (disch := decide) only [M4,readWord_writeWord,read_disjoint,hm3_1344]
@@ -325,7 +325,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M5,readWord_writeWord,read_disjoint,hm4_64]
   have hm5_128 : MachineState.readWord M5 128 = (a 6) := by
     simp (disch := decide) only [M5,readWord_writeWord,read_disjoint,hm4_128]
-  have hm5_2720 : MachineState.readWord M5 2720 = inv := by
+  have hm5_2720 : MachineState.readWord M5 2624 = inv := by
     simp (disch := decide) only [M5,readWord_writeWord,read_disjoint,hm4_2720]
   have hm5_1344 : MachineState.readWord M5 1344 = (n 0) := by
     simp (disch := decide) only [M5,readWord_writeWord,read_disjoint,hm4_1344]
@@ -352,7 +352,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M6,readWord_writeWord,read_disjoint,hm5_64]
   have hm6_128 : MachineState.readWord M6 128 = (a 6) := by
     simp (disch := decide) only [M6,readWord_writeWord,read_disjoint,hm5_128]
-  have hm6_2720 : MachineState.readWord M6 2720 = inv := by
+  have hm6_2720 : MachineState.readWord M6 2624 = inv := by
     simp (disch := decide) only [M6,readWord_writeWord,read_disjoint,hm5_2720]
   have hm6_1344 : MachineState.readWord M6 1344 = (n 0) := by
     simp (disch := decide) only [M6,readWord_writeWord,read_disjoint,hm5_1344]
@@ -381,7 +381,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M7,readWord_writeWord,read_disjoint,hm6_64]
   have hm7_128 : MachineState.readWord M7 128 = (a 6) := by
     simp (disch := decide) only [M7,readWord_writeWord,read_disjoint,hm6_128]
-  have hm7_2720 : MachineState.readWord M7 2720 = inv := by
+  have hm7_2720 : MachineState.readWord M7 2624 = inv := by
     simp (disch := decide) only [M7,readWord_writeWord,read_disjoint,hm6_2720]
   have hm7_1344 : MachineState.readWord M7 1344 = (n 0) := by
     simp (disch := decide) only [M7,readWord_writeWord,read_disjoint,hm6_1344]
@@ -412,7 +412,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M8,readWord_writeWord,read_disjoint,hm7_64]
   have hm8_128 : MachineState.readWord M8 128 = (a 6) := by
     simp (disch := decide) only [M8,readWord_writeWord,read_disjoint,hm7_128]
-  have hm8_2720 : MachineState.readWord M8 2720 = inv := by
+  have hm8_2720 : MachineState.readWord M8 2624 = inv := by
     simp (disch := decide) only [M8,readWord_writeWord,read_disjoint,hm7_2720]
   have hm8_1344 : MachineState.readWord M8 1344 = (n 0) := by
     simp (disch := decide) only [M8,readWord_writeWord,read_disjoint,hm7_1344]
@@ -449,7 +449,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M9,readWord_writeWord,read_disjoint,hm8_128]
   have hm9_160 : MachineState.readWord M9 160 = (a 7) := by
     simp (disch := decide) only [M9,readWord_writeWord,read_disjoint]
-  have hm9_2720 : MachineState.readWord M9 2720 = inv := by
+  have hm9_2720 : MachineState.readWord M9 2624 = inv := by
     simp (disch := decide) only [M9,readWord_writeWord,read_disjoint,hm8_2720]
   have hm9_1344 : MachineState.readWord M9 1344 = (n 0) := by
     simp (disch := decide) only [M9,readWord_writeWord,read_disjoint,hm8_1344]
@@ -486,7 +486,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M10,readWord_writeWord,read_disjoint,hm9_128]
   have hm10_160 : MachineState.readWord M10 160 = (a 7) := by
     simp (disch := decide) only [M10,readWord_writeWord,read_disjoint,hm9_160]
-  have hm10_2720 : MachineState.readWord M10 2720 = inv := by
+  have hm10_2720 : MachineState.readWord M10 2624 = inv := by
     simp (disch := decide) only [M10,readWord_writeWord,read_disjoint,hm9_2720]
   have hm10_1344 : MachineState.readWord M10 1344 = (n 0) := by
     simp (disch := decide) only [M10,readWord_writeWord,read_disjoint,hm9_1344]
@@ -523,7 +523,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M11,readWord_writeWord,read_disjoint,hm10_128]
   have hm11_160 : MachineState.readWord M11 160 = (a 7) := by
     simp (disch := decide) only [M11,readWord_writeWord,read_disjoint,hm10_160]
-  have hm11_2720 : MachineState.readWord M11 2720 = inv := by
+  have hm11_2720 : MachineState.readWord M11 2624 = inv := by
     simp (disch := decide) only [M11,readWord_writeWord,read_disjoint,hm10_2720]
   have hm11_1344 : MachineState.readWord M11 1344 = (n 0) := by
     simp (disch := decide) only [M11,readWord_writeWord,read_disjoint,hm10_1344]
@@ -562,7 +562,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M12,readWord_writeWord,read_disjoint,hm11_128]
   have hm12_160 : MachineState.readWord M12 160 = (a 7) := by
     simp (disch := decide) only [M12,readWord_writeWord,read_disjoint,hm11_160]
-  have hm12_2720 : MachineState.readWord M12 2720 = inv := by
+  have hm12_2720 : MachineState.readWord M12 2624 = inv := by
     simp (disch := decide) only [M12,readWord_writeWord,read_disjoint,hm11_2720]
   have hm12_1344 : MachineState.readWord M12 1344 = (n 0) := by
     simp (disch := decide) only [M12,readWord_writeWord,read_disjoint,hm11_1344]
@@ -603,7 +603,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M13,readWord_writeWord,read_disjoint,hm12_128]
   have hm13_160 : MachineState.readWord M13 160 = (a 7) := by
     simp (disch := decide) only [M13,readWord_writeWord,read_disjoint,hm12_160]
-  have hm13_2720 : MachineState.readWord M13 2720 = inv := by
+  have hm13_2720 : MachineState.readWord M13 2624 = inv := by
     simp (disch := decide) only [M13,readWord_writeWord,read_disjoint,hm12_2720]
   have hm13_1344 : MachineState.readWord M13 1344 = (n 0) := by
     simp (disch := decide) only [M13,readWord_writeWord,read_disjoint,hm12_1344]
@@ -644,7 +644,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M14,readWord_writeWord,read_disjoint,hm13_128]
   have hm14_160 : MachineState.readWord M14 160 = (a 7) := by
     simp (disch := decide) only [M14,readWord_writeWord,read_disjoint,hm13_160]
-  have hm14_2720 : MachineState.readWord M14 2720 = inv := by
+  have hm14_2720 : MachineState.readWord M14 2624 = inv := by
     simp (disch := decide) only [M14,readWord_writeWord,read_disjoint,hm13_2720]
   have hm14_1344 : MachineState.readWord M14 1344 = (n 0) := by
     simp (disch := decide) only [M14,readWord_writeWord,read_disjoint,hm13_1344]
@@ -685,7 +685,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M15,readWord_writeWord,read_disjoint,hm14_128]
   have hm15_160 : MachineState.readWord M15 160 = (a 7) := by
     simp (disch := decide) only [M15,readWord_writeWord,read_disjoint,hm14_160]
-  have hm15_2720 : MachineState.readWord M15 2720 = inv := by
+  have hm15_2720 : MachineState.readWord M15 2624 = inv := by
     simp (disch := decide) only [M15,readWord_writeWord,read_disjoint,hm14_2720]
   have hm15_1344 : MachineState.readWord M15 1344 = (n 0) := by
     simp (disch := decide) only [M15,readWord_writeWord,read_disjoint,hm14_1344]
@@ -726,7 +726,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M16,readWord_writeWord,read_disjoint,hm15_128]
   have hm16_160 : MachineState.readWord M16 160 = (a 7) := by
     simp (disch := decide) only [M16,readWord_writeWord,read_disjoint,hm15_160]
-  have hm16_2720 : MachineState.readWord M16 2720 = inv := by
+  have hm16_2720 : MachineState.readWord M16 2624 = inv := by
     simp (disch := decide) only [M16,readWord_writeWord,read_disjoint,hm15_2720]
   have hm16_1344 : MachineState.readWord M16 1344 = (n 0) := by
     simp (disch := decide) only [M16,readWord_writeWord,read_disjoint,hm15_1344]
@@ -765,7 +765,7 @@ theorem run (s : State) (inv : W) (a b n : Nat → W) (rest : List W)
     simp (disch := decide) only [M17,readWord_writeWord,read_disjoint,hm16_64]
   have hm17_128 : MachineState.readWord M17 128 = Z6 := by
     simp (disch := decide) only [M17,readWord_writeWord,read_disjoint,hm16_128]
-  have hm17_2720 : MachineState.readWord M17 2720 = inv := by
+  have hm17_2720 : MachineState.readWord M17 2624 = inv := by
     simp (disch := decide) only [M17,readWord_writeWord,read_disjoint,hm16_2720]
   have hm17_1344 : MachineState.readWord M17 1344 = (n 0) := by
     simp (disch := decide) only [M17,readWord_writeWord,read_disjoint,hm16_1344]

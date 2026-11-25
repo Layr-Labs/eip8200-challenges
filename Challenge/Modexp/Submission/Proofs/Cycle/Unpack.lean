@@ -27,7 +27,7 @@ theorem model_eq (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Lis
   simp (disch := decide) only [unpackFinalModel,readStore]
   rfl
 theorem run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalProgram
       {s with pc := UInt256.ofNat 5882,stack := SquareMeaning.frame0 inv a (fun _ => UInt256.ofNat 0) n rest} =
       some (result s inv a n rest) := by

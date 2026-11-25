@@ -89,7 +89,7 @@ theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (me
     (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
     (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hc : ExtraCache mem m96 m64 m32) :
     runInstructions (legacyExtraProgram slot loadAddr storeAddr)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv
@@ -159,7 +159,7 @@ theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : By
     (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
     (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hc : ExtraCache mem m96 m64 m32) :
     runInstructions (extraProgram slot loadAddr storeAddr)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv
@@ -215,7 +215,7 @@ theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArr
     (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
     (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     {w64 w32 : UInt256} (hc : ExtraCache mem m96 w64 w32) :
     runInstructions (extraProgramZeroNarrow loadAddr storeAddr)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv
@@ -277,7 +277,7 @@ theorem run_extraStepTwo (template : State) (pc : UInt256) (mem : ByteArray)
     (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
     (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     {w64 : UInt256} (hc : ExtraCache mem m96 w64 m32) :
     runInstructions (extraProgram 2 loadAddr storeAddr)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv

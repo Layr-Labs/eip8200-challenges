@@ -49,7 +49,7 @@ theorem current_sqRows_lazy (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
     (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2624).toNat + 1) % 2 ^ 256 = 0)
     (hz : Monpro.tValue m0 (p + 2) = 0) :
     ∃ Q,Q < Limbs.radix ^ (p + 2) ∧
       Monpro.tValue (SquareModel.sqRowsMem m0 (p + 2) (p + 2)) (p + 2) *
@@ -84,7 +84,7 @@ theorem current_sqRows_lazy_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p 
     (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2624).toNat + 1) % 2 ^ 256 = 0)
     (hz : Monpro.tValue m0 (p + 2) = 0) :
     (MachineState.readWord (SquareModel.sqRowsMem m0 (p + 2) (p + 2)) 2080).toNat ≤ 1 := by
   obtain ⟨_,_,_,_,ht⟩ := current_sqRows_lazy m0 p a mm hn32 ha hm hmpos hminv hz

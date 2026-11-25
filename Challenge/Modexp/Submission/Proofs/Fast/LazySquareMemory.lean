@@ -17,12 +17,8 @@ theorem accumulator_congr {a b : ByteArray} (n : Nat)
       MachineState.readWord b (2112 + 32*(n-1-k))) : tValue a n = tValue b n := by
   unfold tValue
   rw [hhigh,Csub.lowValue_congr hlow]
-theorem count_accumulator (mem : ByteArray) (n c : Nat) (hn : n ≤ 8) :
-    tValue (countMem mem c) n = tValue mem n := by
-  apply accumulator_congr
-  · exact readWord_countMem_disjoint mem c 2080 (by omega)
-  · intro k hk
-    exact readWord_countMem_disjoint mem c (2112+32*(n-1-k)) (by omega)
+theorem count_accumulator (mem : ByteArray) (n c : Nat) (_hn : n ≤ 8) :
+    tValue (countMem mem c) n = tValue mem n := rfl
 theorem carry_accumulator (mem : ByteArray) (n : Nat) (hn : n ≤ 8) :
     tValue (sqRowsCarry mem n n) n = tValue (sqRowsMem mem n n) n := by
   have h := sqRows_agree mem n hn n le_rfl
@@ -60,7 +56,7 @@ theorem carry_result (mem : ByteArray) (p a mm c pdst : Nat)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0)
     (hz : tValue mem (p+2) = 0) :
     let after := countMem (sqRowsCarry mem (p+2) (p+2)) c
     Model.FastRepresents (LazyCsub.resultMemory after (p+2) pdst) pdst (p+2)
@@ -85,7 +81,7 @@ theorem r4_result (mem : ByteArray) (a mm c pdst : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     let after := countMem (R4Bridge.rows4 mem) c
     Model.FastRepresents (LazyCsub.resultMemory after 4 pdst) pdst 4 (roundValue after 4 mm) ∧
       roundValue after 4 mm < Limbs.radix^4 ∧
@@ -104,7 +100,7 @@ theorem carry_tn_le_one (mem : ByteArray) (p a mm : Nat) (hn : p+2 ≤ 8)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0)
     (hz : tValue mem (p+2) = 0) :
     (MachineState.readWord (sqRowsCarry mem (p+2) (p+2)) 2080).toNat ≤ 1 := by
   rw [CarryScratchAgreement.readWord_eq (sqRows_agree mem (p+2) hn (p+2) le_rfl) 2080 (Or.inr (by omega))]
@@ -113,7 +109,7 @@ theorem r4_tn_le_one (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     (MachineState.readWord (R4Bridge.rows4 mem) 2080).toNat ≤ 1 := by
   obtain ⟨Q,hQ,heq⟩ := R4Bridge.rows4_eq mem a mm ha hm hminv
   have hR : 0 < Limbs.radix^4 := pow_pos Limbs.radix_pos _
@@ -131,7 +127,7 @@ theorem r4r_result (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     Model.FastRepresents (R4Bridge.rows4r mem) 2112 4 (roundValue (R4Bridge.rows4 mem) 4 mm) ∧
       roundValue (R4Bridge.rows4 mem) 4 mm < Limbs.radix^4 ∧
       roundValue (R4Bridge.rows4 mem) 4 mm % mm = Model.montMul mm (Limbs.radix^4) a a ∧
@@ -153,12 +149,12 @@ theorem r4r_result (mem : ByteArray) (a mm : Nat)
     rw [← limbSum_fastRepresents hm,R4Bridge.limbSum_four]
   have hT : tValue (R4Bridge.rows4 mem) 4 = R4Value.val5 (R4Bridge.r4Final mem maxWord
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-      (MachineState.readWord mem 32) (MachineState.readWord mem 2720)) :=
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2624)) :=
     R4Bridge.tValue_r4Mem mem _
   obtain ⟨hval,ht4⟩ := R4Value.red4_val (MachineState.readWord mem 96)
     (MachineState.readWord mem 64) (MachineState.readWord mem 32) (MachineState.readWord mem 0)
     (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-      (MachineState.readWord mem 32) (MachineState.readWord mem 2720))
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2624))
     (by rw [hM,← hR4]; exact hm.1) (by rw [hM,← hR4,← hT]; exact hbound)
   have h2080 : MachineState.readWord (R4Bridge.rows4r mem) 2080 = ⟨0⟩ := by
     unfold R4Bridge.rows4r
@@ -168,13 +164,13 @@ theorem r4r_result (mem : ByteArray) (a mm : Nat)
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) (MachineState.readWord mem 0)
       (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) :=
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2624))) :=
     R4Bridge.tValue_r4Mem mem _
   have hlow : Csub.lowValue (R4Bridge.rows4r mem) 2112 4 4 = R4Value.val5 (R4Math.red4
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) (MachineState.readWord mem 0)
       (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) := by
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2624))) := by
     rw [← hTY]
     unfold tValue
     rw [h2080,R4Math.toNat_zero,Nat.zero_mul,Nat.zero_add]
@@ -182,7 +178,7 @@ theorem r4r_result (mem : ByteArray) (a mm : Nat)
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) (MachineState.readWord mem 0)
       (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) := by
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2624))) := by
     rw [roundValue,LazyCsub.value,hT,hval,hR4,hM]
   refine ⟨?_,LazyCsub.value_lt_radix hm.1 hbound,?_,h2080⟩
   · rw [hrv,← hlow]

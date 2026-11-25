@@ -63,7 +63,7 @@ abbrev StepCertificate := ∀ (s : State) (inv : UInt256) (a n : Nat → UInt256
     (env : Environment Artifact.artifact .Osaka s)
     (hm : LimbMemory.Holds s.memory inv a zeroWords n)
     (hc : counter s = UInt256.ofNat 0-UInt256.ofNat (k-1))
-    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hn : ∀ i < 9,(n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
@@ -75,7 +75,7 @@ noncomputable def run (step : StepCertificate startPC exitPC) (s : State) (inv :
     (env : Environment Artifact.artifact .Osaka s)
     (hm : LimbMemory.Holds s.memory inv a zeroWords n)
     (hc : counter s = UInt256.ofNat 0-UInt256.ofNat (k-1))
-    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hn : ∀ i < 9,(n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
@@ -91,7 +91,7 @@ noncomputable def run (step : StepCertificate startPC exitPC) (s : State) (inv :
     · simpa only [Nat.pow_one,Nat.pow_two] using hnext
   · have hmore : 1 < k := by omega
     have en : Environment Artifact.artifact .Osaka st := env.transfer henv hhalt
-    have act : 88 ≤ st.activeWords.toNat := by rw [hactive]; exact hact
+    have act : 87 ≤ st.activeWords.toNat := by rw [hactive]; exact hact
     obtain ⟨tstate,tout,ttrace,tmem,tframe,tpc,tenv,thalt,tact,tbound,tsm,tform,tkeep,tcalls⟩ :=
       run step st inv out n rest (k-1) N (x*x) (by omega) (by omega)
       en hmem (hcounter hmore) hcache hcap act hbound hn hn0 hNvalue hinv hN hNR hodd hN4 hsm hnext

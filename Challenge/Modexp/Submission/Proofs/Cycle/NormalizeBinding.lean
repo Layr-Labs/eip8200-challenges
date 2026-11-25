@@ -35,7 +35,7 @@ def returned (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : L
 noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true) :
     GasSteps {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) := by
@@ -54,7 +54,7 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt
 noncomputable def correct (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true)
     (ha : ∀ i < 8,(a i).toNat < 2^240)
     (hn : ∀ i < 9,(n i).toNat < 2^240)

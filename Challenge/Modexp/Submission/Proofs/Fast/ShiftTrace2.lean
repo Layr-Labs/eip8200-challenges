@@ -178,9 +178,9 @@ theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,jumpDest5366]
 theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 87 ≤ s.activeWords.toNat)
     (hbs : bsize = 32 * n)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3018
@@ -194,17 +194,17 @@ theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       (32 * n)) = s.activeWords :=
     Exp.activeWords_fix2 s 2080 (32 * n) 2112 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
-  have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
+  have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2752 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have hfixT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (2080 + 32 * n) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have htl' : MachineState.readWord
-      (MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32 * n)) 2080) 2784 =
+      (MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32 * n)) 2080) 2752 =
       UInt256.ofNat (2080 + 32 * n) := by
     rw [show MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32 * n)) 2080 =
       Exp.mcopyMem mem 2080 2112 (32 * n) from rfl]
-    rw [Exp.readWord_mcopyMem_disjoint mem 2080 2112 (32 * n) 2784 (Or.inr (by omega))]
+    rw [Exp.readWord_mcopyMem_disjoint mem 2080 2112 (32 * n) 2752 (Or.inr (by omega))]
     exact htl
   have hmodTL : (2080 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
@@ -494,7 +494,7 @@ private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3026

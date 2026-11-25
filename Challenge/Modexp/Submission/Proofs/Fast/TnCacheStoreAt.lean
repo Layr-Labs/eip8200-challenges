@@ -48,7 +48,7 @@ theorem run_middle (pc0 : Nat) (s : State) (c bi pbi hd pb ent tn target inv : U
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_tail (pc0 : Nat) (s : State) (c f pbi hd pb ent tn target inv : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions tail
       (framed s (UInt256.ofNat (pc0 + 0))
         ([c,f,pbi,hd,pb,ent,tn,allOnes,target,inv]++rest)) =
@@ -125,7 +125,7 @@ theorem run_middle14 (pc0 : Nat) (s : State)
      Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_tail16 (pc0 : Nat) (s : State)
     (c f pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions tail16
       (framed s (UInt256.ofNat (pc0 + 0))
         ([c,f,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn]++rest)) =

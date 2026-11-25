@@ -20,13 +20,13 @@ theorem rows_read_word (s : State) (mem : ByteArray) (n addr : Nat) (hn : n ≤ 
   unfold rows
   rw [readWord_sqRowsCarry _ n addr hn hout n le_rfl,readWord_mpZeroed s mem n addr hn hout]
 theorem round_read_word (s : State) (mem : ByteArray) (n c addr : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : addr+32 ≤ 1792 ∨ 2656 ≤ addr) :
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : addr+32 ≤ 1792 ∨ 2624 ≤ addr) :
     MachineState.readWord (round s n c mem) addr = MachineState.readWord mem addr := by
   unfold round
   rw [LazyCsub.result_readWord_outside _ n 2368 addr (by omega) (by omega) (by omega),
     readWord_countMem_disjoint _ c addr (by omega),rows_read_word s mem n addr hn32 (by omega)]
 theorem round_preserves (s : State) (mem : ByteArray) (n c ptr cnt v : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : ptr+32*cnt ≤ 1792 ∨ 2656 ≤ ptr)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : ptr+32*cnt ≤ 1792 ∨ 2624 ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (round s n c mem) ptr cnt v := by
   refine (Model.fastRepresents_congr (a := mem) (b := round s n c mem)
@@ -38,7 +38,7 @@ theorem rows_equation (s : State) (mem : ByteArray) (p a mm : Nat)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     ∃ Q,Q < Limbs.radix^(p+2) ∧
       tValue (rows s (p+2) mem) (p+2) * Limbs.radix^(p+2) = a*a + Q*mm := by
   have ha' := represents_zeroed_stage s mem (p+2) a hn ha
@@ -47,9 +47,9 @@ theorem rows_equation (s : State) (mem : ByteArray) (p a mm : Nat)
     intro j hj
     rw [readWord_mpZeroed s mem (p+2) (0+32*j) hn (Or.inl (by omega))]
   have hi' : ((MachineState.readWord (mpZeroed s mem (p+2)) (32*(p+2)-32)).toNat *
-      (MachineState.readWord (mpZeroed s mem (p+2)) 2720).toNat + 1) % 2^256 = 0 := by
+      (MachineState.readWord (mpZeroed s mem (p+2)) 2624).toNat + 1) % 2^256 = 0 := by
     rw [readWord_mpZeroed s mem (p+2) (32*(p+2)-32) hn (Or.inl (by omega)),
-      readWord_mpZeroed s mem (p+2) 2720 hn (Or.inr (by omega))]
+      readWord_mpZeroed s mem (p+2) 2624 hn (Or.inr (by omega))]
     exact hminv
   obtain ⟨Q,hQ,heq,_,_⟩ := LazyBounds.current_sqRows_lazy (mpZeroed s mem (p+2))
     p a mm hn ha' hm' (by omega) hi' (tValue_mpZeroed s mem (p+2))
@@ -61,7 +61,7 @@ theorem round_represents (s : State) (mem : ByteArray) (p a mm c : Nat)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     ∃ v,Model.FastRepresents (round s (p+2) c mem) 2368 (p+2) v ∧
       v < Limbs.radix^(p+2) ∧ v % mm = Model.montMul mm (Limbs.radix^(p+2)) a a := by
   obtain ⟨Q,hQ,heq⟩ := rows_equation s mem p a mm hn ha hm hodd hminv
@@ -80,14 +80,14 @@ theorem round_represents (s : State) (mem : ByteArray) (p a mm c : Nat)
   exact ⟨LazySquareMemory.roundValue after (p+2) mm,
     LazySquareMemory.result_from_square_equation after (p+2) a mm Q 2368 (by omega) hn ha.1 hm' hodd hQ heq'⟩
 theorem run_read_word (s : State) (mem : ByteArray) (n k addr : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : addr+32 ≤ 1792 ∨ 2656 ≤ addr) :
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : addr+32 ≤ 1792 ∨ 2624 ≤ addr) :
     MachineState.readWord (run s n k mem) addr = MachineState.readWord mem addr := by
   induction k generalizing mem with
   | zero => rfl
   | succ k ih =>
       rw [run,ih,round_read_word s mem n k addr hn hn32 hout]
 theorem run_preserves (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : ptr+32*cnt ≤ 1792 ∨ 2656 ≤ ptr)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : ptr+32*cnt ≤ 1792 ∨ 2624 ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (run s n k mem) ptr cnt v := by
   refine (Model.fastRepresents_congr (a := mem) (b := run s n k mem)
@@ -105,7 +105,7 @@ theorem run_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     ∃ v,Model.FastRepresents (run s (p+2) k mem) 2368 (p+2) v ∧
       v < Limbs.radix^(p+2) ∧
       v % mm = ((fun x => Model.montMul mm (Limbs.radix^(p+2)) x x)^[k] a) := by
@@ -120,9 +120,9 @@ theorem run_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
       | succ j =>
           have hm' := round_preserves s mem (p+2) (j+1) 0 (p+2) mm (by omega) hn (Or.inl (by omega)) hm
           have hi' : ((MachineState.readWord (round s (p+2) (j+1) mem) (32*(p+2)-32)).toNat *
-              (MachineState.readWord (round s (p+2) (j+1) mem) 2720).toNat + 1) % 2^256 = 0 := by
+              (MachineState.readWord (round s (p+2) (j+1) mem) 2624).toNat + 1) % 2^256 = 0 := by
             rw [round_read_word s mem (p+2) (j+1) (32*(p+2)-32) (by omega) hn (Or.inl (by omega)),
-              round_read_word s mem (p+2) (j+1) 2720 (by omega) hn (Or.inr (by omega))]
+              round_read_word s mem (p+2) (j+1) 2624 (by omega) hn (Or.inr (by omega))]
             exact hminv
           obtain ⟨w,hw,hwr,hwm⟩ := ih (round s (p+2) (j+1) mem) v (by omega) hv hm' hi'
           refine ⟨w,hw,hwr,?_⟩

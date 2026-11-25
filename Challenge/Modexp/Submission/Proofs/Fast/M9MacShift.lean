@@ -50,7 +50,7 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       { s with pc := UInt256.ofNat 2782,
                stack := q::Monpro.maxWord::UInt256.ofNat k::Shift.entrySlots z um n bsize esize ++

@@ -23,7 +23,7 @@ def part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w1
   let v3 : W := MachineState.readWord (s.memory) 2200
   {s with pc := N 8835,memory := s.memory,stack := v3::v2::v0::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::rest}
 theorem part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions part0Program {s with pc := N 8822,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::rest} = some (part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -43,7 +43,7 @@ def part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w1
   let v3 : W := MachineState.readWord (s.memory) 2140
   {s with pc := N 8848,memory := s.memory,stack := v3::v2::v0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::rest}
 theorem part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions part1Program {s with pc := N 8835,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::rest} = some (part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -59,7 +59,7 @@ def part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w1
   let v1 : W := UInt256.land w4 w1
   {s with pc := N 8852,memory := s.memory,stack := v1::w2::w3::v0::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::rest}
 theorem part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions part2Program {s with pc := N 8848,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::rest} = some (part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -79,7 +79,7 @@ def model (s : State) (f0 f1 f2 f3 f4 f5 f6 cached f7 f8 f9 f10 f11 f12 f13 f14 
   let v9 : W := UInt256.land v0 v6
   {s with pc := N 8852,memory := s.memory,stack := v9::v4::v2::v8::f0::f1::f2::f3::f4::f5::f6::(cached)::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::f17::f18::f19::f20::f21::f22::f23::rest}
 theorem run (s : State) (f0 f1 f2 f3 f4 f5 f6 cached f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions program {s with pc := N 8822,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::(cached)::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::f17::f18::f19::f20::f21::f22::f23::rest} = some (model s f0 f1 f2 f3 f4 f5 f6 cached f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 224
   let v1 : W := MachineState.readWord (s.memory) 2170
@@ -101,7 +101,7 @@ theorem run (s : State) (f0 f1 f2 f3 f4 f5 f6 cached f7 f8 f9 f10 f11 f12 f13 f1
 end R5CachedSuffix
 namespace R5CachedSuffix
 theorem result_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 cached : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions program {s with pc := N 8822,stack := f0::f1::f2::f3::f4::f5::f6::cached::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::f17::f18::f19::f20::f21::f22::f23::rest} =
       some {s with pc := N 8852,memory := s.memory,stack := (CycleSubmission.R5.ExecPrologue.blk5467_o0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23)::(CycleSubmission.R5.ExecPrologue.blk5467_o1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23)::(CycleSubmission.R5.ExecPrologue.blk5467_o2 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23)::(CycleSubmission.R5.ExecPrologue.blk5467_o3 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23)::f0::f1::f2::f3::f4::f5::f6::cached::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::f17::f18::f19::f20::f21::f22::f23::rest} := by
   simpa only [model,CycleSubmission.R5.ExecPrologue.blk5467_o0,CycleSubmission.R5.ExecPrologue.blk5467_o1,CycleSubmission.R5.ExecPrologue.blk5467_o2,CycleSubmission.R5.ExecPrologue.blk5467_o3] using

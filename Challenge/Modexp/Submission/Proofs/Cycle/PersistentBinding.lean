@@ -36,7 +36,7 @@ theorem valid_kernel : Decode.isValidJumpDest Artifact.bytecode 3520 = true := b
  exact h
 noncomputable def round_steps (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
- (hcap : rest.length ≤ 958) (hact : 88 ≤ s.activeWords.toNat)
+ (hcap : rest.length ≤ 958) (hact : 87 ≤ s.activeWords.toNat)
  (hmem : LimbMemory.Holds s.memory inv a b n) (ha : ∀ i < 8,(a i).toNat < 2^240) :
  GasSteps (CachedInverse.persistentInitial s inv count a b n rest)
  {s with pc := UInt256.ofNat (if count.toNat = 0 then 5837 else 3520),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := PersistentCounter.frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
@@ -47,7 +47,7 @@ def installed (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List U
  {s with pc := UInt256.ofNat 3520,stack := PersistentSquareLoop.frame inv a n ((CachedInverse.entryCounter s)::rest)}
 noncomputable def install_steps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
  (env : Environment Artifact.artifact .Osaka s) (hm : LimbMemory.Holds s.memory inv a SquareStep.zeroWords n)
- (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat) :
+ (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat) :
  GasSteps {s with pc := UInt256.ofNat 3520,stack := CachedInverse.entryFrame inv a SquareStep.zeroWords n (CachedInverse.entryCounter s::rest)}
   (installed s inv a n rest) := by
  cases rest with
@@ -59,8 +59,8 @@ noncomputable def install_steps (s : State) (inv : UInt256) (a n : Nat → UInt2
    (CachedInverse.run_installPrefix s inv (CachedInverse.entryCounter s) a SquareStep.zeroWords n rest
     (by simp at hcap; omega) hact)
 noncomputable def restore_steps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
- (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
- (hcache : rest[0]? = some inv) (hinv : MachineState.readWord s.memory 2720 = inv) :
+ (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat)
+ (hcache : rest[0]? = some inv) (hinv : MachineState.readWord s.memory 2624 = inv) :
  GasSteps {s with pc := UInt256.ofNat 5837,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter s::rest)}
  {s with pc := UInt256.ofNat 5882,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (PersistentSquareLoop.counter s::rest)} := by
  cases rest with

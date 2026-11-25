@@ -120,13 +120,13 @@ theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (
     rw [stepMem_readWord_disjoint mem n mm 2688 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.s32
   minvW := by
-    rw [stepMem_readWord_disjoint mem n mm 2720 hn
+    rw [stepMem_readWord_disjoint mem n mm 2624 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.minvW
   ml := by
-    rw [stepMem_readWord_disjoint mem n mm 2752 hn
+    rw [stepMem_readWord_disjoint mem n mm 2720 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.ml
   tl := by
-    rw [stepMem_readWord_disjoint mem n mm 2784 hn
+    rw [stepMem_readWord_disjoint mem n mm 2752 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
     rw [stepMem_readWord_disjoint mem n mm 2656 hn

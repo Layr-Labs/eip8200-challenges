@@ -64,7 +64,7 @@ theorem overflow_eq (a b : ByteArray) (h : Agree a b) (c : UInt256) :
 theorem rowMu_eq (a b : ByteArray) (h : Agree a b) (n : Nat) :
     rowMu a n = rowMu b n := by
   unfold rowMu
-  rw [readWord_eq h 2720 (Or.inr (by decide)),
+  rw [readWord_eq h 2624 (Or.inr (by decide)),
     readWord_eq h (2080+32*n) (Or.inr (by omega))]
 theorem rowC0_eq (a b : ByteArray) (h : Agree a b) (n : Nat) (hn : n ≤ 8) :
     rowC0 a n = rowC0 b n := by

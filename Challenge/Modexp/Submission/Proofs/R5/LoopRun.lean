@@ -68,7 +68,7 @@ def leave (s : State) (x : D5) (n1 n2 n3 n4 P inv c : UInt256) (rest : List UInt
 section
 variable (s : State) (n1 n2 n3 n4 P inv n0 : UInt256) (rest : List UInt256)
   (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-  (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+  (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
   (h_n0 : MachineState.readWord s.memory 160 = n0) (h_inv : MachineState.readWord s.memory 192 = inv)
   (hP : P = CycleSubmission.WordArithmetic.P)
 /-- One round: square, then the loop test on the old counter `c`. -/

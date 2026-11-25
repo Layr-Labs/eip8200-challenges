@@ -22,7 +22,7 @@ def result (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UI
 noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : ProductMeaning.Memory0 s.memory inv a b n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hb : ∀ i < 9,(b i).toNat < radix)
     (hn : ∀ i < 9,(n i).toNat < radix)
     (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*inv.toNat+1) % 2^256 = 0) :

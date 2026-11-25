@@ -21,7 +21,7 @@ def canonicalCompare3part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
   let v1 : UInt256 := UInt256.gt v0 x6
   {s with pc := UInt256.ofNat 8428,memory := s.memory,stack := (UInt256.ofNat 8558)::v1::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem canonicalCompare3part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions canonicalCompare3part0Program {s with pc := UInt256.ofNat 8420,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (canonicalCompare3part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -42,7 +42,7 @@ def canonicalCompare3Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 
   let v1 : UInt256 := UInt256.gt v0 n7
   {s with pc := UInt256.ofNat 8428,memory := s.memory,stack := (UInt256.ofNat 8558)::v1::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest}
 theorem canonicalCompare3_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions canonicalCompare3Program {s with pc := UInt256.ofNat 8420,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (canonicalCompare3Model s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 160

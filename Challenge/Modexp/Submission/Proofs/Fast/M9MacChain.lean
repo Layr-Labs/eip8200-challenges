@@ -71,7 +71,7 @@ def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt2
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
     (hcarry : b = 0 → m.carry = UInt256.ofNat 0)
     (htop : b = 0 → MachineState.readWord m.memory 2336 = UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
@@ -218,7 +218,7 @@ def gasSteps_run : (m b : Nat) → b + m = 8 →
     s.fork = .Osaka →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false →
-    88 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
+    87 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
     (b = 0 → q.carry = UInt256.ofNat 0) →
     (b = 0 → MachineState.readWord q.memory 2336 = UInt256.ofNat 0) →
     Challenge.EvmProof.GasSteps
@@ -264,7 +264,7 @@ def gasSteps_chain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (chainState s (UInt256.ofNat (entryPC n)) ⟨um,UInt256.ofNat 0⟩ q rest)
       (chainState s (UInt256.ofNat 3034) (l1Step um q 1280 n n) q rest) :=
@@ -319,7 +319,7 @@ def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArr
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (setupState s (UInt256.ofNat 2782) um q (maxWord::rest))
       (chainState s (UInt256.ofNat 3034) (l1Step um q 1280 n n) q rest) :=

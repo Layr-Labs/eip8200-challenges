@@ -287,7 +287,7 @@ theorem run_zeroPrefix8 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) (hn : n = 8)
     (hpre : PreOK mem) (hd : (MachineState.readWord mem 0).toNat ≠ 0)
     (hshift : (MachineState.readWord mem 1536).toNat = 0)
-    (hbs : bsize = 32*n) (hact : 88 ≤ s.activeWords.toNat)
+    (hbs : bsize = 32*n) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkZero8
@@ -362,7 +362,7 @@ theorem run_zeroPrefix4 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) (hn : n = 4)
     (hpre : PreOK mem) (hd : (MachineState.readWord mem 0).toNat ≠ 0)
     (hshift : (MachineState.readWord mem 1536).toNat = 0)
-    (hbs : bsize = 32*n) (hact : 88 ≤ s.activeWords.toNat)
+    (hbs : bsize = 32*n) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkZero4

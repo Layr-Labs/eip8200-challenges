@@ -14,7 +14,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission CycleSubmission.Global
 noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
  (hk : 1 ≤ k) (hk16 : k ≤ 16) (env : Environment Artifact.artifact .Osaka s)
- (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
+ (hact : 87 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
  (hf : Exp.Frame mem 8 bsize mi) (hmi : mi < 2^256)
  (hinv : (N % Limbs.radix * mi + 1) % 2^256 = 0)
  (hmod : Model.FastRepresents mem 0 8 N)
@@ -27,7 +27,7 @@ noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B m
   (SlimCallerFixed.inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB hg
 noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
  (hk : 1 ≤ k) (hk16 : k ≤ 16) (env : Environment Artifact.artifact .Osaka s)
- (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
+ (hact : 87 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
  (hf : Exp.Frame mem 8 bsize mi) (hg : (DirectEightRaw.guardWord mem).toNat = 0) :
  GasSteps (SlimFrames.special s mem 8 bsize esize 256 k) (DirectEightEntry.bailState s mem bsize esize k) :=
  DirectEightEntry.miss s mem bsize esize k hk hk16 hact env hg
