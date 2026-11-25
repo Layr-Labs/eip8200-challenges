@@ -1191,8 +1191,8 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
         (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
           (gasSteps_bail1_zero s input hcode hfork hrun hnp hzero)
     else if h12 : modulusSize input = 12 then
-      if hz : (ZeroMod12.rawWord input).toNat = 0 then
-        .zeroMod12 h12 hz <|
+      if hz : (ZeroMod12.probeWord input).toNat = 0 then
+        .zeroMod12 h12 (ZeroMod12.rawWord_zero_of_probe input hz) <|
           (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
           ((gasSteps_bail1_probe s input hcode hfork hrun hnp hzero).trans
            (Challenge.EvmProof.Stepper.runLocatedBlock_sound

@@ -1,1 +1,36 @@
-Direct-store inherited answer tail and shorter RSA stack schedule. Complete Solution accepted by the prescribed independent default Lean4.32.2 kernel at 352898 gas over 44 vectors, 11003 bytes, and 8294 instructions. Ordinary root Lake dependency builds pass, reusing unchanged previously checked dependencies. Paired saving of 40 gas versus full immediate parent 7e9d603b-8ae3-44df-b6bd-345f967ccc6f; eight additional 44-vector corpora pass with the same paired saving. Recognizer and mathematical answer unchanged. Only propext, Classical.choice, Quot.sound occur. Earlier declarations remain archive-scoped under Provenance. Hosted scoring and promotion remain separate.
+# MODEXP whole-word zero probe
+
+Model: Astra 6.2 (gpt-6.2-astra)
+Harness: Codex CLI
+
+The 12-byte modulus path can establish a zero result by testing the word already on the stack after CALLDATALOAD. The child removes PUSH1 160 and SHR from that path. A local replay of the 44 public vectors at seed zero used 352892 gas, compared with 352898 for the parent under the same replay. One execution of the modified block accounts for the six-gas difference. The hosted score and the independent Lean kernel result for this child are pending.
+
+## Source and contract
+
+The immediate source is submission 8ec1b35f-870b-400a-9712-f09652eee6bf, promoted at da752dc9837f9ae186c376cf9561bf62c97209fe. It provides the MODEXP arithmetic, dispatch, memo handling, fixed-window routines, multi-limb fallback, and their existing proofs. The child changes the sufficient condition for one early return and the machine-code evidence for that condition. See the parent commit for its direct-store answer tail, RSA stack schedule and earlier dependency declarations. The parent's published gas of 352652 is a hosted measurement. The paired local measurements below use identical inputs and a common interpreter for both revisions.
+
+The acceptance predicate ranges over inputs whose declared operand sizes are at most 1024 bytes. EIP-198 interprets missing operand bytes as zero and returns exactly the declared modulus width. For width twelve and a numerical modulus of zero, the result occupies twelve bytes, all zero. For width zero, the result is empty. The width guard still controls access to the modified block. The exit for width zero and the handlers for other widths retain their original bytecode.
+
+## Branch condition and stack
+
+The preceding instructions compute the offset 96 + baseSize + exponentSize, then CALLDATALOAD reads a big-endian word at that offset. Write W for this word. The modulus occupies its high 96 bits. In the parent, the stack machine computes W >> 160 and branches if the resulting twelve-byte value is nonzero. In the child, JUMPI consumes W directly. If W is zero, all twelve modulus bytes are zero, including any bytes supplied by EIP-198 padding. The existing return tail reads twelve bytes at offset zero in the initial empty memory. If W is nonzero, the dispatcher resumes the inherited general handler. That handler takes the original calldata and implements the modular exponentiation even when the declared modulus is zero.
+
+Trailing input illustrates the cost of the stronger fast-path condition. Encode base 42, exponent 7, and twelve zero modulus bytes, then append byte 0x80. The high twelve bytes of W are zero and its low twenty bytes now contain a set bit. The child follows the fallback and still returns twelve zero bytes. That particular input costs 351 gas in the local replay, up from 156. If the same byte follows twenty additional zeros, it lies outside the loaded word and the cost falls from 156 to 150. A nonzero byte inside the twelve-byte modulus also takes the fallback, with a saving of six gas at the test.
+
+## Bytecode and proof binding
+
+The changed range starts at byte offset 10984 and ends before 10995. The parent sequence is 60a01c61036157600c5ff3. The child sequence is 61036157600c5ff3600000. The taken branch still targets the existing JUMPDEST at PC 865 with an empty stack. The other path pushes twelve and zero, then returns at PC 10991. After RETURN, a PUSH1 0 and a STOP occupy the remaining three bytes. Neither padding instruction is a jump destination. This layout retains the next block's entry at PC 10995 and instruction index 8286. The artifact has 11003 bytes and 8294 decoded instructions.
+
+Cycle/Bytes.lean binds the byte literal. Cycle/Artifact.lean describes the corresponding instructions. CycleGlobal/PCCertificate.lean gives their widths and program counters. In CycleGlobal/FastP6.lean the two execution paths use the new JUMPI and either the original destination or the earlier RETURN. In CycleGlobal/ZeroMod12.lean, probeWord names the complete input word and rawWord names the logical modulus. The added implication rawWord_zero_of_probe converts a zero observation on the full word into the existing modulus witness. CycleGlobal/Setup.lean uses this implication to construct the successful zero-result route. The final correctness statement in Solution.lean still refers to the byte array generated by the protected renderer.
+
+## Paired local measurements
+
+| Corpus seed | Vectors | Parent gas | Candidate gas | Difference |
+| --- | ---: | ---: | ---: | ---: |
+| 0 | 44 | 352898 | 352892 | -6 |
+| 1 | 44 | 353505 | 353499 | -6 |
+| 11 | 44 | 352547 | 352541 | -6 |
+
+A standalone interpreter replayed the opcode subset of the two artifacts using the vector construction in Challenge/Modexp/Scorer.lean. Each return was compared against arbitrary-precision modular exponentiation and the required output length. Each corpus visited the modified probe once. The replay also covered nonzero values in the first and last modulus bytes, a truncated twelve-byte modulus, two positions for a trailing nonzero byte, an empty modulus, an empty exponent and a thirteen-byte modulus. These runs establish the observed outputs and paired gas under the local interpreter.
+
+The static layout check used the repository's protected hex reader and renderer. It compared the rendered bytes, the literal chunks and the encoded instruction list. It also recomputed the width and PC tables through the end of the artifact and checked the located instructions in both changed paths. Local proof elaboration requires the pinned Lean 4.31.0 toolchain and its Lake dependencies. The checkout used for the replay lacked that toolchain, the dependency build and Comparator. The hosted benchmark must still elaborate Solution.lean, check its axioms, replay the proof independently and evaluate the protected bytes. On a provisioned checkout the repository entry points are setup.sh modexp and benchmark.sh modexp.

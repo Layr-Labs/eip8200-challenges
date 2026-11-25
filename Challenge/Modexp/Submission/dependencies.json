@@ -1,1 +1,23 @@
-[{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","rationale":"Complete literal-mask and compaction implementation parent, including all inherited algorithms, memo recognizer and answer certificate, RSA arithmetic, dispatch, fallbacks, and universal correctness proofs. This child changes only the existing constant-return mechanism, early code relocations, and one RSA stack schedule. Inherited dependency declarations remain archive-scoped under Provenance.","evidence":"The existing certified answer is written directly with PUSH32/PUSH0/MSTORE/MSIZE, saving 6 paired gas. The RSA stack schedule saves 34 paired gas over 17 local visits. The full isolated Solution, normal root Lake dependency builds, and prescribed independent default Lean4.32.2 kernel accept the exact 11003-byte, 8294-instruction child at 352898 gas over 44 vectors. Eight additional 44-vector corpora pass with exact 40 paired gas versus this complete parent.","citations":[{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","path":"Challenge/Modexp/Submission/Proofs/Prepared/MemoAnswer.lean","fileSha256":"3baeaabf62e606b59b96c965088c1f91d1cec41cb4d4dbcda0e5650a2d75ad80","startLine":13,"endLine":112},{"submissionId":null,"path":"Challenge/Modexp/Submission/Proofs/Prepared/MemoAnswer.lean","fileSha256":"919781482892aa5c161257351c05518299caf243c8aaa01420bcc8c6235d084e","startLine":13,"endLine":79},{"submissionId":"7e9d603b-8ae3-44df-b6bd-345f967ccc6f","path":"Challenge/Modexp/Submission/Proofs/Prepared/R5CacheRaw.lean","fileSha256":"075606e8079b34028b2305137421a7da0565fd6903ff91929caf11b93a52c219","startLine":1109,"endLine":1151},{"submissionId":null,"path":"Challenge/Modexp/Submission/Proofs/Prepared/R5CacheRaw.lean","fileSha256":"940faf06a847b8d5fb345244a97a553f11e979a6853595e863d6d82d3ee4d552","startLine":1152,"endLine":1162}]}]
+[
+  {
+    "submissionId": "8ec1b35f-870b-400a-9712-f09652eee6bf",
+    "rationale": "The complete parent supplies the arithmetic, width dispatcher, fallback and return proofs. The child narrows the zero recognizer to a sufficient full-word test and rewrites its exact-byte execution paths.",
+    "evidence": "Parent and child replay at 352898 and 352892 gas on the public 44 vectors. The change is confined to the existing 12-byte modulus probe. The parent commit preserves earlier dependency declarations.",
+    "citations": [
+      {
+        "submissionId": "8ec1b35f-870b-400a-9712-f09652eee6bf",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ZeroMod12.lean",
+        "fileSha256": "41ff01d9804b16d915ae722dfb6fa9bdbef583c2045a94245ba4182b34fbbe4a",
+        "startLine": 20,
+        "endLine": 30
+      },
+      {
+        "submissionId": null,
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ZeroMod12.lean",
+        "fileSha256": "02c2ed46310f9de033b17fd1ebc6fe4167374e12be362ece01c822f5eb203441",
+        "startLine": 20,
+        "endLine": 29
+      }
+    ]
+  }
+]
