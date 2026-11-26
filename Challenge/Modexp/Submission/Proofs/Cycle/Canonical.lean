@@ -22,7 +22,7 @@ def result (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : L
 noncomputable def subtraction (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8558,stack := frame a n slot0 slot1 rest}
       (NormalizeBinding.returned s a n (UInt256.ofNat 8568) slot1 rest) := by
   let ready : State := {s with
@@ -47,7 +47,7 @@ noncomputable def subtraction (s : State) (a n : Nat → UInt256) (slot0 slot1 :
 noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8,(a i).toNat < 2^240)
     (hn : ∀ i < 8,(n i).toNat < 2^240) :
     GasSteps {s with pc := UInt256.ofNat 8397,stack := frame a n slot0 slot1 rest}

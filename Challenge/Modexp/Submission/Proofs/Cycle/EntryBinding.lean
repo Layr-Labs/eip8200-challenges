@@ -21,7 +21,7 @@ def entered (s : State) (f : Caller) : State :=
   result s f
 noncomputable def gasSteps (s : State) (f : Caller)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : f.tail.length ≤ 943) (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 3335,stack := saved f} (entered s f) := by
   have h := entryBlock.steps
     (s := {s with pc := UInt256.ofNat 3335,stack := saved f})

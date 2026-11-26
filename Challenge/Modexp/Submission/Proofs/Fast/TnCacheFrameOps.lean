@@ -31,7 +31,7 @@ theorem run_reset (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256
     Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
 theorem run_flush (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions flush (framed s (UInt256.ofNat pc0) (frame pbi hd pb ent tn target inv rest)) =
     some (framed {s with memory := TnCacheMemory.lift s.memory tn}
       (UInt256.ofNat (pc0+5)) (frame pbi hd pb ent tn target inv rest)) := by
@@ -93,7 +93,7 @@ theorem run_reset13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2
     Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
 theorem run_flush13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions flush13 (framed s (UInt256.ofNat pc0)
       (frame pbi hd pb ent w5 target w8 (r0::r1::r2::r3::tn::rest))) =
     some (framed {s with memory := TnCacheMemory.lift s.memory tn}

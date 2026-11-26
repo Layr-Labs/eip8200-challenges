@@ -23,7 +23,7 @@ def endFrame (flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     m96::m64::m32::x::rest
 theorem run_quotientA (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory 2336
     runInstructions quotientA
       { s with pc := pc,stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
@@ -38,7 +38,7 @@ theorem run_quotientA (s : State)
     List.exchange,h15,h16,h17,State.activeWordsAfterUInt256,ht,hT,advancePC]
 theorem run_quotientB (s : State)
     (pc mu flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory 2336
     runInstructions quotientB
       { s with pc := pc,stack := mu::endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
@@ -68,7 +68,7 @@ theorem run_quotientJump (s : State)
     h17,h18,hjump]
 theorem run_exit (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 87 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     let t0 := MachineState.readWord s.memory 2336
     let mu := t0*inv

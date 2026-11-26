@@ -18,7 +18,7 @@ theorem readonlyCache_sqRowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt2
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) (hn : n ≤ 8) (i : Nat) (hi : i ≤ n) :
     CiosReadonly.ReadonlyCache (sqRowsCarry mem n i) n tl inv m0 :=
   hc.of_preserved
-    (readWord_sqRowsCarry mem n 2720 hn (Or.inr (by decide)) i hi)
+    (readWord_sqRowsCarry mem n 2624 hn (Or.inr (by decide)) i hi)
     (readWord_sqRowsCarry mem n (16 * n + 32) hn (Or.inl (by omega)) i hi)
       (readWord_sqRowsCarry mem n 224 hn (Or.inl (by omega)) i hi)
 theorem extraCache_sqRowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
@@ -34,7 +34,7 @@ theorem inverse_sqRowsCarry (mem : ByteArray) (n : Nat) (hn : n ≤ 8)
     inverseInvariant (sqRowsCarry mem n i) n := by
   unfold inverseInvariant at *
   rw [readWord_sqRowsCarry mem n (32 * n - 32) hn (Or.inl (by omega)) i hi,
-    readWord_sqRowsCarry mem n 2720 hn (Or.inr (by decide)) i hi]
+    readWord_sqRowsCarry mem n 2624 hn (Or.inr (by decide)) i hi]
   exact hminv
 /-! Inside one row: after the prologue and after every chain step. -/
 theorem readonlyCache_sqPro {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
@@ -42,7 +42,7 @@ theorem readonlyCache_sqPro {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
     (tb : UInt256) :
     CiosReadonly.ReadonlyCache (sqPro mem n i tb).memory n tl inv m0 :=
   hc.of_preserved
-    (readWord_sqPro mem n i 2720 tb hi (Or.inr (by omega)))
+    (readWord_sqPro mem n i 2624 tb hi (Or.inr (by omega)))
     (readWord_sqPro mem n i (16 * n + 32) tb hi (Or.inl (by omega)))
       (readWord_sqPro mem n i 224 tb hi (Or.inl (by omega)))
 theorem readonlyCache_l1Run {q : MacState} {n : Nat} {tl inv m0 : UInt256}
@@ -50,7 +50,7 @@ theorem readonlyCache_l1Run {q : MacState} {n : Nat} {tl inv m0 : UInt256}
     (pa j0 k : Nat) (hk : j0 + k ≤ n) :
     CiosReadonly.ReadonlyCache (l1Run q bi pa n j0 k).memory n tl inv m0 :=
   hc.of_preserved
-    (readWord_l1Run q bi pa n j0 2720 (Or.inr (by omega)) k hk)
+    (readWord_l1Run q bi pa n j0 2624 (Or.inr (by omega)) k hk)
     (readWord_l1Run q bi pa n j0 (16 * n + 32) (Or.inl (by omega)) k hk)
       (readWord_l1Run q bi pa n j0 224 (Or.inl (by omega)) k hk)
 theorem extraCache_sqPro {mem : ByteArray} {m96 m64 m32 : UInt256}
@@ -74,13 +74,13 @@ theorem inverse_sqPro (mem : ByteArray) (n i : Nat) (tb : UInt256) (hn : n ≤ 8
     inverseInvariant (sqPro mem n i tb).memory n := by
   unfold inverseInvariant at *
   rw [readWord_sqPro mem n i (32 * n - 32) tb hi (Or.inl (by omega)),
-    readWord_sqPro mem n i 2720 tb hi (Or.inr (by omega))]
+    readWord_sqPro mem n i 2624 tb hi (Or.inr (by omega))]
   exact hminv
 theorem inverse_l1Run (q : MacState) (bi : UInt256) (pa n j0 k : Nat) (hn : n ≤ 8)
     (hk : j0 + k ≤ n) (hminv : inverseInvariant q.memory n) :
     inverseInvariant (l1Run q bi pa n j0 k).memory n := by
   unfold inverseInvariant at *
   rw [readWord_l1Run q bi pa n j0 (32 * n - 32) (Or.inl (by omega)) k hk,
-    readWord_l1Run q bi pa n j0 2720 (Or.inr (by omega)) k hk]
+    readWord_l1Run q bi pa n j0 2624 (Or.inr (by omega)) k hk]
   exact hminv
 end Challenge.Modexp.Submission.Proofs.Fast.SquareCaches

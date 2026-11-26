@@ -41,7 +41,7 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   · exact isTrue_lor_right a b h
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn32 : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hor : (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0 ∨ (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -77,7 +77,7 @@ theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n 
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
 theorem run_mid_zero (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn32 : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hneg : negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q = UInt256.ofNat 0)
     (htz : tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q = UInt256.ofNat 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -139,14 +139,14 @@ theorem run_unc_add (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize m
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
 theorem run_addEntry (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hact : 87 ≤ s.activeWords.toNat)
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3153
       (addLoopState z s mem n bsize esize msize k) =
       some (addInnerState z s mem n bsize esize msize k 0) := by
-  have hTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
+  have hTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2752 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 200000 })
     [blk3153,opAt,pushAt,wfOp,
@@ -164,7 +164,7 @@ theorem run_addBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
     (rest : List UInt256)
     (hn32 : n ≤ 8) (hj : j < n) (hpv : p.toNat = 2112 + 32 * (n - 1 - j))
     (hcap : rest.length ≤ 1011)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3157a
@@ -289,7 +289,7 @@ theorem run_addPad (s : State) (mm : ByteArray) (c p' : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,Nat.mod_eq_of_lt,List.exchange]
 theorem run_addTail_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hout : addOut mem n = UInt256.ofNat 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -320,7 +320,7 @@ theorem run_addTail_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hout : addOut mem n = UInt256.ofNat 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -352,7 +352,7 @@ theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (htn : (MachineState.readWord mem 2080).toNat = 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -442,7 +442,7 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -532,7 +532,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | decide)
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyte3 : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
@@ -644,7 +644,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | decide)
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyteNe : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
@@ -848,7 +848,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 @[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4430 = 5543 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 theorem run_shiftDone_check (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :

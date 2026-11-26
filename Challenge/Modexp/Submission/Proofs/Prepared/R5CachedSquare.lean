@@ -13,7 +13,7 @@ set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
 def history0 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 8878,stack := (CycleSubmission.R5.ExecSquare.sqCol0_o0 a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(CycleSubmission.R5.ExecSquare.sqCol0_o1 a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::((a0+a0))::a1::a2::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage0 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -27,7 +27,7 @@ theorem run_stage0 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history1 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 8914,stack := (CycleSubmission.R5.ExecSquare.sqCol1_o0 (c) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(CycleSubmission.R5.ExecSquare.sqCol1_o1 (c) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(q0)::((a0+a0))::a1::a2::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage1 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -41,7 +41,7 @@ theorem run_stage1 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history2 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 8973,stack := (CycleSubmission.R5.ExecSquare.sqCol2_o0 (c) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(CycleSubmission.R5.ExecSquare.sqCol2_o1 (c) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(q1)::(q0)::((a0+a0))::((a1+a1))::a2::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage2 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -55,7 +55,7 @@ theorem run_stage2 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history3 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9038,stack := (CycleSubmission.R5.ExecSquare.sqCol3_o0 (c) (q2) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(CycleSubmission.R5.ExecSquare.sqCol3_o1 (c) (q2) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(q2)::(q1)::(q0)::((a0+a0))::((a1+a1))::a2::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage3 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -69,7 +69,7 @@ theorem run_stage3 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history4 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9128,stack := (CycleSubmission.R5.ExecSquare.sqCol4_o0 (c) (q3) (q2) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::(q3)::(q2)::(q1)::(CycleSubmission.R5.ExecSquare.sqCol4_o4 (c) (q3) (q2) (q1) (q0) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt) (n0))::((a0+a0))::((a1+a1))::((a2+a2))::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage4 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -83,7 +83,7 @@ theorem run_stage4 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history5 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9230,stack := (CycleSubmission.R5.ExecSquare.sqCol5_o0 (c) (q3) (q2) (q1) (q4) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::(q3)::(q2)::(q1)::(q4)::(CycleSubmission.R5.ExecSquare.sqCol5_o5 (c) (q3) (q2) (q1) (q4) a0 a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::((a1+a1))::((a2+a2))::a3::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage5 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -97,7 +97,7 @@ theorem run_stage5 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history6 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9325,stack := (CycleSubmission.R5.ExecSquare.sqCol6_o0 (c) (q3) (q2) (q1) (q4) (z0) a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::(q3)::(q2)::(q1)::(q4)::(z0)::(CycleSubmission.R5.ExecSquare.sqCol6_o6 (c) (q3) (q2) (q1) (q4) (z0) a1 a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::((a2+a2))::((a3+a3))::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage6 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -111,7 +111,7 @@ theorem run_stage6 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history7 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9397,stack := (CycleSubmission.R5.ExecSquare.sqCol7_o0 (c) (q3) (q2) (q1) (q4) (z0) (z1) a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::(q3)::(q2)::(q1)::(q4)::(z0)::(z1)::(CycleSubmission.R5.ExecSquare.sqCol7_o7 (c) (q3) (q2) (q1) (q4) (z0) (z1) a2 a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::((a3+a3))::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage7 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -125,7 +125,7 @@ theorem run_stage7 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history8 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9460,stack := (CycleSubmission.R5.ExecSquare.sqCol8_o0 (c) (q3) (q2) (q1) (q4) (z0) (z1) (z2) a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::(q3)::(q2)::(q1)::(q4)::(z0)::(z1)::(z2)::(CycleSubmission.R5.ExecSquare.sqCol8_o8 (c) (q3) (q2) (q1) (q4) (z0) (z1) (z2) a3 a4 (n1) (n2) (n3) (n4) (p) (inv) (cnt))::a4::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt)::rest}
 theorem run_stage8 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -139,7 +139,7 @@ theorem run_stage8 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p
   exact hraw.trans (congrArg some hend)
 def history9 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W) : State := {s with pc := N 9471,stack := (cnt)::(z0)::(z1)::(z2)::(z3)::(c)::(n1)::(n2)::(n3)::(n4)::(p)::(inv)::(MachineState.readWord s.memory 160)::(cnt-N 1)::rest}
 theorem run_stage9 (s : State) (c q0 q1 q2 q3 q4 a0 a1 a2 a3 a4 n0 n1 n2 n3 n4 p inv cnt z0 z1 z2 z3 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : p = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240)
@@ -158,7 +158,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open CycleSubmission.R5.SquareRun
 def newProgram : List Instr := (R5LimbCacheRaw.stage0Program++(R5LimbCacheRaw.stage1Program++(R5LimbCacheRaw.stage2Program++(R5LimbCacheRaw.stage3Program++(R5LimbCacheRaw.stage4Program++(R5LimbCacheRaw.stage5Program++(R5LimbCacheRaw.stage6Program++(R5LimbCacheRaw.stage7Program++(R5LimbCacheRaw.stage8Program++(R5LimbCacheRaw.stage9Program))))))))))
 theorem new_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (hn0 : MachineState.readWord s.memory 160 = n0) (hi : MachineState.readWord s.memory 192 = inv)
     (hp : P = CycleSubmission.WordArithmetic.P)
     (ha0 : a0.toNat < 2^240) (ha1 : a1.toNat < 2^240) (ha2 : a2.toNat < 2^240) (ha3 : a3.toNat < 2^240) :

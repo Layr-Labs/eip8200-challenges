@@ -35,7 +35,7 @@ def classify8 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (
  classifyBlock.steps (s := {s with pc := UInt256.ofNat 8624,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest})
   (env.transfer rfl rfl) rfl (DirectR5Classifier.run8 {s with memory := mem} count hpos hle rest hcap (by rw [env.code]; exact jumpDestCommon))
 def enter4 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (bsize esize msize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
+ (hact : 87 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
  GasSteps {s with pc := UInt256.ofNat 8624,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize}
  (DirectR5Reuse.result s mem (UInt256.ofNat (count-1)) bsize esize msize) := by
  have hc : (SlimFrames.outer mem 4 bsize esize msize).length ≤ 1000 := by

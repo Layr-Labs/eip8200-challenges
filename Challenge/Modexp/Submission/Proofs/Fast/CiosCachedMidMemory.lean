@@ -36,7 +36,7 @@ theorem read_mid (mem : ByteArray) (c : UInt256) (r : Nat)
 theorem rowMu_mid (mem : ByteArray) (c : UInt256) (n : Nat) (hn : 2 ≤ n) :
     rowMu (midMem mem c) n = rowMu mem n := by
   unfold rowMu
-  rw [read_mid mem c 2720 (Or.inr (by decide)),
+  rw [read_mid mem c 2624 (Or.inr (by decide)),
     read_mid mem c (2080+32*n) (Or.inr (by omega))]
 theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) :
@@ -45,33 +45,33 @@ theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
   rw [rowMu_mid mem c n hn,read_mid mem c (32*n-32) (Or.inl (by omega))]
 def inverseInvariant (mem : ByteArray) (n : Nat) : Prop :=
   ((MachineState.readWord mem (32*n-32)).toNat *
-    (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0
+    (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0
 opaque inverse_mpZeroed (s : State) (mem : ByteArray) (n : Nat)
     (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
     inverseInvariant (mpZeroed s mem n) n := by
   unfold inverseInvariant at *
   rw [readWord_mpZeroed s mem n (32*n-32) hn (Or.inl (by omega)),
-    readWord_mpZeroed s mem n 2720 hn (Or.inr (by decide))]
+    readWord_mpZeroed s mem n 2624 hn (Or.inr (by decide))]
   exact hminv
 opaque inverse_rowsMem (mem : ByteArray) (pa pb n i : Nat)
     (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
     inverseInvariant (rowsMem mem pa pb n i) n := by
   unfold inverseInvariant at *
   rw [readWord_rowsMem mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsMem mem pa pb n 2720 hn (Or.inr (by decide)) i]
+    readWord_rowsMem mem pa pb n 2624 hn (Or.inr (by decide)) i]
   exact hminv
 opaque inverse_l1Step (mem : ByteArray) (bi : UInt256) (pa n j : Nat)
     (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
     inverseInvariant (l1Step mem bi pa n j).memory n := by
   unfold inverseInvariant at *
   rw [readWord_l1Step mem bi pa n (32*n-32) j hn (Or.inl (by omega)),
-    readWord_l1Step mem bi pa n 2720 j hn (Or.inr (by decide))]
+    readWord_l1Step mem bi pa n 2624 j hn (Or.inr (by decide))]
   exact hminv
 opaque inverse_midMem (mem : ByteArray) (c : UInt256) (n : Nat)
     (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
     inverseInvariant (midMem mem c) n := by
   unfold inverseInvariant at *
   rw [read_mid mem c (32*n-32) (Or.inl (by omega)),
-    read_mid mem c 2720 (Or.inr (by decide))]
+    read_mid mem c 2624 (Or.inr (by decide))]
   exact hminv
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory

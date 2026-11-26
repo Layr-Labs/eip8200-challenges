@@ -53,7 +53,7 @@ def phaseSwitchProgram : List Instr :=
    .op (.Dup ⟨1,by decide⟩),.op .JUMP]
 def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray := Exp.mcopyMem mem 256 2112 (32 * n)
 theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n) (hact : 88 ≤ s.activeWords.toNat)
+    (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n) (hact : 87 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.loopPC mem n) = true) :
     runInstructions phaseSwitchProgram
       (frame s mem 10418 (transferSlots (UInt256.ofNat 10417) mem n bsize esize msize)) =
@@ -71,8 +71,8 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
       UInt256.ofNat (n / 4) := by
     rcases hn with rfl | rfl <;> decide
   have ha2 : 32 * n ≠ 0 := by omega
-  have ha3 : 256 + 32 * n ≤ 2816 := by omega
-  have ha4 : 2112 + 32 * n ≤ 2816 := by omega
+  have ha3 : 256 + 32 * n ≤ 2784 := by omega
+  have ha4 : 2112 + 32 * n ≤ 2784 := by omega
   have hactive2 := Exp.activeWords_fix2 s 256 (32 * n) 2112 (32 * n) ha2 ha2 ha3 ha4 hact
   have hhead : CycleSubmission.Global.Fast.Shift.loopPC mem n %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =

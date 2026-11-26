@@ -14,7 +14,7 @@ structure Holds (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : Pr
  at768 : MachineState.readWord mem 768 = a 0
  at1344 : MachineState.readWord mem 1344 = n 0
  at1376 : MachineState.readWord mem 1376 = n 1
- at2720 : MachineState.readWord mem 2720 = inv
+ at2720 : MachineState.readWord mem 2624 = inv
  at1568 : MachineState.readWord mem 1568 = n 7
  at1600 : MachineState.readWord mem 1600 = n 8
  at32 : MachineState.readWord mem 32 = a 3

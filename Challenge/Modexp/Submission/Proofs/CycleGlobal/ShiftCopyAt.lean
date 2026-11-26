@@ -13,7 +13,7 @@ open ShiftProducerCanonical ShiftProducerSplitRun
 The historical producer's own fixed-address theorem remains available. -/
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions copyProgram (frame s mem 2554 n rest) =
       some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2563 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
@@ -23,7 +23,7 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
   have hsz : 32*n % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 32*n := Nat.mod_eq_of_lt (by omega)
   have haD := Monpro.activeWords_fix s 256 (32*n) (by omega) (by omega) (by omega)
   have haB := Monpro.activeWords_fix s 2112 (32*n) (by omega) (by omega) (by omega)
-  have haL := Monpro.activeWords_fix s 2752 32 (by decide) (by omega) (by omega)
+  have haL := Monpro.activeWords_fix s 2720 32 (by decide) (by omega) (by omega)
   have haDN := Exp.activeWordsAfter_fix s.activeWords.toNat 256 (32*n) (by omega) (by omega) hact
   have haBN := Exp.activeWordsAfter_fix s.activeWords.toNat 2112 (32*n) (by omega) (by omega) hact
   have hamod : s.activeWords.toNat % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.activeWords.toNat :=

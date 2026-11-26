@@ -313,14 +313,14 @@ theorem ptrAt_mod (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256)
 Every address `MONPRO` touches lies below `0x2500`, so once the setup block has
 made `0x2500` bytes active no access here extends the high-water mark. -/
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
+    (hoff : off + sz ≤ 2784) (hcurr : 87 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -331,7 +331,7 @@ Addresses (absolute, independent of the code offset):
 `T_ = 2048` holds `t[n+1]`, `TN = 2080` holds `t[n]`, `TS = 2112` holds the
 `n` limbs `t[n-1..0]` most significant first, so `t[k]` sits at
 `2112 + 32 * (n - 1 - k)` and `TL = 2080 + 32 * n` is the address of `t[0]`.
-`V_S32 = 2688`, `V_MINV = 2720`, `V_ML = 2752`, `V_TL = 2784`. -/
+`V_S32 = 2688`, `V_MINV = 2624`, `V_ML = 2720`, `V_TL = 2752`. -/
 structure MacState where
   memory : ByteArray
   carry : UInt256
@@ -355,7 +355,7 @@ def midMem (mem : ByteArray) (c : UInt256) : ByteArray :=
     (Data.Bytes.natToBytesPadded
       (UInt256.lt (MachineState.readWord mem 2080 + c) c).toNat 32) 2048
 def rowMu (mem : ByteArray) (n : Nat) : UInt256 :=
-  MachineState.readWord mem 2720 * MachineState.readWord mem (2080 + 32 * n)
+  MachineState.readWord mem 2624 * MachineState.readWord mem (2080 + 32 * n)
 def rowC0 (mem : ByteArray) (n : Nat) : UInt256 :=
   UInt256.isZero
       (UInt256.isZero (MachineState.readWord mem (32 * n - 32) * rowMu mem n)) +
@@ -1090,7 +1090,7 @@ theorem row_equation (mem : ByteArray) (pa pb p i : Nat) (a mm tlow : Nat)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ht : Model.FastRepresents mem 2112 (p + 2) tlow)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     ((MachineState.readWord (rowMem mem pa pb (p + 2) i) 2080).toNat *
           Limbs.radix ^ (p + 2) +
         Csub.lowValue (rowMem mem pa pb (p + 2) i) 2112 (p + 2) (p + 2)) *
@@ -1107,9 +1107,9 @@ theorem row_equation (mem : ByteArray) (pa pb p i : Nat) (a mm tlow : Nat)
       (32 * (p + 2) - 32) = MachineState.readWord mem (32 * (p + 2) - 32) :=
     readWord_l1Step_low mem (rowBi mem pb (p + 2) i) pa (p + 2)
       (32 * (p + 2) - 32) (p + 2) (by omega)
-  have hMinvR : MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory 2720 =
-      MachineState.readWord mem 2720 :=
-    readWord_l1Step mem (rowBi mem pb (p + 2) i) pa (p + 2) 2720 (p + 2) hn32
+  have hMinvR : MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory 2624 =
+      MachineState.readWord mem 2624 :=
+    readWord_l1Step mem (rowBi mem pb (p + 2) i) pa (p + 2) 2624 (p + 2) hn32
       (Or.inr (by omega))
   have hT0 : MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory
       (2080 + 32 * (p + 2)) =
@@ -1181,7 +1181,7 @@ theorem row_equation (mem : ByteArray) (pa pb p i : Nat) (a mm tlow : Nat)
     rw [radix_eq,← hT0,← hM0]
     exact c0_spec
       (MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory (32 * (p + 2) - 32))
-      (MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory 2720)
+      (MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory 2624)
       (MachineState.readWord (rowL1 mem pa pb (p + 2) i).memory (2080 + 32 * (p + 2)))
       (by rw [hM0,hMinvR]; exact hminv)
   have hD0 := l2_invariant (rowMid mem pa pb (p + 2) i)
@@ -1334,7 +1334,7 @@ theorem rows_invariant (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm : N
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     ∀ i,i ≤ p + 2 → ∃ Q,
       tValue (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) i) (p + 2) *
           Limbs.radix ^ i = a * (b % Limbs.radix ^ i) + Q * mm ∧
@@ -1375,11 +1375,11 @@ theorem rows_invariant (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm : N
             (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) i)
             (32 * (p + 2) - 32)).toNat *
           (MachineState.readWord
-            (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) i) 2720).toNat + 1) %
+            (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) i) 2624).toNat + 1) %
           2 ^ 256 = 0 := by
         rw [readWord_monpro_preserved s mem pa pb (p + 2) i (32 * (p + 2) - 32) hn32
             (Or.inl (by omega)),
-          readWord_monpro_preserved s mem pa pb (p + 2) i 2720 hn32 (Or.inr (by omega))]
+          readWord_monpro_preserved s mem pa pb (p + 2) i 2624 hn32 (Or.inr (by omega))]
         exact hminv
       have hrow := row_equation (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) i)
         pa pb p i a mm
@@ -1436,7 +1436,7 @@ theorem monpro_tn_le_one (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm :
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     (MachineState.readWord (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) (p + 2))
       2080).toNat ≤ 1 := by
   obtain ⟨-,-,hlt⟩ := rows_invariant s mem pa pb p a b mm hn32 hpaFit hpbFit ha hb hm
@@ -1460,7 +1460,7 @@ theorem monpro_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents
       (Csub.csResultMemory
         (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) pdst)
@@ -1560,18 +1560,18 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
     MachineState.readWord (monproMem s mem pa pb n pdst) 2688 =
         MachineState.readWord mem 2688 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2624 =
+        MachineState.readWord mem 2624 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2720 =
         MachineState.readWord mem 2720 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2752 =
         MachineState.readWord mem 2752 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 2784 =
-        MachineState.readWord mem 2784 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2656 =
         MachineState.readWord mem 2656 :=
   ⟨monproMem_readWord_high s mem pa pb n pdst 2688 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2624 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2720 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2752 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -1593,7 +1593,7 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents (monproMem s mem pa pb (p + 2) pdst) pdst (p + 2)
       (Model.montMul mm (Limbs.radix ^ (p + 2)) a b) :=
   monpro_represents s mem pa pb p pdst a b mm hn32 hpaFit hpbFit ha hb hm hodd ham

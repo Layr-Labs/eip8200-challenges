@@ -145,20 +145,20 @@ def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
   Csub.csResultMemory (Csub.amResultMemory mem px px n) n px
 structure Vars (mem : ByteArray) (n : Nat) : Prop where
   s32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)
-  ml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)
-  tl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)
+  ml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32)
+  tl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n)
 theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
     (loopStack px k ret rest).length = rest.length + 3 := by
   simp [loopStack]
 theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2624 ≤ addr) :
     MachineState.readWord (Csub.amResultMemory mem pa pb n) addr =
       MachineState.readWord mem addr := by
   rw [Csub.amResultMemory_def,
     Csub.readWord_write_disjoint _ _ _ _ (Or.inr (by omega)),
     Csub.amStep_readWord_disjoint mem pa pb n addr hn (Or.inr (by omega)) n le_rfl]
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ 2656) (haddr : 2656 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ addr) (haddr : 2624 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
       MachineState.readWord mem addr :=
   Csub.guarded_readWord_outside mem n pdst addr hn (Or.inr (by omega))
@@ -169,11 +169,11 @@ theorem vars_dblStep (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
   · rw [dblStep,readWord_csResultMemory_high _ n px 2688 (by omega) hn32 (by omega)
       (by omega),readWord_amResultMemory_high _ px px n 2688 (by omega) hn32 (by omega)]
     exact hv.s32
+  · rw [dblStep,readWord_csResultMemory_high _ n px 2720 (by omega) hn32 (by omega)
+      (by omega),readWord_amResultMemory_high _ px px n 2720 (by omega) hn32 (by omega)]
+    exact hv.ml
   · rw [dblStep,readWord_csResultMemory_high _ n px 2752 (by omega) hn32 (by omega)
       (by omega),readWord_amResultMemory_high _ px px n 2752 (by omega) hn32 (by omega)]
-    exact hv.ml
-  · rw [dblStep,readWord_csResultMemory_high _ n px 2784 (by omega) hn32 (by omega)
-      (by omega),readWord_amResultMemory_high _ px px n 2784 (by omega) hn32 (by omega)]
     exact hv.tl
 theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpxFit : px + 32 * n ≤ 2048) (hv : Vars mem n) (i : Nat) :

@@ -48,7 +48,7 @@ def prV8_8 (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256)
 def prSeg0Program : List Instr :=
   prCol0Program++prCol1Program
 theorem prSeg0_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) (hcache : MachineState.readWord s.memory 160 = cntp)
     (h_b0 : MachineState.readWord s.memory 0 = b0)
     (h_b1 : MachineState.readWord s.memory 32 = b1)
     (h_b2 : MachineState.readWord s.memory 64 = b2)
@@ -71,7 +71,7 @@ theorem prSeg0_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b
 def prSeg1Program : List Instr :=
   prCol2Program++prCol3Program
 theorem prSeg1_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (h_b0 : MachineState.readWord s.memory 0 = b0)
     (h_b1 : MachineState.readWord s.memory 32 = b1)
     (h_b2 : MachineState.readWord s.memory 64 = b2)
@@ -94,7 +94,7 @@ theorem prSeg1_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b
 def prSeg2Program : List Instr :=
   prCol4Program
 theorem prSeg2_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (h_b0 : MachineState.readWord s.memory 0 = b0)
     (h_b1 : MachineState.readWord s.memory 32 = b1)
     (h_b2 : MachineState.readWord s.memory 64 = b2)
@@ -119,7 +119,7 @@ private theorem raw_model_eq (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp 
     CycleSubmission.Prepared.R5Product.oldModel s ((prV4_0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)) ((prV3_1 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)) ((prV2_1 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)) ((prV1_1 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)) ((prV4_4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv::cntp::rest) = {s with pc := UInt256.ofNat 10172,stack := (prV5_5 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)::(prV6_6 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)::(prV7_7 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)::(prV8_8 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)::(prV8_0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M)::n1::n2::n3::n4::P::inv::cntp::rest} := by
   simp only [CycleSubmission.Prepared.R5Product.oldModel,h_b1,h_b2,h_b3,h_b4,h_M,prCol5_o0,prCol5_o5,prCol6_o0,prCol6_o6,prCol7_o0,prCol7_o7,prCol8_o0,prCol8_o8,prV5_0,prV5_5,prV6_0,prV6_6,prV7_0,prV7_7,prV8_0,prV8_8]
 theorem prSeg3_run (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (h_b0 : MachineState.readWord s.memory 0 = b0)
     (h_b1 : MachineState.readWord s.memory 32 = b1)
     (h_b2 : MachineState.readWord s.memory 64 = b2)

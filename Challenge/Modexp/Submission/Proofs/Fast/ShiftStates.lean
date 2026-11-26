@@ -133,7 +133,7 @@ def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msiz
              outer n bsize esize msize
            memory := M }
 def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
-  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2720
+  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2624
     (UInt256.ofNat 0 - preDodd d * newton8W (preDodd d * n0))
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   slotState (UInt256.ofNat 0) s mem 2663 n bsize esize msize (UInt256.ofNat n)

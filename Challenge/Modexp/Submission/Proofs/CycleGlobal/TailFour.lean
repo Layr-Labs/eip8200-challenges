@@ -14,7 +14,7 @@ open CycleSubmission CycleSubmission.Global
 noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
+    (hact : 87 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (hf : Exp.Frame mem 4 bsize mi) (hmi : mi < 2^256) (hmi1 : mi ≠ 1)
     (hmachine : ((MachineState.readWord mem 96).toNat * mi + 1) % 2^256 = 0) :
     GasSteps (SlimFrames.special s mem 4 bsize esize 128 k)

@@ -107,14 +107,14 @@ def retTo (s : State) (mem : ByteArray) (ret : UInt256)
   { s with pc := ret,stack := tail,memory := mem }
 structure Frame (mem : ByteArray) (n bsize minv : Nat) : Prop where
   s32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)
-  minvW : MachineState.readWord mem 2720 = UInt256.ofNat minv
-  ml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)
-  tl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)
+  minvW : MachineState.readWord mem 2624 = UInt256.ofNat minv
+  ml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32)
+  tl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n)
   eoff : MachineState.readWord mem 2656 = UInt256.ofNat (96 + bsize)
 def amMemOf (mem : ByteArray) (pa pb n pd : Nat) : ByteArray :=
   Csub.csResultMemory (Csub.amResultMemory mem pa pb n) n pd
 theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048) (haddr : 2656 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048) (haddr : 2624 ≤ addr) :
     MachineState.readWord (amMemOf mem pa pb n pd) addr =
       MachineState.readWord mem addr := by
   rw [amMemOf,
@@ -123,14 +123,14 @@ theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
 theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048)
     (hf : Frame mem n bsize minv) : Frame (amMemOf mem pa pb n pd) n bsize minv := by
-  have key : ∀ addr,2656 ≤ addr →
+  have key : ∀ addr,2624 ≤ addr →
       MachineState.readWord (amMemOf mem pa pb n pd) addr =
         MachineState.readWord mem addr :=
     fun addr haddr => amMemOf_readWord_high mem pa pb n pd addr hn hn32 hpd haddr
   exact ⟨by rw [key 2688 (by omega)]; exact hf.s32,
-         by rw [key 2720 (by omega)]; exact hf.minvW,
-         by rw [key 2752 (by omega)]; exact hf.ml,
-         by rw [key 2784 (by omega)]; exact hf.tl,
+         by rw [key 2624 (by omega)]; exact hf.minvW,
+         by rw [key 2720 (by omega)]; exact hf.ml,
+         by rw [key 2752 (by omega)]; exact hf.tl,
          by rw [key 2656 (by omega)]; exact hf.eoff⟩
 structure Subroutines (s : State) (n bsize mm minv : Nat) where
   mpMem : Nat → Nat → Nat → ByteArray → ByteArray
@@ -242,22 +242,22 @@ theorem fastRepresents_mcopyMem_disjoint (mem : ByteArray) (dst src sz ptr cnt v
     Model.FastRepresents (mcopyMem mem dst src sz) ptr cnt v :=
   Csub.fastRepresents_mcopy_disjoint mem src dst sz ptr cnt v hdisj hrep
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
+    (hoff : off + sz ≤ 2784) (hcurr : 87 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 2784) (hact : 87 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
   exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
 theorem activeWords_fix2 (s : State) (off1 sz1 off2 sz2 : Nat)
     (hsz1 : sz1 ≠ 0) (hsz2 : sz2 ≠ 0)
-    (hoff1 : off1 + sz1 ≤ 2816) (hoff2 : off2 + sz2 ≤ 2816)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hoff1 : off1 + sz1 ≤ 2784) (hoff2 : off2 + sz2 ≤ 2784)
+    (hact : 87 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter
       (MachineState.activeWordsAfter s.activeWords.toNat off1 sz1) off2 sz2) =
       s.activeWords := by
@@ -296,7 +296,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (_hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
-    (hact : 88 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
+    (hact : 87 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1333
       (finHead s mem n bsize esize msize) =
       some (returnedState s mem n bsize esize msize) := by
@@ -320,7 +320,7 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -713,7 +713,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
   mpValueRaw : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 2048 → pb + 32 * n ≤ 2048 → pd + 32 * n ≤ 2048 →
     Model.FastRepresents mem 0 n mm →
-    MachineState.readWord mem 2720 = UInt256.ofNat minv →
+    MachineState.readWord mem 2624 = UInt256.ofNat minv →
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b →
     a < mm →
     Model.FastRepresents (mpMem pa pb pd mem) pd n (Model.montMul mm R a b)
@@ -722,7 +722,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (mpMem pa pb pd mem) ptr n v
   mpMinv : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
-    MachineState.readWord (mpMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
+    MachineState.readWord (mpMem pa pb pd mem) 2624 = MachineState.readWord mem 2624
   amValue : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 2048 → pb + 32 * n ≤ 2048 → pd + 32 * n ≤ 2048 →
     Model.FastRepresents mem 0 n mm →
@@ -734,13 +734,13 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (amMem pa pb pd mem) ptr n v
   amMinv : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
-    MachineState.readWord (amMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
+    MachineState.readWord (amMem pa pb pd mem) 2624 = MachineState.readWord mem 2624
 theorem SubSpec.mpValue {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
     (pa pb pd : Nat) (mem : ByteArray) (a b : Nat)
     (hpa : pa + 32 * n ≤ 2048) (hpb : pb + 32 * n ≤ 2048)
     (hpd : pd + 32 * n ≤ 2048) (hm : Model.FastRepresents mem 0 n mm)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (ha : Model.FastRepresents mem pa n a) (hb : Model.FastRepresents mem pb n b)
     (ham : a < mm) (_hbm : b < mm) :
     Model.FastRepresents (mpMem pa pb pd mem) pd n (Model.montMul mm R a b) :=
@@ -757,16 +757,16 @@ structure RrInv (mem : ByteArray) (n mm R v : Nat) : Prop where
   rr : Model.FastRepresents mem 1536 n v
 theorem readWord_rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
-      MachineState.readWord (mpMem pa pb 1536 mem') 2720 =
-        MachineState.readWord mem' 2720)
+      MachineState.readWord (mpMem pa pb 1536 mem') 2624 =
+        MachineState.readWord mem' 2624)
     (n : Nat) (mem : ByteArray) (i : Nat) :
-    MachineState.readWord (rrMem mpMem n mem i) 2720 =
-      MachineState.readWord mem 2720 := by
+    MachineState.readWord (rrMem mpMem n mem i) 2624 =
+      MachineState.readWord mem 2624 := by
   induction i with
   | zero => rfl
   | succ i ih =>
       show MachineState.readWord (rrStep mpMem n (5 - i) (rrMem mpMem n mem i))
-        2720 = _
+        2624 = _
       unfold rrStep
       split
       · rw [hkeep 1536 1536 _,ih]
@@ -776,7 +776,7 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hcop : Nat.Coprime R mm)
     (hn32 : n ≤ 8) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R (R % mm)) : ∀ i,
     RrInv (rrMem mpMem n mem i) n mm R (rrValue mm R n i) := by
   intro i
@@ -788,12 +788,12 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
         have := bitAt_le_one n (5 - i)
         unfold selOf
         omega
-      have hmi : MachineState.readWord (rrMem mpMem n mem i) 2720 =
+      have hmi : MachineState.readWord (rrMem mpMem n mem i) 2624 =
           UInt256.ofNat minv :=
         (readWord_rrMem mpMem
           (fun pa pb m => spec.mpMinv pa pb 1536 m (by omega)) n mem i).trans hminv
       have hmi1 : MachineState.readWord
-          (mpMem 1536 1536 1536 (rrMem mpMem n mem i)) 2720 = UInt256.ofNat minv :=
+          (mpMem 1536 1536 1536 (rrMem mpMem n mem i)) 2624 = UInt256.ofNat minv :=
         (spec.mpMinv 1536 1536 1536 _ (by omega)).trans hmi
       have hsq : Model.FastRepresents (mpMem 1536 1536 1536 (rrMem mpMem n mem i))
           1536 n (Model.montMul mm R (rrValue mm R n i) (rrValue mm R n i)) :=
@@ -848,7 +848,7 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
 theorem rrMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R (R % mm)) :
     Model.FastRepresents (rrMem mpMem n mem 6) 1536 n (rrValue mm R n 6) ∧
       rrValue mm R n 6 ≡ Limbs.radix ^ n * R [MOD mm] :=
@@ -908,34 +908,34 @@ theorem storeWord_readWord_disjoint (mem : ByteArray) (addr a : Nat) (w : UInt25
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   exact hdisj
 theorem frame_storeWord {mem : ByteArray} {n bsize minv addr : Nat} (w : UInt256)
-    (haddr : addr + 32 ≤ 2656) (hf : Frame mem n bsize minv) :
+    (haddr : addr + 32 ≤ 2624) (hf : Frame mem n bsize minv) :
     Frame (storeWord mem addr w) n bsize minv where
   s32 := by
     rw [storeWord_readWord_disjoint mem addr 2688 w (Or.inr (by omega))]; exact hf.s32
   minvW := by
-    rw [storeWord_readWord_disjoint mem addr 2720 w (Or.inr (by omega))]
+    rw [storeWord_readWord_disjoint mem addr 2624 w (Or.inr (by omega))]
     exact hf.minvW
   ml := by
-    rw [storeWord_readWord_disjoint mem addr 2752 w (Or.inr (by omega))]; exact hf.ml
+    rw [storeWord_readWord_disjoint mem addr 2720 w (Or.inr (by omega))]; exact hf.ml
   tl := by
-    rw [storeWord_readWord_disjoint mem addr 2784 w (Or.inr (by omega))]; exact hf.tl
+    rw [storeWord_readWord_disjoint mem addr 2752 w (Or.inr (by omega))]; exact hf.tl
   eoff := by
     rw [storeWord_readWord_disjoint mem addr 2656 w (Or.inr (by omega))]
     exact hf.eoff
 theorem frame_mcopyMem {mem : ByteArray} {n bsize minv dst src sz : Nat}
-    (hfit : dst + sz ≤ 2656) (hf : Frame mem n bsize minv) :
+    (hfit : dst + sz ≤ 2624) (hf : Frame mem n bsize minv) :
     Frame (mcopyMem mem dst src sz) n bsize minv where
   s32 := by
     rw [readWord_mcopyMem_disjoint mem dst src sz 2688 (Or.inr (by omega))]
     exact hf.s32
   minvW := by
-    rw [readWord_mcopyMem_disjoint mem dst src sz 2720 (Or.inr (by omega))]
+    rw [readWord_mcopyMem_disjoint mem dst src sz 2624 (Or.inr (by omega))]
     exact hf.minvW
   ml := by
-    rw [readWord_mcopyMem_disjoint mem dst src sz 2752 (Or.inr (by omega))]
+    rw [readWord_mcopyMem_disjoint mem dst src sz 2720 (Or.inr (by omega))]
     exact hf.ml
   tl := by
-    rw [readWord_mcopyMem_disjoint mem dst src sz 2784 (Or.inr (by omega))]
+    rw [readWord_mcopyMem_disjoint mem dst src sz 2752 (Or.inr (by omega))]
     exact hf.tl
   eoff := by
     rw [readWord_mcopyMem_disjoint mem dst src sz 2656 (Or.inr (by omega))]
@@ -990,7 +990,7 @@ theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     (hradix : Limbs.radix ≤ mm) (input : ByteArray) (bsize pb j : Nat)
     (hjpb : j < pb) (hle : 32 * (pb - j) ≤ bsize)
     (mem : ByteArray) (acc : Nat) (hacc : acc < mm)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : BlInv mem n mm R rr acc) :
     BlInv (blStepMem mpMem amMem input n bsize pb mem j) n mm R rr
       ((acc * Limbs.radix % mm +
@@ -1043,27 +1043,27 @@ theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
   · exact spec.amFrame 256 768 256 1536 rr _ (by omega) (Or.inl (by omega)) hrr2
 theorem readWord_blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hmp : ∀ (pa pb : Nat) (mem' : ByteArray),
-      MachineState.readWord (mpMem pa pb 256 mem') 2720 =
-        MachineState.readWord mem' 2720)
+      MachineState.readWord (mpMem pa pb 256 mem') 2624 =
+        MachineState.readWord mem' 2624)
     (ham : ∀ (pa pb : Nat) (mem' : ByteArray),
-      MachineState.readWord (amMem pa pb 256 mem') 2720 =
-        MachineState.readWord mem' 2720)
+      MachineState.readWord (amMem pa pb 256 mem') 2624 =
+        MachineState.readWord mem' 2624)
     (input : ByteArray) (n bsize pb : Nat) (hn32 : n ≤ 8) (mem : ByteArray)
     (t : Nat) :
-    MachineState.readWord (blMems mpMem amMem input n bsize pb mem t) 2720 =
-      MachineState.readWord mem 2720 := by
+    MachineState.readWord (blMems mpMem amMem input n bsize pb mem t) 2624 =
+      MachineState.readWord mem 2624 := by
   induction t with
   | zero => rfl
   | succ t ih =>
       rw [blMems_succ,blStepMem,ham 256 768 _,
-        storeWord_readWord_disjoint _ (736 + 32 * n) 2720 _ (Or.inr (by omega)),
+        storeWord_readWord_disjoint _ (736 + 32 * n) 2624 _ (Or.inr (by omega)),
         hmp 256 1280 _,ih]
 theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
     (hradix : Limbs.radix ≤ mm) (input : ByteArray) (bsize : Nat)
     (hb0 : 1 ≤ bsize) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : BlInv mem n mm R rr
       (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize) 0)) :
     ∀ t,t < pbOf bsize →
@@ -1091,7 +1091,7 @@ theorem blMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
     (hradix : Limbs.radix ≤ mm) (input : ByteArray) (bsize : Nat)
     (hb0 : 1 ≤ bsize) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : BlInv mem n mm R rr
       (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize) 0)) :
     Model.FastRepresents
@@ -1105,7 +1105,7 @@ theorem blMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     {n mm R rr b minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm) (hrr : rr ≡ R * R [MOD mm])
     (hrrlt : rr < mm) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hacc : Model.FastRepresents mem 256 n (b % mm))
     (hrrb : Model.FastRepresents mem 1536 n rr) :
@@ -1138,7 +1138,7 @@ theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (mem : ByteArray) (bM acc bit : Nat) (hbit : bit ≤ 1)
     (hbM : bM < mm) (hacc : acc < mm)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM acc) :
     EbInv (bitStep mpMem mem bit) n mm bM
       (if bit = 0 then Model.montMul mm R acc acc
@@ -1224,7 +1224,7 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
     (t0 j0 : Nat)
     (hbits : ∀ k,k < 8 - j0 → bits (t0 + j0 + k) = bitAt w (7 - (j0 + k)))
     (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM bits (t0 + j0))) :
     ∀ k,k ≤ 8 - j0 →
       EbInv (bitMemsFrom mpMem w mem j0 k) n mm bM
@@ -1237,7 +1237,7 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
       have hstep := bitStep_inv spec hm hn32 (bitMemsFrom mpMem w mem j0 k) bM
         (expAcc mm R bM bits (t0 + j0 + k)) (bitAt w (7 - (j0 + k)))
         (bitAt_le_one w (7 - (j0 + k))) hbM (expAcc_lt hm bits (t0 + j0 + k))
-        ((readWord_bitMemsFrom mpMem 2720
+        ((readWord_bitMemsFrom mpMem 2624
           (fun pa pb m => spec.mpMinv pa pb 256 m (by omega)) w mem j0 k).trans hminv)
         (ih (by omega))
       rw [show t0 + j0 + (k + 1) = t0 + j0 + k + 1 from rfl,expAcc_succ,
@@ -1309,7 +1309,7 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     (hcop : Nat.Coprime R mm) (hn : 2 ≤ n)
     (hn32 : n ≤ 8) (bM : Nat) (hbM : bM < mm) (input : ByteArray) (bsize : Nat)
     (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM (expBits input bsize) 0)) :
     ∀ i,EbInv (ebMems mpMem input bsize n mem i) n mm bM
       (expAcc mm R bM (expBits input bsize) (8 * i)) := by
@@ -1320,9 +1320,9 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       have hwlt : expByte input bsize i < 256 :=
         (YulSemantics.EVM.byteFrom input.toList (96 + bsize + i)).toNat_lt
       have hj0 : lzSkip input bsize i ≤ 7 := lzSkip_le input bsize i
-      have hminvI : MachineState.readWord (ebMems mpMem input bsize n mem i) 2720
+      have hminvI : MachineState.readWord (ebMems mpMem input bsize n mem i) 2624
           = UInt256.ofNat minv :=
-        (readWord_ebMems mpMem 2720
+        (readWord_ebMems mpMem 2624
           (fun pa pb m => spec.mpMinv pa pb 256 m (by omega)) input bsize n mem i
           (by omega) hn32).trans hminv
       show EbInv (byteMemAt mpMem input bsize n
@@ -1339,9 +1339,9 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
               have h := expBits_eq input bsize 0 j hj
               rwa [Nat.mul_zero,Nat.zero_add] at h)
         have hminvC : MachineState.readWord
-            (mcopyMem (ebMems mpMem input bsize n mem 0) 256 512 (32 * n)) 2720
+            (mcopyMem (ebMems mpMem input bsize n mem 0) 256 512 (32 * n)) 2624
             = UInt256.ofNat minv :=
-          (readWord_mcopyMem_disjoint _ 256 512 (32 * n) 2720
+          (readWord_mcopyMem_disjoint _ 256 512 (32 * n) 2624
             (Or.inr (by omega))).trans hminvI
         have hinvC : EbInv
             (mcopyMem (ebMems mpMem input bsize n mem 0) 256 512 (32 * n)) n mm bM
@@ -1383,7 +1383,7 @@ theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     (input : ByteArray) (bsize esize : Nat)
     (he : e = Precompile.bytesToNatPadded input (96 + bsize) esize)
     (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2624 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM (expBits input bsize) 0)) :
     Model.FastRepresents
       (mpMem 256 768 256
@@ -1394,9 +1394,9 @@ theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
   have hloop := ebMems_inv spec hm hcop hn hn32 bM hbM input bsize mem hminv hinv esize
   have hmi : MachineState.readWord
       (storeWord (ebMems mpMem input bsize n mem esize) (736 + 32 * n)
-        (UInt256.ofNat 1)) 2720 = UInt256.ofNat minv := by
-    rw [storeWord_readWord_disjoint _ (736 + 32 * n) 2720 _ (Or.inr (by omega))]
-    exact (readWord_ebMems mpMem 2720
+        (UInt256.ofNat 1)) 2624 = UInt256.ofNat minv := by
+    rw [storeWord_readWord_disjoint _ (736 + 32 * n) 2624 _ (Or.inr (by omega))]
+    exact (readWord_ebMems mpMem 2624
       (fun pa pb m => spec.mpMinv pa pb 256 m (by omega)) input bsize n mem esize
       (by omega) hn32).trans hminv
   obtain ⟨one,honelt,honerep⟩ := hloop.oneBlock

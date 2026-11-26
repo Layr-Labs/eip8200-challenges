@@ -14,12 +14,12 @@ open CycleSubmission.ControlArithmetic (value)
 noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
-    (hcache : f.pbi = MachineState.readWord s.memory 2720)
+    (hcap : f.tail.length ≤ 943) (hact : 87 ≤ s.activeWords.toNat)
+    (hcache : f.pbi = MachineState.readWord s.memory 2624)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
-    (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
+    (hinv : (N*(MachineState.readWord s.memory 2624).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
     Finish.Outcome {s with pc := UInt256.ofNat 3335,stack := saved f}
@@ -58,7 +58,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     counter,aBound,nBound,n0,nValue,inverse,base,form,callsStart,small⟩ :=
     EntryContract.prepare s f k N A B x env hcap hact hcounter hn ha hb hinv hform hsmallA
   have envStart := env.transfer en halt
-  have actStart : 88 ≤ start.activeWords.toNat := by rw [active]; exact hact
+  have actStart : 87 ≤ start.activeWords.toNat := by rw [active]; exact hact
   obtain ⟨last,out,rounds,lastMem,lastFrame,lastPc,lastEnv,lastHalt,
     lastActive,lastBound,lastSmall,lastForm,keepsBase,callsLast⟩ :=
     PersistentLoop.run start inv a n (saved f) k N x hk hk16 envStart memory counter (by simpa [saved] using congrArg some (hcache.trans invEq.symm)) cap actStart
@@ -73,7 +73,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     unfold MachineState.readWord
     rw [keepsBase (256+32*j) 32 (by omega) (by omega)]
   have envLast := envStart.transfer lastEnv lastHalt
-  have actLast : 88 ≤ last.activeWords.toNat := by rw [lastActive]; exact actStart
+  have actLast : 87 ≤ last.activeWords.toNat := by rw [lastActive]; exact actStart
   have factor := ordinary_represents baseLast
   have hfactor : value (ordinary last.memory 256) = B := factor.2
   have capFinal : (PersistentLoop.counter last::saved f).length ≤ 960 := by
@@ -99,12 +99,12 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
 theorem correct_from_entry (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
-    (hcache : f.pbi = MachineState.readWord s.memory 2720)
+    (hcap : f.tail.length ≤ 943) (hact : 87 ≤ s.activeWords.toNat)
+    (hcache : f.pbi = MachineState.readWord s.memory 2624)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
-    (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
+    (hinv : (N*(MachineState.readWord s.memory 2624).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938)
     (hstack : s.callStack = []) :

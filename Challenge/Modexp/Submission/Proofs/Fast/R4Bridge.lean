@@ -7,7 +7,7 @@ set_option maxHeartbeats 4000000
 # R4：内存模型与 CSUB 结果
 
 `r4Mem mem W` 是例程写回 `t` 窗口五个字后的内存；`rows4 mem` 是同一内存，其中
-`W` 由内存本身决定（`k = maxWord`，模数字取自字 0..96，`np` 取自 2720）。
+`W` 由内存本身决定（`k = maxWord`，模数字取自字 0..96，`np` 取自 2624）。
 
 `rows4_represents`：在 `a < m`、`m` 奇、`n0·np ≡ −1` 下，`rows4` 之后的 CSUB 把
 `montMul m R⁴ a a` 写到目标——与旧 `sqRowsCarry_represents` 同一结论，不经过旧行模型。
@@ -30,7 +30,7 @@ def r4Final (mem : ByteArray) (k n0 n1 n2 np : UInt256) : W5 :=
     (MachineState.readWord mem 0) np k
 def rows4 (mem : ByteArray) : ByteArray :=
   r4Mem mem (r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-    (MachineState.readWord mem 32) (MachineState.readWord mem 2720))
+    (MachineState.readWord mem 32) (MachineState.readWord mem 2624))
 theorem radix_eq : Limbs.radix = 2 ^ 256 := by
   rw [← SquareModel.two_half_radix]; norm_num
 /-! ## 读回 -/
@@ -108,12 +108,12 @@ theorem lsum_four (f : Nat → Nat) :
 theorem rows4_eq (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     ∃ Q,Q < Limbs.radix ^ 4 ∧ tValue (rows4 mem) 4 * Limbs.radix ^ 4 = a * a + Q * mm := by
   obtain ⟨Q,hQ,hf⟩ := final_eq (MachineState.readWord mem 2208) (MachineState.readWord mem 2176)
     (MachineState.readWord mem 2144) (MachineState.readWord mem 2112)
     (MachineState.readWord mem 96) (MachineState.readWord mem 64) (MachineState.readWord mem 32)
-    (MachineState.readWord mem 0) (MachineState.readWord mem 2720) hminv
+    (MachineState.readWord mem 0) (MachineState.readWord mem 2624) hminv
   have hA : SquareMath.lsum (2 * 2 ^ 255) (limbs4 (MachineState.readWord mem 2208)
       (MachineState.readWord mem 2176) (MachineState.readWord mem 2144)
       (MachineState.readWord mem 2112)) 4 = a := by
@@ -142,7 +142,7 @@ def rows4r (mem : ByteArray) : ByteArray :=
   r4Mem mem (red4 (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) (MachineState.readWord mem 0)
     (r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-      (MachineState.readWord mem 32) (MachineState.readWord mem 2720)))
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2624)))
 theorem rows4r_readWord_outside (mem : ByteArray) (addr : Nat)
     (h : addr + 32 ≤ 2080 ∨ 2240 ≤ addr) :
     MachineState.readWord (rows4r mem) addr = MachineState.readWord mem addr :=
@@ -156,7 +156,7 @@ theorem rows4r_fastRepresents_outside (mem : ByteArray) (ptr cnt v : Nat)
 theorem rows4_lt (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
     tValue (rows4 mem) 4 < 2 * mm := by
   obtain ⟨Q,hQ,hinv⟩ := rows4_eq mem a mm ha hm hminv
   have hmlt : mm < Limbs.radix ^ 4 := hm.1
@@ -173,7 +173,7 @@ theorem rows4_lt (mem : ByteArray) (a mm : Nat)
 theorem rows4_tn_le_one (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
     (MachineState.readWord (rows4 mem) 2080).toNat ≤ 1 := by
   have hlt := rows4_lt mem a mm ha hm hminv ham
   simp only [tValue] at hlt
@@ -188,7 +188,7 @@ theorem rows4_represents (mem : ByteArray) (a mm pdst : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents (Csub.csResultMemory (rows4 mem) 4 pdst) pdst 4
       (Model.montMul mm (Limbs.radix ^ 4) a a) := by
   have hmpos : 0 < mm := by omega

@@ -395,8 +395,8 @@ def zeroExpReturnProgram80 : List Instr :=
    .op .SUB,
    .op .RETURN]
 def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10318 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 7802 4 10318 zeroExpReturnProgram80
-    (by change 7802+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block Artifact.wellFormed 7801 4 10318 zeroExpReturnProgram80
+    (by change 7801+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -1333,8 +1333,8 @@ def mstoreAt (mem : ByteArray) (addr value : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded value 32) addr
 def varsMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
   mstoreAt (mstoreAt (mstoreAt (mstoreAt mem 2656 (96 + baseSize input))
-    2688 (s32 input)) 2752 (s32 input - 32))
-    2784 (2080 + s32 input)
+    2688 (s32 input)) 2720 (s32 input - 32))
+    2752 (2080 + s32 input)
 def modulusMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
   MachineState.writeBytes
     (MachineState.writeBytes (varsMem mem input)
@@ -1374,8 +1374,8 @@ theorem activeWords_refill_raw (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256)
       activeWordsAfter_max _ 0 n hz,Nat.max_assoc,Nat.max_self]
 def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
   UInt256.ofNat (awNext (awNext (awNext (awNext (awNext
-    (MachineState.activeWordsAfter w.toNat 2656 32) 2688 32) 2752 32)
-    2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
+    (MachineState.activeWordsAfter w.toNat 2656 32) 2688 32) 2720 32)
+    2752 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 441 (.Dup ⟨3,by decide⟩),
@@ -1386,10 +1386,10 @@ def setupPathA :
    opAt 446 (.Dup ⟨1,by decide⟩),
    opAt 447 .MSIZE,
    opAt 448 .MSTORE,
-   pushAt 449 1 32,
+   pushAt 449 3 32,
    opAt 450 (.Dup ⟨2,by decide⟩),
    opAt 451 .SUB,
-   pushAt 452 2 2752,
+   opAt 452 .MSIZE,
    opAt 453 .MSTORE,
    opAt 454 (.Dup ⟨1,by decide⟩),
    pushAt 455 2 2080,
@@ -1409,15 +1409,15 @@ namespace MsizeSetup
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 set_option linter.unusedSimpArgs false
 def prefixWords (w : UInt256) : UInt256 :=
-  UInt256.ofNat (awNext (awNext (MachineState.activeWordsAfter w.toNat 2656 32) 2688 32) 2752 32)
+  UInt256.ofNat (awNext (awNext (MachineState.activeWordsAfter w.toNat 2656 32) 2688 32) 2720 32)
 theorem prefixWords_eq (w : UInt256) (hw : w.toNat ≤ 84) :
-    prefixWords w = UInt256.ofNat 87 := by
-  have hb : 87 < (2 : Nat)^256 := by decide
+    prefixWords w = UInt256.ofNat 86 := by
+  have hb : 86 < (2 : Nat)^256 := by decide
   simp only [prefixWords,awNext,activeWordsAfter_max _ _ 32 (by decide)]
   congr 1
   omega
 theorem prefixMsize_eq (w : UInt256) (hw : w.toNat ≤ 84) :
-    UInt256.ofNat (32 * (prefixWords w).toNat) = UInt256.ofNat 2784 := by
+    UInt256.ofNat (32 * (prefixWords w).toNat) = UInt256.ofNat 2752 := by
   rw [prefixWords_eq w hw]
   decide
 def headWords (w : UInt256) : UInt256 :=
@@ -1438,10 +1438,10 @@ def program80 : List Instr :=
    .op (.Dup dA1),
    .op .MSIZE,
    .op .MSTORE,
-   .push 1 32,
+   .push 3 32,
    .op (.Dup dA2),
    .op .SUB,
-   .push 2 2752,
+   .op .MSIZE,
    .op .MSTORE,
    .op (.Dup dA1),
    .push 2 2080,
@@ -1456,7 +1456,7 @@ def headProgram : List Instr := program80.take 6
 def midProgram : List Instr := (program80.drop 7).take 9
 def prefixMemory (mem : ByteArray) (input : ByteArray) : ByteArray :=
   mstoreAt (mstoreAt (mstoreAt mem 2656 (96 + baseSize input))
-    2688 (s32 input)) 2752 (s32 input - 32)
+    2688 (s32 input)) 2720 (s32 input - 32)
 def headState (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 605
            memory := mstoreAt s.memory 2656 (96 + baseSize input)
@@ -1495,8 +1495,9 @@ theorem run_msize1 (s : State) (input : ByteArray) (hw : s.activeWords.toNat ≤
     Challenge.EvmProof.Word.succ_ofNat_mod]
 theorem run_mid (s : State) (input : ByteArray)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
-    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input) :
-    runInstructions midProgram (sized1State s input) = some (prefixState s input) := by
+    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
+    (hw : s.activeWords.toNat ≤ 84) :
+    runInstructionsX midProgram (sized1State s input) = some (prefixState s input) := by
   have hn2 := limbs_ge_two input h32
   have hS := s32_le_1024 input hm
   have hSge : 32 ≤ s32 input := by unfold s32; omega
@@ -1510,8 +1511,10 @@ theorem run_mid (s : State) (input : ByteArray)
   have hmodtl := mod_word_self (show 2080 + s32 input < 2 ^ 256 by omega)
   have hmodmoff := mod_word_self (modOffset_lt input hb he)
   simp [midProgram,program80,sized1State,headState,prefixState,prefixMemory,
-    runInstructions,Challenge.EvmProof.Stepper.runInstr,outerStack,
-    mstoreAt,headWords,prefixWords,awNext,State.activeWordsAfterUInt256,hsub32,
+    runInstructionsX,runInstrX,Challenge.EvmProof.Stepper.runInstr,outerStack,
+    mstoreAt,headWords_eq s.activeWords hw,prefixWords_eq s.activeWords hw,
+    State.activeWordsAfterUInt256,show MachineState.activeWordsAfter 84 2688 32 = 85 by decide,
+    show MachineState.activeWordsAfter 85 2720 32 = 86 by decide,hsub32,
     hmodS,hmodn,hmodb,hmodml,hmodtl,hmodmoff,
     Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -1519,7 +1522,7 @@ theorem run_mid (s : State) (input : ByteArray)
 def sizedState (s : State) (input : ByteArray) : State :=
   { (prefixState s input) with
     pc := UInt256.ofNat 621
-    stack := UInt256.ofNat 2784::(prefixState s input).stack }
+    stack := UInt256.ofNat 2752::(prefixState s input).stack }
 theorem run_msize (s : State) (input : ByteArray) (hw : s.activeWords.toNat ≤ 84) :
     runInstructionsX [.op .MSIZE] (prefixState s input) = some (sizedState s input) := by
   simp [runInstructionsX,runInstrX,prefixState,sizedState,outerStack,
@@ -1527,7 +1530,7 @@ theorem run_msize (s : State) (input : ByteArray) (hw : s.activeWords.toNat ≤ 
     Challenge.EvmProof.Word.succ_ofNat_mod]
 theorem setupWords_bounded (w : UInt256) (input : ByteArray) (hw : w.toNat ≤ 84)
     (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input) :
-    setupWords w input = UInt256.ofNat 88 := by
+    setupWords w input = UInt256.ofNat 87 := by
   have hn2 := limbs_ge_two input h32
   have hS := s32_le_1024 input hm
   have hSge : 32 ≤ s32 input := by unfold s32; omega
@@ -1542,7 +1545,7 @@ theorem setupWords_bounded (w : UInt256) (input : ByteArray) (hw : w.toNat ≤ 8
   congr 1
   omega
 theorem copyWords88 (n : Nat) (hn : n ≤ 1024) :
-    MachineState.activeWordsAfter 88 0 n = 88 := by
+    MachineState.activeWordsAfter 87 0 n = 87 := by
   by_cases hz : n = 0
   · simp [MachineState.activeWordsAfter,hz]
   · simp only [MachineState.activeWordsAfter,if_neg hz,Nat.zero_add]
@@ -1571,7 +1574,7 @@ theorem run_rest (s : State) (input : ByteArray) (m0 : Nat)
     have hS := s32_le_1024 input hm; omega)
   have hmodms := mod_word_self (show modulusSize input < 2^256 by omega)
   have hmodmoff := mod_word_self (modOffset_lt input hb he)
-  have hStore : MachineState.activeWordsAfter 87 2784 32 = 88 := by decide
+  have hStore : MachineState.activeWordsAfter 86 2752 32 = 87 := by decide
   simp [restProgram,program80,sizedState,prefixState,prefixMemory,
     runInstructions,Challenge.EvmProof.Stepper.runInstr,setupExitState,outerStack,
     setupMem,modulusMem,varsMem,mstoreAt,prefixWords_eq s.activeWords hw,
@@ -1592,9 +1595,7 @@ theorem run_setup80 (s : State) (input : ByteArray) (m0 : Nat)
     rw [runInstructionsX_eq headProgram (by decide)]
     exact run_head s input hb he hm h32
   have hz1 := run_msize1 s input hw
-  have hmid : runInstructionsX midProgram (sized1State s input) = some (prefixState s input) := by
-    rw [runInstructionsX_eq midProgram (by decide)]
-    exact run_mid s input hb he hm h32
+  have hmid := run_mid s input hb he hm h32 hw
   have hz := run_msize s input hw
   have hr : runInstructionsX restProgram (sizedState s input) = some (setupExitState s input m0) := by
     rw [runInstructionsX_eq restProgram (by decide)]
@@ -1706,19 +1707,19 @@ theorem readWord_V_EOFF (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     readWord_mstoreAt_self _ _ _ (by omega)]
 theorem readWord_V_ML (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) :
-    MachineState.readWord (setupMem mem input m0) 2752 =
+    MachineState.readWord (setupMem mem input m0) 2720 =
       UInt256.ofNat (s32 input - 32) := by
   have hS := s32_le_1024 input hm
-  rw [readWord_setupMem_var mem input m0 2752 hm (by omega)]
+  rw [readWord_setupMem_var mem input m0 2720 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_self _ _ _ (by omega)]
 theorem readWord_V_TL (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) :
-    MachineState.readWord (setupMem mem input m0) 2784 =
+    MachineState.readWord (setupMem mem input m0) 2752 =
       UInt256.ofNat (2080 + s32 input) := by
   have hS := s32_le_1024 input hm
-  rw [readWord_setupMem_var mem input m0 2784 hm (by omega)]
+  rw [readWord_setupMem_var mem input m0 2752 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_self _ _ _ (by omega)]
 theorem fastRepresents_bytes (bs : ByteArray) (ptr count : Nat) :
@@ -1929,11 +1930,11 @@ theorem fastSetup_V_S32 (input : ByteArray) (hpath : FastPath input) :
     MachineState.readWord (fastSetupMemory input) 2688 = UInt256.ofNat (s32 input) :=
   readWord_V_S32 ByteArray.empty input (lowLimb input) (fastPath_modulus_le_1024 input hpath)
 theorem fastSetup_V_ML (input : ByteArray) (hpath : FastPath input) :
-    MachineState.readWord (fastSetupMemory input) 2752 =
+    MachineState.readWord (fastSetupMemory input) 2720 =
       UInt256.ofNat (s32 input - 32) :=
   readWord_V_ML ByteArray.empty input (lowLimb input) (fastPath_modulus_le_1024 input hpath)
 theorem fastSetup_V_TL (input : ByteArray) (hpath : FastPath input) :
-    MachineState.readWord (fastSetupMemory input) 2784 =
+    MachineState.readWord (fastSetupMemory input) 2752 =
       UInt256.ofNat (2080 + s32 input) :=
   readWord_V_TL ByteArray.empty input (lowLimb input) (fastPath_modulus_le_1024 input hpath)
 theorem fastSetup_V_EOFF (input : ByteArray) (hpath : FastPath input) :
@@ -1971,7 +1972,7 @@ theorem activeWordsAfter_eq (curr off sz : Nat) (hsz : sz ≠ 0) :
   rw [if_neg hsz]
 theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
     (h32 : 32 < modulusSize input) :
-    setupWords (UInt256.ofNat 0) input = UInt256.ofNat 88 := by
+    setupWords (UInt256.ofNat 0) input = UInt256.ofNat 87 := by
   have hn2 := limbs_ge_two input h32
   have hS := s32_le_1024 input hm
   have hSge : 32 ≤ s32 input := by unfold s32; omega
@@ -1986,12 +1987,12 @@ theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
   congr 1
   omega
 theorem fastSetup_activeWords (input : ByteArray) (hpath : FastPath input) :
-    (fastSetupState input).activeWords = UInt256.ofNat 88 :=
+    (fastSetupState input).activeWords = UInt256.ofNat 87 :=
   setupWords_initial input (fastPath_modulus_le_1024 input hpath) hpath.1
 theorem fastSetup_activeWords_ge (input : ByteArray) (hpath : FastPath input) :
-    88 ≤ (fastSetupState input).activeWords.toNat := by
+    87 ≤ (fastSetupState input).activeWords.toNat := by
   rw [fastSetup_activeWords input hpath,
-    toNat_ofNat_self (show (88 : Nat) < 2 ^ 256 by norm_num)]
+    toNat_ofNat_self (show (87 : Nat) < 2 ^ 256 by norm_num)]
 theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :=
   Classical.em _
 end CycleSubmission.Global.Fast.Setup

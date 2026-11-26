@@ -53,7 +53,7 @@ theorem l2_lift (mem : ByteArray) (tn mu c0 : UInt256) (n k : Nat)
 theorem mu_lift (mem : ByteArray) (tn : UInt256) (n : Nat) (hn : 1 ≤ n) :
     rowMu (lift mem tn) n = rowMu mem n := by
   unfold rowMu
-  rw [read_lift_outside _ _ 2720 (Or.inr (by decide)),
+  rw [read_lift_outside _ _ 2624 (Or.inr (by decide)),
       read_lift_outside _ _ (2080+32*n) (Or.inr (by omega))]
 theorem c0_lift (mem : ByteArray) (tn : UInt256) (n : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) :

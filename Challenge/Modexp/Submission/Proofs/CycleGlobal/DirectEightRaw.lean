@@ -17,7 +17,7 @@ def guardWord (mem : ByteArray) : UInt256 :=
  UInt256.shiftRight (UInt256.lnot (MachineState.readWord mem 2112)) (UInt256.ofNat 146)
 def memory (mem : ByteArray) : ByteArray := StagedOperand.stage mem 2112 8
 def frame (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : Caller where
- pbi := MachineState.readWord mem 2720
+ pbi := MachineState.readWord mem 2624
  hd := CycleSubmission.Global.Fast.Shift.hdSlot mem
  w3 := width
  ent := MachineState.readWord mem 1312
@@ -57,12 +57,12 @@ def finishProgram : List Instr :=
    .op .NOT,
    .op (.Swap ⟨4,by decide⟩),
    .op .POP,
-   .push 2 2720,
+   .push 2 2624,
    .op .MLOAD]
 def entered (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : State :=
  {s with pc := UInt256.ofNat 3335,memory := memory mem,stack := saved (frame mem count width bsize esize)}
 theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat ≠ 0) :
+ (hact : 87 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat ≠ 0) :
  runInstructions guardProgram (state s mem 3305 count width bsize esize) =
  some (state s mem 3318 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
@@ -75,7 +75,7 @@ theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esi
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat = 0)
+ (hact : 87 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat = 0)
  (hd : Decode.isValidJumpDest s.executionEnv.code 174 = true) :
  runInstructions guardProgram (state s mem 3305 count width bsize esize) =
  some (state s mem 174 count width bsize esize) := by
@@ -88,19 +88,19 @@ theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize es
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_finish (s : State) (mem : ByteArray) (count : UInt256) (bsize esize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) :
+ (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions finishProgram
    (state s mem 3318 count (UInt256.ofNat 256) bsize esize) =
  some (entered s mem count (UInt256.ofNat 256) bsize esize) := by
  have hmax : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (2^256-1) := by decide
  have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide)
    (by norm_num) (by norm_num) hact
- have hl := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
- have hr := StagedOperand.read_stage_outside mem 2112 8 2720
-   (by norm_num : 2720 + 32 ≤ 2368 ∨ 2624 ≤ 2720)
+ have hl := Monpro.activeWords_fix s 2624 32 (by decide) (by norm_num) hact
+ have hr := StagedOperand.read_stage_outside mem 2112 8 2624
+   (by norm_num : 2624 + 32 ≤ 2368 ∨ 2624 ≤ 2624)
  have hr' : MachineState.readWord
-   (MachineState.writeBytes mem (MachineState.readPadded mem 2112 256) 2368) 2720 =
-   MachineState.readWord mem 2720 := by
+   (MachineState.writeBytes mem (MachineState.readPadded mem 2112 256) 2368) 2624 =
+   MachineState.readWord mem 2624 := by
   simpa [StagedOperand.stage] using hr
  simp [hmax,finishProgram,state,entered,
    frame,saved,memory,

@@ -18,7 +18,7 @@ def cachedMakeMu : List Instr :=
 def cachedLoadMask : List Instr := [.op (.Dup dA8)]
 theorem run_cachedLoadLow (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions cachedLoadLow
       (framed s (UInt256.ofNat (pc0 + 0))
         (cacheStack bi pbi pa pb flag tn target2 (UInt256.ofNat (2080+32*n)) inv m0 aEnd m96 m64 m32 dst ret rest)) =
@@ -95,7 +95,7 @@ def cachedProduct : List Instr :=
    .op (.Dup dA13),.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     let tl := UInt256.ofNat (2080+32*n)
     let t0 := MachineState.readWord s.memory (2080+32*n)
     runInstructions cachedProduct
@@ -124,7 +124,7 @@ def cachedProduct4 : List Instr :=
    .push 2 2208,.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct4 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory (2080+32*4)
     runInstructions cachedProduct4
       (framed s (UInt256.ofNat (pc0 + 0))
@@ -152,7 +152,7 @@ theorem run_cachedProduct4 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2
 theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n = 4)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
     (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
     (hminv : CiosCachedMidMemory.inverseInvariant s.memory n) :
@@ -165,13 +165,13 @@ theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
   subst hn
   rw [hc.inverse,hm0]
   have hr := run_cachedProduct4 pc0 s bi pbi pa pb flag tn target2 tl
-    (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (32*4-32))
+    (MachineState.readWord s.memory 2624) (MachineState.readWord s.memory (32*4-32))
     aEnd m96 m64 m32 dst ret rest hcap hact
-  have hguard : MachineState.readWord s.memory 2720 ≠ UInt256.ofNat 1 := by
+  have hguard : MachineState.readWord s.memory 2624 ≠ UInt256.ofNat 1 := by
     rw [← hc.inverse]
     exact hc.inverseGuard
   have hcarry := N0Carry.addMod_row_carry (MachineState.readWord s.memory (32*4-32))
-    (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (2080+32*4)) hminv hguard
+    (MachineState.readWord s.memory 2624) (MachineState.readWord s.memory (2080+32*4)) hminv hguard
   dsimp only at hr
   rw [N0Carry.addMod_comm] at hr
   simpa only [hcarry,rowC0,rowMu] using hr
@@ -182,7 +182,7 @@ def cachedProduct8 : List Instr :=
    .push 2 2336,.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory (2080+32*8)
     runInstructions cachedProduct8
       (framed s (UInt256.ofNat (pc0 + 0))
@@ -210,7 +210,7 @@ theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2
 theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory 8 tl inv m0)
     (hminv : CiosCachedMidMemory.inverseInvariant s.memory 8) :
     runInstructions cachedProduct8
@@ -221,13 +221,13 @@ theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
         cacheStack bi pbi pa pb flag tn target2 tl m64 m0 aEnd m96 inv m32 dst ret rest)) := by
   rw [hc.lowAddress,hc.inverse]
   have hr := run_cachedProduct8 pc0 s bi pbi pa pb flag tn target2
-    (MachineState.readWord s.memory 224) (MachineState.readWord s.memory 2720) m0
+    (MachineState.readWord s.memory 224) (MachineState.readWord s.memory 2624) m0
     aEnd m96 m64 m32 dst ret rest hcap hact
-  have hguard : MachineState.readWord s.memory 2720 ≠ UInt256.ofNat 1 := by
+  have hguard : MachineState.readWord s.memory 2624 ≠ UInt256.ofNat 1 := by
     rw [← hc.inverse]
     exact hc.inverseGuard
   have hcarry := N0Carry.addMod_row_carry (MachineState.readWord s.memory 224)
-    (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (2080+32*8)) hminv hguard
+    (MachineState.readWord s.memory 2624) (MachineState.readWord s.memory (2080+32*8)) hminv hguard
   dsimp only at hr
   rw [N0Carry.addMod_comm] at hr
   simpa only [hcarry,rowC0,rowMu,Nat.reduceMul,Nat.reduceSub,Nat.reduceAdd] using hr

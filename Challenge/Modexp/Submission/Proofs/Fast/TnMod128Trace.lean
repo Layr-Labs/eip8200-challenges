@@ -40,7 +40,7 @@ private theorem run_fusedHead_state (s : State)
 theorem run_step (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 pbi hd pb ent tn m128 inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcache : m128 = MachineState.readWord mem 128) :
     runInstructions program
       (TnCacheL2Trace.state s pc mem bi mu c0 8 2 pbi hd pb ent tn m128 inv rest) =
@@ -110,7 +110,7 @@ private theorem run_fusedHead160_state (s : State)
 theorem run_step160 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 pbi hd pb ent tn m128 inv m160 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1005)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcache : m160 = MachineState.readWord mem 160) :
     runInstructions program160
       (TnCacheL2Trace.state s pc mem bi mu c0 8 1 pbi hd pb ent tn m128 inv (m160::rest)) =
@@ -181,7 +181,7 @@ theorem run_step64 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat)
     (pbi hd pb ent tn m128 m64 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k + 4 = n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k + 4 = n)
     (hcache : m64 = MachineState.readWord mem 64) :
     runInstructions program64
       (TnCacheL2Trace.state s pc mem bi mu c0 n k pbi hd pb ent tn m128 m64 rest) =
@@ -254,7 +254,7 @@ theorem run_step32 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat)
     (pbi hd pb ent m32 m128 m64 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k + 3 = n)
+    (hact : 87 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k + 3 = n)
     (hcache : m32 = MachineState.readWord mem 32) :
     runInstructions program32
       (TnCacheL2Trace.state s pc mem bi mu c0 n k pbi hd pb ent m32 m128 m64 rest) =
