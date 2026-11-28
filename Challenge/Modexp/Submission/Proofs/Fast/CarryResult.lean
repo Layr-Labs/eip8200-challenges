@@ -57,18 +57,18 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
     MachineState.readWord (monproMem s mem pa pb n pdst) 2688 =
         MachineState.readWord mem 2688 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2624 =
+        MachineState.readWord mem 2624 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2720 =
         MachineState.readWord mem 2720 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2752 =
         MachineState.readWord mem 2752 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 2784 =
-        MachineState.readWord mem 2784 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2656 =
         MachineState.readWord mem 2656 :=
   ⟨monproMem_readWord_high s mem pa pb n pdst 2688 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2624 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2720 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2752 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -91,7 +91,7 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (hm : Model.FastRepresents mem 0 (p+2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2^256 = 0) :
     Model.FastRepresents (monproMem s mem pa pb (p+2) pdst) pdst (p+2)
       (Model.montMul mm (Limbs.radix^(p+2)) a b) := by
   let prepared := inputMemory mem pa (p+2)
@@ -102,10 +102,10 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
   have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
     (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
   have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
-      (MachineState.readWord prepared 2720).toNat + 1) % 2^256 = 0 := by
+      (MachineState.readWord prepared 2624).toNat + 1) % 2^256 = 0 := by
     simpa only [prepared,
       read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
-      read_inputMemory_outside mem pa (p+2) 2720 (Or.inr (by decide))] using hminv
+      read_inputMemory_outside mem pa (p+2) 2624 (Or.inr (by decide))] using hminv
   have hrow := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
     hpa hpb (by omega) hn32 (by omega)
   have htn := Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpa hpb ha' hb' hm' ham (by omega) hminv'

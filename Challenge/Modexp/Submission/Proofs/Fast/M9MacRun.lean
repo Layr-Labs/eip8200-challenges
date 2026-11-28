@@ -28,8 +28,8 @@ restores the frame.  Block 7 keeps the staged `PUSH2 1280; MLOAD; DUP4` load.  T
 * `Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore.framed (template : State) (pc : UInt256) (stack : List UInt256) : State`.
 * `Challenge.Modexp.Submission.Proofs.Fast.Monpro.MacState` (fields `memory : ByteArray`, `carry : UInt256`),
   `Monpro.maxWord : UInt256` (= `UInt256.ofNat (2^256-1)`), `Monpro.macSum`, `Monpro.macCarry`,
-  `Monpro.activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0) (hoff : off + sz ≤ 2816)
-    (hact : 88 ≤ s.activeWords.toNat) : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) = s.activeWords`.
+  `Monpro.activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0) (hoff : off + sz ≤ 2784)
+    (hact : 87 ≤ s.activeWords.toNat) : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) = s.activeWords`.
 * `Challenge.Modexp.Submission.Proofs.Fast.SquareModel.l1StepOn (q : MacState) (bi : UInt256) (pa n j : Nat) : MacState`
   (`Proofs/Fast/SquareModel.lean`; reads `pa + 32(n-1-j)` and `2112 + 32(n-1-j)`, writes the latter).
 * `Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel.runInstructions`, `runInstructions_append_some`,
@@ -118,7 +118,7 @@ theorem run_ride (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (hd13 : d.val ≤ 13) (hin : d.val < 3 + rest.length)
     (hx : rest[d.val - 3]? = some x)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
     runInstructions (rideProgram d t) (chainState template pc m bi rest) =
     some (chainState template (pc + UInt256.ofNat 32) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
   subst hval
@@ -160,7 +160,7 @@ theorem run_ride_head (template : State) (pc : UInt256) (m : MacState) (bi : UIn
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (hd13 : d.val ≤ 13) (hin : d.val < 3 + rest.length)
     (hx : rest[d.val - 3]? = some x)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
     runInstructions ([.op .JUMPDEST]++rideProgram d t) (chainState template pc m bi rest) =
     some (chainState template (pc + UInt256.ofNat 33) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
   have hc : rest.length + 3 < 1024 := by omega
@@ -182,7 +182,7 @@ theorem run_ride_zero_head (template : State) (pc : UInt256) (m : MacState) (bi 
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (hin : d.val < 3 + rest.length)
     (hx : rest[d.val - 3]? = some x)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hcarry : m.carry = UInt256.ofNat 0) :
     runInstructions ([.op .JUMPDEST]++rideZeroProgram d t) (chainState template pc m bi rest) =
     some (chainState template (pc + UInt256.ofNat 34) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
@@ -370,7 +370,7 @@ theorem run_ride_top_head (template : State) (pc : UInt256) (m : MacState) (bi :
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
     (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hcarry : m.carry = UInt256.ofNat 0)
     (htop : MachineState.readWord m.memory (2112 + 32 * (n - 1 - j)) = UInt256.ofNat 0) :
     runInstructions ([.op .JUMPDEST]++rideTopProgram d t) (chainState template pc m bi rest) =
@@ -412,7 +412,7 @@ theorem run_block (template : State) (pc : UInt256) (m : MacState) (bi : UInt256
     (pa n j : Nat) (a t : UInt256)
     (ha : a.toNat = pa + 32 * (n - 1 - j)) (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
-    (hactive : 88 ≤ template.activeWords.toNat) (hpa : pa + 32 * n ≤ 2784)
+    (hactive : 87 ≤ template.activeWords.toNat) (hpa : pa + 32 * n ≤ 2784)
     (hn : n ≤ 8) (hj : j < n) :
     runInstructions (blockProgram a t) (chainState template pc m bi rest) =
     some (chainState template (pc + UInt256.ofNat 36) (SquareModel.l1StepOn m bi pa n j) bi rest) := by
@@ -554,7 +554,7 @@ theorem run_ride_top_np (template : State) (pc : UInt256) (m : MacState) (bi : U
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
     (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hcarry : m.carry = UInt256.ofNat 0)
     (htop : MachineState.readWord m.memory (2112 + 32 * (n - 1 - j)) = UInt256.ofNat 0) :
     runInstructions (rideTopProgramNP d t)
@@ -597,7 +597,7 @@ theorem run_ride_top_np_stale (template : State) (pc : UInt256) (m : MacState) (
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
     (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
     runInstructions (rideTopProgramNP d t)
       (setupState template pc m.memory bi (maxWord::rest)) =
     some (chainState template (pc + UInt256.ofNat 18)
@@ -674,7 +674,7 @@ theorem run_rideW3 (template : State) (pc : UInt256) (m : MacState) (bi : UInt25
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (hd13 : d.val ≤ 13) (hin : d.val < 3 + rest.length)
     (hx : rest[d.val - 3]? = some x)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
+    (hactive : 87 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
     runInstructions (rideProgramW3 d t) (chainState template pc m bi rest) =
     some (chainState template (pc + UInt256.ofNat 33) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
   subst hval

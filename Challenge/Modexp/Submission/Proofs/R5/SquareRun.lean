@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open CycleSubmission.R5.ExecSquare
 def sqProgram : List Instr := CycleSubmission.Prepared.R5CachedSquare.newProgram
 theorem sq_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (h_n0 : MachineState.readWord s.memory 160 = n0)
     (h_inv : MachineState.readWord s.memory 192 = inv)
     (hP : P = CycleSubmission.WordArithmetic.P)

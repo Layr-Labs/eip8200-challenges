@@ -34,7 +34,7 @@ structure Env (s : State) : Prop where
   run : s.halt = .Running
   np : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
     s.executionEnv.fork s.executionEnv.codeAddr = false
-  act : 88 ≤ s.activeWords.toNat
+  act : 87 ≤ s.activeWords.toNat
 def soundEnv (blk : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka))
     {s st tt : State} (e : Env s)
     (h : Challenge.EvmProof.Stepper.runLocatedBlock blk st = some tt)
@@ -57,7 +57,7 @@ def bindingEnv {s st : State} (e : Env s)
   forkEq := by rw [hforkEq]; exact e.fork
   running := by rw [hhalt]; exact e.run
   noPrecompile := by rw [henv]; exact e.np
-theorem Env.act296 {s : State} (e : Env s) : 88 ≤ s.activeWords.toNat :=
+theorem Env.act296 {s : State} (e : Env s) : 87 ≤ s.activeWords.toNat :=
   e.act
 theorem ptrWord_step (base j : Nat) :
     UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 +
@@ -92,7 +92,7 @@ def gasSteps_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (
     (soundEnv blk2919b e
       (run_negDoneB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))
 theorem nbOut_eq (s : State) (X : ByteArray) (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hml : MachineState.readWord X 2752 = UInt256.ofNat (32 * n - 32))
+    (hml : MachineState.readWord X 2720 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord X (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord X 0)).toNat % 2 = 1) :
     nbOutMem (preNewtonState s X n bsize esize msize).memory (MachineState.readWord X 0)
@@ -114,7 +114,7 @@ theorem preNewton_readWord (s : State) (X : ByteArray) (n bsize esize msize addr
     Csub.readWord_write_disjoint _ _ _ _ (by omega)]
 def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
@@ -124,9 +124,9 @@ def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hXn0 : MachineState.readWord (negStep mem n n).memory (32 * n - 32) =
       MachineState.readWord mem (32 * n - 32) :=
     negStep_readWord_disjoint mem n (32 * n - 32) (Or.inl (by unfold NEG; omega)) n le_rfl
-  have hXml : MachineState.readWord (negStep mem n n).memory 2752 =
+  have hXml : MachineState.readWord (negStep mem n n).memory 2720 =
       UInt256.ofNat (32 * n - 32) :=
-    (negStep_readWord_disjoint mem n 2752 (Or.inr (by unfold NEG; omega)) n le_rfl).trans hml
+    (negStep_readWord_disjoint mem n 2720 (Or.inr (by unfold NEG; omega)) n le_rfl).trans hml
   have hhead : preNewtonState s (negStep mem n n).memory n bsize esize msize =
       nbHeadState s (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
         (MachineState.readWord (negStep mem n n).memory 0) n bsize esize msize := rfl
@@ -139,7 +139,7 @@ def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         (MachineState.readWord (negStep mem n n).memory 0)
         (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize
         hn hn32 e.act296
-        ((preNewton_readWord s _ n bsize esize msize 2752 (Or.inr (by unfold PRE_BMOD; omega))).trans
+        ((preNewton_readWord s _ n bsize esize msize 2720 (Or.inr (by unfold PRE_BMOD; omega))).trans
           hXml)
         (preNewton_readWord s _ n bsize esize msize (32 * n - 32)
           (Or.inl (by unfold PRE_L; omega)))
@@ -157,7 +157,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hfast : n = 4 ∨ n = 8)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
@@ -175,7 +175,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
       (MachineState.readWord s.executionEnv.calldata
         (MachineState.readWord (preMem (negStep mem n n).memory) 2656).toNat) ≠
       UInt256.ofNat 3)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
@@ -193,7 +193,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
       (MachineState.readWord s.executionEnv.calldata
         (MachineState.readWord (preMem (negStep mem n n).memory) 2656).toNat) =
       UInt256.ofNat 3)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
@@ -247,7 +247,7 @@ def gasSteps_addLastIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 def gasSteps_addPass (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)) :
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n)) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
       (addTailState z s mem n bsize esize msize k) :=
   ((soundEnv blk3153 e
@@ -258,7 +258,7 @@ def gasSteps_addPass (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     (gasSteps_addLastIter z s mem n bsize esize msize k hn hn32 e)
 def gasSteps_addRound_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hout : addOut mem n = UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
       (addLoopState z s (addRoundMem mem n) n bsize esize msize k) :=
@@ -267,7 +267,7 @@ def gasSteps_addRound_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize
       (run_addTail_again z s mem n bsize esize msize k e.act296 hout e.code e.run))
 def gasSteps_addRound_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hout : addOut mem n = UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
       (subCheckState z s (addRoundMem mem n) n bsize esize msize k) :=
@@ -276,14 +276,14 @@ def gasSteps_addRound_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize 
       (run_addTail_done z s mem n bsize esize msize k e.act296 hout e.code e.run))
 def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k c : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hc : 1 ≤ c)
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hrounds : ∀ i,i < c - 1 → addOut (addRounds mem n i) n = UInt256.ofNat 0)
     (hlast : addOut (addRounds mem n (c - 1)) n = UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
       (subCheckState z s (addRounds mem n c) n bsize esize msize k) :=
-  have htl' : ∀ i,MachineState.readWord (addRounds mem n i) 2784 =
+  have htl' : ∀ i,MachineState.readWord (addRounds mem n i) 2752 =
       UInt256.ofNat (2080 + 32 * n) := fun i => by
-    rw [addRounds_readWord_disjoint mem n 2784 (Or.inr (by omega)) i]; exact htl
+    rw [addRounds_readWord_disjoint mem n 2752 (Or.inr (by omega)) i]; exact htl
   Challenge.EvmProof.GasSteps.cast
     ((Challenge.EvmProof.GasSteps.iterateBounded
         (I := fun i => addLoopState z s (addRounds mem n i) n bsize esize msize k) (c - 1)
@@ -300,8 +300,8 @@ theorem jumpD4692 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
   by rw [show (UInt256.ofNat pcCsubReturn).toNat = 2554 from by decide]; exact jumpDest4657
 def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : 2 ≤ k) (hk32 : k ≤ 32) (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (e : Env s)
-    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (_htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (_hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
+    (_htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (_hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (_htn : (MachineState.readWord mem 2080).toNat ≤ 1)
     (_hfast : n = 4 ∨ n = 8) :
@@ -318,8 +318,8 @@ def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.a
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hdata : s.executionEnv.calldata = input)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32))
+    (htl : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n))
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hfast : n = 4 ∨ n = 8) :
@@ -354,8 +354,8 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
         (RetainedT.gasSteps_retained s (hitMem mem input n) n
           (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize) hlen e.code e.fork e.run
           e.np e.act296 hn (by omega) jumpD4692 rfl
-          (by rw [hhigh 2752 (by omega)]; exact hml)
-          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast))
+          (by rw [hhigh 2720 (by omega)]; exact hml)
+          (by rw [hhigh 2752 (by omega)]; exact htl) hs32' htn' hfast))
       rfl rfl
   have copy := canonicalCopyBlock.steps (bindingEnv e) rfl
     (ShiftCopyAt.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
@@ -373,17 +373,17 @@ theorem negOf_cases (mem : ByteArray) (c q : UInt256) :
   · exact Or.inr rfl
   · exact Or.inl rfl
 abbrev stepU (mem : ByteArray) (n : Nat) : ByteArray := uMem mem n
-abbrev stepQ (mem : ByteArray) (n : Nat) : UInt256 := qhatOf (uMem mem n)
+abbrev stepQ (mem : ByteArray) (n : Nat) : UInt256 := qhatV1 (uMem mem n)
 abbrev stepMac (mem : ByteArray) (n : Nat) : Monpro.MacState :=
-  macOf (uMem mem n) n (qhatOf (uMem mem n))
+  macOf (uMem mem n) n (qhatV1 (uMem mem n))
 abbrev stepMid (mem : ByteArray) (n : Nat) : ByteArray :=
   midMem (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
 abbrev stepNeg (mem : ByteArray) (n : Nat) : UInt256 :=
   negOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
 def coldPrefixBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10995
     CycleSubmission.ColdCounterSplit.coldPrefix :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8286 5 10995 CycleSubmission.ColdCounterSplit.coldPrefix
-    (by change 8286+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8285 5 10995 CycleSubmission.ColdCounterSplit.coldPrefix
+    (by change 8285+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -408,15 +408,15 @@ def hotCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifac
     (by decide)
 def inlineCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10944
     CycleSubmission.DirectCounterExit.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8250 3 10944 CycleSubmission.DirectCounterExit.program
-    (by change 8250+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8249 3 10944 CycleSubmission.DirectCounterExit.program
+    (by change 8249+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def coldCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 11000
     CycleSubmission.DirectCounterExit.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8291 3 11000 CycleSubmission.DirectCounterExit.program
-    (by change 8291+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8290 3 11000 CycleSubmission.DirectCounterExit.program
+    (by change 8290+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -450,11 +450,11 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (rf : RepairFacts
-      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      (midMem (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n)))
       n mm
-      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+      (negOf (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (csubCallState z s (LazyTopStep.next mem n mm) n bsize esize msize k) ⊕
@@ -463,8 +463,8 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (csubCall4State z s (LazyTopStep.next mem n mm) n bsize esize msize k) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
-  have htl0 : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n) := inv.frame.tl
-  have hml0 : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32) := inv.frame.ml
+  have htl0 : MachineState.readWord mem 2752 = UInt256.ofNat (2080 + 32 * n) := inv.frame.tl
+  have hml0 : MachineState.readWord mem 2720 = UInt256.ofNat (32 * n - 32) := inv.frame.ml
   have hs320 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n) := inv.frame.s32
   have hhighU : ∀ addr,2688 ≤ addr →
       MachineState.readWord (stepU mem n) addr = MachineState.readWord mem addr :=
@@ -472,12 +472,12 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
   have hhighMid : ∀ addr,2688 ≤ addr →
       MachineState.readWord (stepMid mem n) addr = MachineState.readWord mem addr := by
     intro addr haddr
-    show MachineState.readWord (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) addr = _
+    show MachineState.readWord (midMem (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+      (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n))) addr = _
     unfold midMem Exp.storeWord
     rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
     unfold macOf
-    rw [l1Step_readWord_disjoint (uMem mem n) (qhatOf (uMem mem n)) NEG n addr (by omega)
+    rw [l1Step_readWord_disjoint (uMem mem n) (qhatV1 (uMem mem n)) NEG n addr (by omega)
       (Or.inr (by omega)) n]
     exact hhighU addr haddr
   have hhighFix : ∀ addr,2688 ≤ addr →
@@ -530,12 +530,12 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     M9Mac.gasSteps_macSection_stale z n hfast s (uMem0 mem n) (stepU mem n) (uMem_eq_store mem n)
       (stepQ mem n) bsize esize msize k
       e.run e.code e.fork e.np e.act296
-  have htlMid : MachineState.readWord (stepMid mem n) 2784 = UInt256.ofNat (2080 + 32 * n) := by
-    rw [hhighMid 2784 (by omega)]; exact htl0
+  have htlMid : MachineState.readWord (stepMid mem n) 2752 = UInt256.ofNat (2080 + 32 * n) := by
+    rw [hhighMid 2752 (by omega)]; exact htl0
   have htlA : MachineState.readWord
-      (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) 2784 =
+      (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) 2752 =
       UInt256.ofNat (2080 + 32 * n) := by
-    rw [addRounds_readWord_disjoint (stepMid mem n) n 2784 (Or.inr (by omega))]; exact htlMid
+    rw [addRounds_readWord_disjoint (stepMid mem n) n 2752 (Or.inr (by omega))]; exact htlMid
   have hmodU : Model.FastRepresents (stepU mem n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 inv.modulus
     intro i hi
@@ -559,7 +559,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
     exact mac_readWord_disjoint (stepU mem n) n _ _ (by omega) (Or.inl (by omega))
   have hqge : (r * Limbs.radix) / mm ≤ (stepQ mem n).toNat :=
-    qhatOf_ge (stepU mem n) n mm (r * Limbs.radix) hn hn32 htop hmodU
+    qhatV1_ge (stepU mem n) n mm (r * Limbs.radix) hn hn32 htop hmodU
       (PreOK_uMem mem n hn32 inv.pre) hu
       (Nat.mul_lt_mul_of_pos_right hr Limbs.radix_pos)
   obtain ⟨hsc0,_hltA,hfixEq⟩ :=
@@ -594,7 +594,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     · 
       have htz : tnOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n) =
           UInt256.ofNat 0 :=
-        mid_neg_tn_zero mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg hbase hr
+        mid_neg_tn_zeroV1 mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg hbase hr
           inv.pre h0
       have hfix : fixMem (stepMid mem n) n mm (stepNeg mem n) = stepMid mem n := by
         rw [hfixEq,rf'.posCount h0,addRounds_zero]
@@ -617,7 +617,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
         (negOf_cases (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)).resolve_left h0
       have hc1 : 1 ≤ addCount (stepMid mem n) n mm (stepNeg mem n) := rf'.negCount h1
       have htnmax : tnOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n) = Monpro.maxWord :=
-        mid_neg_tn_max mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg hbase hr inv.pre h1
+        mid_neg_tn_maxV1 mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg hbase hr inv.pre h1
       have start : Challenge.EvmProof.GasSteps
           (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
           (addLoopState z s (stepMid mem n) n bsize esize msize k) := by
@@ -650,11 +650,11 @@ def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (rf : RepairFacts
-      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      (midMem (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n)))
       n mm
-      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+      (negOf (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (shiftLoopState z s (LazyTopStep.next mem n mm) n bsize esize msize (k - 1)) :=
@@ -680,11 +680,11 @@ def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (rf : RepairFacts
-      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      (midMem (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n)))
       n mm
-      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+      (negOf (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) (hz : Decode.isValidJumpDest s.executionEnv.code z.toNat = true) :
     Challenge.EvmProof.GasSteps
       (shiftLoopState z s mem n bsize esize msize 1)

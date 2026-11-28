@@ -26,7 +26,7 @@ theorem frame_result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
 noncomputable def steps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
  (env : Environment Artifact.artifact .Osaka s)
  (hm : LimbMemory.Holds s.memory inv a zeroWords n)
- (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+ (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 87 ≤ s.activeWords.toNat)
  (ha : ∀ i < 8,(a i).toNat < radix) :
  GasSteps {s with pc := UInt256.ofNat 3520,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter s::rest)}
   (result s inv a n rest) := by

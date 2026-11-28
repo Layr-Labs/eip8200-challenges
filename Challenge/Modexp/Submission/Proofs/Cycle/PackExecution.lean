@@ -23,7 +23,7 @@ theorem model_eq (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (re
    LowOverlapPackingMemory.store,frame,CycleSubmission.Prepared.Arithmetic.read_disjoint,
    List.cons_append,List.nil_append,readWord_writeWord,hm.a0,hm.a3,hm.a4,hm.a5,hm.a6,hm.a7]
 theorem run (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
- (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+ (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions CycleSubmission.Execution.packFinalProgram
   {s with pc := UInt256.ofNat 8568,stack := frame a n slot0 slot1 rest} =
  some (result s a n slot0 slot1 rest) := by
@@ -45,7 +45,7 @@ theorem bytes (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest 
 noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8568,stack := frame a n slot0 slot1 rest}
       (result s a n slot0 slot1 rest) :=
   FinalBlocks.packFinalBlock.steps (env.transfer rfl rfl) rfl

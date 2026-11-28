@@ -134,7 +134,7 @@ end
 section
 variable (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
   (n0 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256) (N : Nat)
-  (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+  (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
   (h_n0 : MachineState.readWord s.memory 160 = n0) (h_M : MachineState.readWord s.memory 224 = Digits.M)
   (hcache : MachineState.readWord s.memory 160 = cntp)
   (hn0 : n0.toNat < radix) (hn1 : n1.toNat < radix) (hn2 : n2.toNat < radix) (hn3 : n3.toNat < radix)
@@ -197,7 +197,7 @@ theorem norm_spec (a : D5) (h0 : a.d0.toNat < radix) (h1 : a.d1.toNat < radix)
 end
 /-! ## From the loop head to RETURN -/
 theorem from_head (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (rest : List UInt256) (hcap : rest.length ≤ 959)
+    (hact : 87 ≤ s.activeWords.toNat) (rest : List UInt256) (hcap : rest.length ≤ 959)
     (x : D5) (n0 n1 n2 n3 n4 P inv ninv b0 b1 b2 b3 b4 c : UInt256) (N B k : Nat) (w : ZMod N)
     (hinv : inv = UInt256.shiftLeft ninv (UInt256.ofNat 16)) (hP : P = CycleSubmission.WordArithmetic.P)
     (hn1 : n1.toNat < radix) (hn2 : n2.toNat < radix) (hn3 : n3.toNat < radix) (hn4 : n4.toNat < radix)

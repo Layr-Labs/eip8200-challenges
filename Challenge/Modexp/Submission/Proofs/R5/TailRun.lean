@@ -26,7 +26,7 @@ noncomputable def runSteps {pc : Nat} {prog : List Instr}
 section
 variable (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
   (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M : UInt256) (rest : List UInt256)
-  (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+  (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
   (h_b0 : MachineState.readWord s.memory 0 = b0) (h_b1 : MachineState.readWord s.memory 32 = b1)
   (h_b2 : MachineState.readWord s.memory 64 = b2) (h_b3 : MachineState.readWord s.memory 96 = b3)
   (h_b4 : MachineState.readWord s.memory 128 = b4) (h_n0 : MachineState.readWord s.memory 160 = n0)
@@ -56,7 +56,7 @@ end
 section
 variable (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
   (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M : UInt256) (rest : List UInt256)
-  (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+  (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
   (h_n0 : MachineState.readWord s.memory 160 = n0) (h_M : MachineState.readWord s.memory 224 = M)
   (hcache : MachineState.readWord s.memory 160 = cntp)
 def normAt (pc : Nat) (a0 a1 a2 a3 a4 : UInt256) : State :=

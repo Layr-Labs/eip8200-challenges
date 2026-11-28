@@ -68,7 +68,7 @@ def storedFrame (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Stat
    memory := GateScratch.memory mem esize
    stack := SlimFrames.outer mem n bsize esize msize}
 theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hact : 88 ≤ s.activeWords.toNat) :
+ (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions prefixProgram (frame s mem 2522 n bsize esize msize) =
  some (storedFrame s mem n bsize esize msize) := by
  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) = s.activeWords :=
@@ -79,7 +79,7 @@ theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   Exp.outer,GateScratch.memory,GateScratch.value,State.activeWordsAfterUInt256,haw,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
- (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
+ (hb : bsize ≤ 1024) (hact : 87 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
  (hd : Decode.isValidJumpDest s.executionEnv.code 8624 = true)
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3)
@@ -100,7 +100,7 @@ theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
    hd,UInt256.isZero,UInt256.isTrue,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
    Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
+ (hb : bsize ≤ 1024) (hact : 87 ≤ s.activeWords.toNat)
  (hc : UInt256.isTrue (guardValue s bsize esize))
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
@@ -117,7 +117,7 @@ theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
    GateScratch.value,GateScratch.memory,Memory.readWord_writeWord,State.activeWordsAfterUInt256,haw,pointer bsize hb,hp,hsize,hptr,hmask,UInt256.isZero,UInt256.isTrue,
    Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
- (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
+ (hb : bsize ≤ 1024) (hact : 87 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
  (hd : Decode.isValidJumpDest s.executionEnv.code 8624 = true)
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3)
@@ -127,7 +127,7 @@ theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize 3 msize hact)
   (run_test_hit s mem n bsize msize hb hact he hd hsize hptr)
 theorem run_guard_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
+ (hb : bsize ≤ 1024) (hact : 87 ≤ s.activeWords.toNat)
  (hc : UInt256.isTrue (guardValue s bsize esize))
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :

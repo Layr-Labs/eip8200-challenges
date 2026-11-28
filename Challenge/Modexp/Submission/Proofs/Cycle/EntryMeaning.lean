@@ -44,7 +44,7 @@ def result (s : State) (f : Caller) : State :=
   {s with
     pc := UInt256.ofNat 3520
     memory := storeCells s.memory (cells s.memory f)
-    stack := cacheFrame (MachineState.readWord s.memory 2720)
+    stack := cacheFrame (MachineState.readWord s.memory 2624)
       (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (UInt256.ofNat 0-f.counter) (saved f).tail}
 theorem model_eq (s : State) (f : Caller) :
     entryModel s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
@@ -57,7 +57,7 @@ theorem model_eq (s : State) (f : Caller) :
     cacheFrame,CycleSubmission.SquareMeaning.frame0,CycleSubmission.WordArithmetic.P,HistoricalSearch.CRTColumn.residueModulus,saved,scaled,scaledLow,scaledTop,ordinary,low,top,List.set,
     List.cons_append,List.nil_append,List.tail_cons,CycleSubmission.Prepared.Arithmetic.andC]
 theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entryProgram {s with pc := UInt256.ofNat 3335,stack := saved f} =
       some (result s f) := by
   have h := entry_run s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
@@ -66,7 +66,7 @@ theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
   exact h
 theorem memory_output (s : State) (f : Caller) :
     LimbMemory.Holds (result s f).memory
-      (MachineState.readWord s.memory 2720) (scaled s.memory 2368)
+      (MachineState.readWord s.memory 2624) (scaled s.memory 2368)
       (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) := by
   constructor <;>
     simp (disch := decide) only [result,cells,storeCells,writeCell,

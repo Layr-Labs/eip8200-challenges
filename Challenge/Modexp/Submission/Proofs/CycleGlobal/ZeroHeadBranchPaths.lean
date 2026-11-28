@@ -11,18 +11,22 @@ def blkCacheChoose : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Ar
    opAt 2180 .JUMPI]
 def blkCacheNormal : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2193 .JUMPDEST,
-   opAt 2194 (.Dup ⟨0,by decide⟩),
-   pushAt 2195 2 1963,
-   opAt 2196 .MUL,
-   pushAt 2197 2 18566,
-   opAt 2198 .SUB,
-   opAt 2199 (.Swap ⟨0,by decide⟩),
-   opAt 2200 (.Dup ⟨14,by decide⟩),
-   pushAt 2201 1 1,
-   opAt 2202 .AND,
-   opAt 2203 .SHR,
-   opAt 2204 (.Dup ⟨1,by decide⟩),
-   opAt 2205 .JUMP]
+   opAt 2194 (.Swap ⟨11,by decide⟩),
+   opAt 2195 (.Dup ⟨11,by decide⟩),
+   opAt 2196 .SHR,
+   opAt 2197 (.Swap ⟨11,by decide⟩),
+   opAt 2198 (.Dup ⟨0,by decide⟩),
+   pushAt 2199 2 1963,
+   opAt 2200 .MUL,
+   pushAt 2201 2 18570,
+   opAt 2202 .SUB,
+   opAt 2203 (.Swap ⟨0,by decide⟩),
+   opAt 2204 (.Dup ⟨14,by decide⟩),
+   pushAt 2205 1 1,
+   opAt 2206 .AND,
+   opAt 2207 .SHR,
+   opAt 2208 (.Dup ⟨1,by decide⟩),
+   opAt 2209 .JUMP]
 def blkCacheZero : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2181 (.Dup ⟨0,by decide⟩),
    pushAt 2182 1 11,
@@ -80,25 +84,25 @@ def blkCacheZero : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Arti
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoCachePC2086 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2846 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2087 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2849 := by
+@[simp] theorem rhoCachePC2087 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2847 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2088 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2850 := by
+@[simp] theorem rhoCachePC2088 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2848 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2089 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2853 := by
+@[simp] theorem rhoCachePC2089 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2849 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2090 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2854 := by
+@[simp] theorem rhoCachePC2090 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2850 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2091 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2855 := by
+@[simp] theorem rhoCachePC2091 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2853 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2092 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2856 := by
+@[simp] theorem rhoCachePC2092 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2854 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2093 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2858 := by
+@[simp] theorem rhoCachePC2093 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2094 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2859 := by
+@[simp] theorem rhoCachePC2094 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2858 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2095 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2860 := by
+@[simp] theorem rhoCachePC2095 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2859 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2096 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2861 := by
+@[simp] theorem rhoCachePC2096 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2860 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 def cacheBlock (mem : ByteArray) : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   blkCacheChoose++if (MachineState.readWord mem 1536).toNat = 0 then blkCacheZero else blkCacheNormal
@@ -252,25 +256,25 @@ def cacheBlock (mem : ByteArray) : List (Challenge.EvmProof.Stepper.Located Cycl
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem readyPC2083 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2846 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2084 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2849 := by
+@[simp] theorem readyPC2084 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2847 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2085 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2850 := by
+@[simp] theorem readyPC2085 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2848 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2086 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2853 := by
+@[simp] theorem readyPC2086 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2849 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2087 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2854 := by
+@[simp] theorem readyPC2087 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2850 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2088 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2855 := by
+@[simp] theorem readyPC2088 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2853 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2089 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2856 := by
+@[simp] theorem readyPC2089 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2854 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2090 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2858 := by
+@[simp] theorem readyPC2090 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2091 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2859 := by
+@[simp] theorem readyPC2091 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2858 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2092 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2860 := by
+@[simp] theorem readyPC2092 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2859 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2093 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2861 := by
+@[simp] theorem readyPC2093 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2860 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem jumpDestCacheNormal : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2844 = true := by
   have h := CycleSubmission.Global.Binding.jumpDest 2193 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)

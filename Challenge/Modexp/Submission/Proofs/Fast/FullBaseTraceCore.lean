@@ -20,7 +20,7 @@ def copyAddProgram : List Instr :=
    .push ⟨2,by decide⟩ (UInt256.ofNat 3406),.op .JUMP]
 theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hactive : 88 ≤ s.activeWords.toNat)
+    (hactive : 87 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3406 = true) :
     runInstructions copyAddProgram (copyState s memory n bsize esize msize) =

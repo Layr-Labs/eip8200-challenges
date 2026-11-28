@@ -21,7 +21,7 @@ def packOverlapPart0Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12
   let v3 : W := MachineState.readWord (s.memory) 768
   let v4 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded v3.toNat 32) 240
   {s with pc := N 8585,memory := v4,stack := v2::v1::v0::f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest}
-theorem packOverlapPart0_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart0_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart0Program {s with pc := N 8568,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest} = some (packOverlapPart0Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -41,7 +41,7 @@ def packOverlapPart1Program : List Instr := [.op (.Dup dA6),.push 1 210,.op .MST
 def packOverlapPart1Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f6.toNat 32) 210
   {s with pc := N 8589,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest}
-theorem packOverlapPart1_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart1_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart1Program {s with pc := N 8585,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest} = some (packOverlapPart1Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -53,7 +53,7 @@ def packOverlapPart2Program : List Instr := [.op (.Dup dA7),.push 1 180,.op .MST
 def packOverlapPart2Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f7.toNat 32) 180
   {s with pc := N 8593,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest}
-theorem packOverlapPart2_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart2_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart2Program {s with pc := N 8589,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest} = some (packOverlapPart2Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -66,7 +66,7 @@ def packOverlapPart3Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12
   let v0 : W := MachineState.readWord (s.memory) 32
   let v1 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded v0.toNat 32) 150
   {s with pc := N 8599,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest}
-theorem packOverlapPart3_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart3_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart3Program {s with pc := N 8593,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest} = some (packOverlapPart3Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -81,7 +81,7 @@ def packOverlapPart4Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12
   let v0 : W := MachineState.readWord (s.memory) 64
   let v1 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded v0.toNat 32) 120
   {s with pc := N 8605,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest}
-theorem packOverlapPart4_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart4_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart4Program {s with pc := N 8599,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest} = some (packOverlapPart4Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -95,7 +95,7 @@ def packOverlapPart5Program : List Instr := [.push 1 90,.op .MSTORE]
 def packOverlapPart5Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f0.toNat 32) 90
   {s with pc := N 8608,memory := v0,stack := f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest}
-theorem packOverlapPart5_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart5_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart5Program {s with pc := N 8605,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::f16::rest} = some (packOverlapPart5Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -107,7 +107,7 @@ def packOverlapPart6Program : List Instr := [.push 1 60,.op .MSTORE]
 def packOverlapPart6Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f0.toNat 32) 60
   {s with pc := N 8611,memory := v0,stack := f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}
-theorem packOverlapPart6_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart6_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart6Program {s with pc := N 8608,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest} = some (packOverlapPart6Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -119,7 +119,7 @@ def packOverlapPart7Program : List Instr := [.push 1 30,.op .MSTORE]
 def packOverlapPart7Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f0.toNat 32) 30
   {s with pc := N 8614,memory := v0,stack := f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::rest}
-theorem packOverlapPart7_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart7_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart7Program {s with pc := N 8611,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::rest} = some (packOverlapPart7Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -131,7 +131,7 @@ def packOverlapPart8Program : List Instr := [.op (.Dup dA13),.push 0 0,.op .MSTO
 def packOverlapPart8Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f13.toNat 32) 0
   {s with pc := N 8617,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest}
-theorem packOverlapPart8_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packOverlapPart8_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packOverlapPart8Program {s with pc := N 8614,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest} = some (packOverlapPart8Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -157,7 +157,7 @@ def packFinalModel (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : 
   let v13 : ByteArray := MachineState.writeBytes v12 (Data.Bytes.natToBytesPadded v0.toNat 32) 30
   let v14 : ByteArray := MachineState.writeBytes v13 (Data.Bytes.natToBytesPadded f13.toNat 32) 0
   {s with pc := N 8617,memory := v14,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest}
-theorem packFinal_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+theorem packFinal_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
  runInstructions packFinalProgram {s with pc := N 8568,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::rest} = some (packFinalModel s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 160
   let v1 : W := MachineState.readWord (s.memory) 128

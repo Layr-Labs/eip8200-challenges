@@ -33,7 +33,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
@@ -102,7 +102,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shr_of_toNat_zero,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
@@ -122,7 +122,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 /-- An initialized exponent-three cache enters the half-length first loop. -/
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyte3 : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
@@ -207,7 +207,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shr_of_toNat_zero,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
@@ -228,7 +228,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 /-- Other single-byte exponents enter the ordinary loop with continuation 2310. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyteNe : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
@@ -336,7 +336,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shr_of_toNat_zero,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,

@@ -89,7 +89,7 @@ private theorem fastPCAnchor15 :
   interval_cases i <;> rfl
 @[simp] theorem fastPC1 (i : Nat) (hi : 417 ≤ i) (hii : i ≤ 453) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([568,569,570,571,572,574,575,576,577,578,579,580,581,582,583,584,586,587,588,590,591,592,593,595,596,597,599,600,603,604,605,606,607,609,610,611,614] : List Nat)[i - 417]! := by
+      ([568,569,570,571,572,574,575,576,577,578,579,580,581,582,583,584,586,587,588,590,591,592,593,595,596,597,599,600,603,604,605,606,607,611,612,613,614] : List Nat)[i - 417]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem fastPC2 (i : Nat) (hi : 454 ≤ i) (hii : i ≤ 632) :
@@ -135,7 +135,7 @@ theorem jumpDest3412 :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10322 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 7806
+  have h := CycleSubmission.Global.Binding.jumpDest 7805
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h

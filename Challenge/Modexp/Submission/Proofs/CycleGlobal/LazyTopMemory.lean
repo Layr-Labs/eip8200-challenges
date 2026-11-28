@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.TnCacheMemory
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftModel
+import Challenge.Modexp.Submission.Proofs.Prepared.QuotientV1
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 namespace CycleSubmission.Global.LazyTopMemory
@@ -52,8 +53,8 @@ theorem l1_size (mem : ByteArray) (q : UInt256) (pa n j : Nat) :
     simp only [Monpro.l1Step,MachineState.writeBytes_size,wordBytes_size]
     split_ifs <;> omega
 theorem stepMem_eq {a b : ByteArray} (h : Related a b) (n mm : Nat) (hn : 1 ≤ n) :
-    Shift.stepMem a n mm = Shift.stepMem b n mm := by
-  unfold Shift.stepMem
+    Shift.stepMemV1 a n mm = Shift.stepMemV1 b n mm := by
+  unfold Shift.stepMemV1
   rw [uMem_eq h n hn]
 #print axioms stepMem_eq
 end CycleSubmission.Global.LazyTopMemory

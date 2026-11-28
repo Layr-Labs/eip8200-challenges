@@ -25,7 +25,7 @@ def entrypart0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v1 : W := MachineState.readWord (s.memory) 2368
   {s with pc := N 3344,memory := s.memory,stack := v1::v0::w14::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::rest}
 theorem entrypart0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart0Program {s with pc := N 3335,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::rest} = some (entrypart0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -43,7 +43,7 @@ def entrypart1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord (s.memory) 224
   {s with pc := N 3355,memory := s.memory,stack := v3::v2::v0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::rest}
 theorem entrypart1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart1Program {s with pc := N 3344,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::rest} = some (entrypart1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -61,7 +61,7 @@ def entrypart2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v1 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded v0.toNat 32) 1344
   {s with pc := N 3365,memory := v1,stack := w3::v0::w1::w2::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::rest}
 theorem entrypart2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart2Program {s with pc := N 3355,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::rest} = some (entrypart2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -77,7 +77,7 @@ def entrypart3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord v2 0
   {s with pc := N 3377,memory := v2,stack := v3::v1::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::rest}
 theorem entrypart3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart3Program {s with pc := N 3365,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::rest} = some (entrypart3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -106,7 +106,7 @@ def entrypart4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v4 : W := MachineState.readWord v1 14
   {s with pc := N 3421,memory := v1,stack := v4::v3::v0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::rest}
 theorem entrypart4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart4Program {s with pc := N 3377,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::rest} = some (entrypart4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -127,7 +127,7 @@ def entrypart5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v2 : W := MachineState.readWord v1 74
   {s with pc := N 3432,memory := v1,stack := w4::v2::v0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::rest}
 theorem entrypart5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart5Program {s with pc := N 3421,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::rest} = some (entrypart5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -145,7 +145,7 @@ def entrypart6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord (s.memory) 2576
   {s with pc := N 3444,memory := s.memory,stack := w6::v3::v2::v0::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::rest}
 theorem entrypart6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart6Program {s with pc := N 3432,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::rest} = some (entrypart6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -163,7 +163,7 @@ def entrypart7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord (s.memory) 44
   {s with pc := N 3454,memory := s.memory,stack := w8::v3::v2::v0::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::rest}
 theorem entrypart7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart7Program {s with pc := N 3444,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::rest} = some (entrypart7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -181,7 +181,7 @@ def entrypart8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord (s.memory) 2592
   {s with pc := N 3466,memory := s.memory,stack := (N 112)::v3::v2::v0::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest}
 theorem entrypart8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart8Program {s with pc := N 3454,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest} = some (entrypart8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -201,7 +201,7 @@ def entrypart9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v3 : W := MachineState.readWord v2 2516
   {s with pc := N 3478,memory := v2,stack := w12::v3::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::w32::rest}
 theorem entrypart9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart9Program {s with pc := N 3466,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::w32::rest} = some (entrypart9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -220,7 +220,7 @@ def entrypart10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v4 : ByteArray := MachineState.writeBytes v1 (Data.Bytes.natToBytesPadded v3.toNat 32) 64
   {s with pc := N 3491,memory := v4,stack := w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::w32::rest}
 theorem entrypart10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart10Program {s with pc := N 3478,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::w32::rest} = some (entrypart10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -239,7 +239,7 @@ def entrypart11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v2 : W := MachineState.readWord (s.memory) 2426
   {s with pc := N 3503,memory := s.memory,stack := v2::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::v1::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest}
 theorem entrypart11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart11Program {s with pc := N 3491,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest} = some (entrypart11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -258,7 +258,7 @@ def entrypart12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v4 : W := (N 0) - w15
   {s with pc := N 3520,memory := v1,stack := w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w16::w12::w13::v3::w14::v4::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::rest}
 theorem entrypart12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart12Program {s with pc := N 3503,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::w31::rest} = some (entrypart12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -272,7 +272,7 @@ def entrypart13Program : List Instr := []
 def entrypart13Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 : W) (rest : List W) : State :=
   {s with pc := N 3520,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest}
 theorem entrypart13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entrypart13Program {s with pc := N 3520,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::w19::w20::w21::w22::w23::w24::w25::w26::w27::w28::w29::w30::rest} = some (entrypart13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -331,7 +331,7 @@ def entryModel (s : State) (pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn 
   let v48 : W := (N 0) - (counter)
   {s with pc := N 3520,memory := v45,stack := v30::v28::v26::v24::v22::v20::v17::v15::v12::v9::v42::v6::v4::v47::v2::v48::(hd)::w3::(ent)::(m32)::(allones)::(m128)::(m64)::(m0)::(tl)::(m96)::(inv)::(tn)::(aprev)::(counter)::(ret)::rest}
 theorem entry_run (s : State) (pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions entryProgram {s with pc := N 3335,memory := s.memory,stack := (pbi)::(hd)::w3::(ent)::(m32)::(allones)::(m128)::(m64)::(m0)::(tl)::(m96)::(inv)::(tn)::(aprev)::(counter)::(ret)::rest} = some (entryModel s pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) := by
   let v0 : W := UInt256.shiftRight (allones) (N 16)
   let v1 : W := MachineState.readWord (s.memory) 2368

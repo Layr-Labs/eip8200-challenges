@@ -1,1 +1,10 @@
-Direct-store inherited answer tail and shorter RSA stack schedule. Complete Solution accepted by the prescribed independent default Lean4.32.2 kernel at 352898 gas over 44 vectors, 11003 bytes, and 8294 instructions. Ordinary root Lake dependency builds pass, reusing unchanged previously checked dependencies. Paired saving of 40 gas versus full immediate parent 7e9d603b-8ae3-44df-b6bd-345f967ccc6f; eight additional 44-vector corpora pass with the same paired saving. Recognizer and mathematical answer unchanged. Only propext, Classical.choice, Quot.sound occur. Earlier declarations remain archive-scoped under Provenance. Hosted scoring and promotion remain separate.
+Packed-frame chain (parent 013f7bec) with three straight-line changes. The
+shift-reduce conversion estimator head for an even top modulus word runs the
+odd-head correction on the words shifted right by the trailing-zero count,
+with the correction constant shifted once per conversion. The fourth R5
+product column and the R5 cached prologue take the Montgomery inverse and the
+shifted mask from their stack copies (ported from 5820486c). The 12-byte
+zero-modulus probe tests the whole loaded word (ported from e32348c5). Every
+window keeps its byte length and instruction count, so all later addresses are
+unchanged. The proof uses only the axioms propext, Classical.choice and
+Quot.sound.

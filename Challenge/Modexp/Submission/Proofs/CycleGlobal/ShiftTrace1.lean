@@ -154,7 +154,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `blk2874`: copy the raw base to `TS`, clear `TN`, call the retained `CSUB` entry with the return address only. -/
 theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 87 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
@@ -265,7 +265,7 @@ theorem run_negW4 (s : State) (mem : ByteArray) (bsize esize msize : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `negS8`: limb `0` (`0 - m` at 224). -/
 theorem run_negS8 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hA : 32 * (n - 1) = 224) (hact : 88 ≤ s.activeWords.toNat)
+    (hA : 32 * (n - 1) = 224) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negS8
@@ -292,7 +292,7 @@ theorem run_negS8 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `negN8a`: a later limb (`NOT m` at 192). -/
 theorem run_negN8a (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 192) (hact : 88 ≤ s.activeWords.toNat)
+    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 192) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negN8a
@@ -318,7 +318,7 @@ theorem run_negN8a (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `negN8b`: a later limb (`NOT m` at 160). -/
 theorem run_negN8b (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 160) (hact : 88 ≤ s.activeWords.toNat)
+    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 160) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negN8b
@@ -344,7 +344,7 @@ theorem run_negN8b (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `negN8c`: a later limb (`NOT m` at 128). -/
 theorem run_negN8c (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 128) (hact : 88 ≤ s.activeWords.toNat)
+    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 128) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negN8c
@@ -370,7 +370,7 @@ theorem run_negN8c (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `negN8d`: a later limb (`NOT m` at 96). -/
 theorem run_negN8d (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 96) (hact : 88 ≤ s.activeWords.toNat)
+    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 96) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negN8d
@@ -399,7 +399,7 @@ theorem run_negN8d (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
 /- `negNTc`: a later limb (`NOT m` at 0). -/
 /-- `negS4`: limb `0` (`0 - m` at 96). -/
 theorem run_negS4 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hA : 32 * (n - 1) = 96) (hact : 88 ≤ s.activeWords.toNat)
+    (hA : 32 * (n - 1) = 96) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negS4
@@ -483,7 +483,7 @@ theorem run_negJ4b (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- The eight-limb cells: limbs `0..4` of `NEG`. -/
 theorem run_neg8 (s : State) (mem : ByteArray) (bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkNeg8
@@ -502,7 +502,7 @@ theorem run_neg8 (s : State) (mem : ByteArray) (bsize esize msize : Nat)
   exact run_negN8d s mem 8 bsize esize msize 4 (by decide) (by decide) hact hcode hrun
 /-- The four-limb stub: limb `0` of `NEG`, then `NEG_TAIL`. -/
 theorem run_neg4 (s : State) (mem : ByteArray) (bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkNeg4
@@ -518,7 +518,7 @@ theorem run_neg4 (s : State) (mem : ByteArray) (bsize esize msize : Nat)
 /-- `NEG_TAIL`: the last three limbs (`j`, `j + 1`, `j + 2` at 64, 32, 0). -/
 theorem run_negT (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
     (hj : 1 ≤ j) (hA0 : 32 * (n - 1 - j) = 64) (hA1 : 32 * (n - 1 - (j + 1)) = 32)
-    (hA2 : 32 * (n - 1 - (j + 1 + 1)) = 0) (hact : 88 ≤ s.activeWords.toNat)
+    (hA2 : 32 * (n - 1 - (j + 1 + 1)) = 0) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkNegT
@@ -560,7 +560,7 @@ theorem run_negT (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
 #print axioms run_negT
 /-- `blk2919a`: leave `[L, L, d]` at the `CLZ`. -/
 theorem run_negDoneA (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2919a
@@ -601,7 +601,7 @@ private theorem add_one_eq_neg_not115 (x : UInt256) :
 /-- `blk2919b` (after the `CLZ`): store `PRE_X := 0 - ~clz L`, `PRE_L := 255 - clz L`,
 `dodd`, `Bmod`. -/
 theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2919b
@@ -632,15 +632,15 @@ theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
 /-- `blkNbHead`: load `n0 = mem[mem[V_ML]]` and form `dodd * n0` for the inline Newton chain. -/
 theorem run_nbHead (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
-    (hml : MachineState.readWord M 2752 = UInt256.ofNat (32 * n - 32))
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 87 ≤ s.activeWords.toNat)
+    (hml : MachineState.readWord M 2720 = UInt256.ofNat (32 * n - 32))
     (hn0 : MachineState.readWord M (32 * n - 32) = n0)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkNbHead
       (nbHeadState s M d n bsize esize msize) =
       some (nbSubState s M d n0 n bsize esize msize) := by
-  have haw2752 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2752 32) =
+  have haw2752 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hawn0 : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat (32 * n - 32) 32) =
@@ -683,7 +683,7 @@ theorem run_nbSub (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize ms
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `blkNbTail`: store `dinv` and `V_MINV`, drop four words, and park the riding slots. -/
 theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat)
-    (hact : 88 ≤ s.activeWords.toNat)
+    (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (blkNbTail esize)
@@ -713,7 +713,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1664 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2720 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
+  have haw2720 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2624 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact

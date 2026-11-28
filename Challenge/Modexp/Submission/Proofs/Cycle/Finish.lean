@@ -42,7 +42,7 @@ structure Packed (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (re
 noncomputable def pack (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : NormalizeMeaning.MemoryInput s.memory a n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hv : value a < 2^2048) :
     Packed s a n slot0 slot1 rest :=
   ⟨PackExecution.result s a n slot0 slot1 rest,
@@ -51,7 +51,7 @@ noncomputable def pack (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt25
 noncomputable def serialize (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : NormalizeMeaning.MemoryInput s.memory a n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hv : value a < 2^2048) :
     Outcome {s with pc := UInt256.ofNat 8568,stack := NormalizeMeaning.frame a n slot0 slot1 rest}
       (Precompile.natToBytes (value a) 256) := by
@@ -59,7 +59,7 @@ noncomputable def serialize (s : State) (a n : Nat → UInt256) (slot0 slot1 : U
   have cap : (NormalizeMeaning.frame a n slot0 slot1 rest).length ≤ 1021 := by
     simp only [NormalizeMeaning.frame,List.length_cons,List.length_append,List.length_nil]
     omega
-  have act : 88 ≤ packed.activeWords.toNat := by rw [active]; exact hact
+  have act : 87 ≤ packed.activeWords.toNat := by rw [active]; exact hact
   have hr := Return.gasSteps packed (NormalizeMeaning.frame a n slot0 slot1 rest)
     (env.transfer en halt) cap act
   have he : {packed with pc := UInt256.ofNat 8617,stack := NormalizeMeaning.frame a n slot0 slot1 rest} = packed :=
@@ -86,7 +86,7 @@ structure Computed (s : State) (inv : UInt256) (a b n : Nat → UInt256)
 noncomputable def compute (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : ProductMeaning.Memory0 s.memory inv a b n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hb : ∀ i < 9,(b i).toNat < radix)
     (hn : ∀ i < 9,(n i).toNat < radix)
     (N x : Nat) (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
@@ -105,7 +105,7 @@ noncomputable def compute (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
 noncomputable def product (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : ProductMeaning.Memory0 s.memory inv a b n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hb : ∀ i < 9,(b i).toNat < radix)
     (hn : ∀ i < 9,(n i).toNat < radix)
     (N x : Nat) (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
@@ -116,7 +116,7 @@ noncomputable def product (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
       (Precompile.natToBytes (value b*x % N) 256) := by
   obtain ⟨st,out,slot0,slot1,ht,mem,frame,pc,en,halt,active,calls,bound,valueEq⟩ :=
     compute s inv a b n rest env hm hcap hact ha hb hn N x hn0 hNvalue hinv hN hNsize hodd hB hform
-  have act : 88 ≤ st.activeWords.toNat := by rw [active]; exact hact
+  have act : 87 ≤ st.activeWords.toNat := by rw [active]; exact hact
   have hv : value out < 2^2048 := by
     rw [valueEq]; exact Nat.lt_trans (Nat.mod_lt _ hN) hNsize
   obtain ⟨done,tr,returned,bytes,callsDone⟩ := serialize st out n slot0 slot1 rest

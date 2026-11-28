@@ -17,13 +17,21 @@ def oldEntry (s : State) : State :=
  {s with pc := UInt256.ofNat 10280,stack := []}
 def memo (s : State) : State :=
  {s with pc := UInt256.ofNat 866,stack := []}
+/-- A zero word certifies all twelve modulus bytes, including EIP-198 padding. -/
+def probeWord (input : ByteArray) : UInt256 :=
+ MachineState.readWord input (96+baseSize input+exponentSize input)
 def rawWord (input : ByteArray) : UInt256 :=
  UInt256.shiftRight (MachineState.readWord input (96+baseSize input+exponentSize input)) (UInt256.ofNat 160)
+theorem rawWord_zero_of_probe (input : ByteArray) (h : (probeWord input).toNat = 0) :
+    (rawWord input).toNat = 0 := by
+  have hz : probeWord input = (0 : UInt256) := Word.word_ext h
+  change (UInt256.shiftRight (probeWord input) (UInt256.ofNat 160)).toNat = 0
+  rw [hz] <;> decide
 def memory (s : State) : ByteArray :=
  s.memory
 def finalState (s : State) : State :=
  {s with
-   pc := UInt256.ofNat 10994
+   pc := UInt256.ofNat 10991
    stack := []
    memory := memory s
    activeWords := UInt256.ofNat 1
@@ -58,9 +66,9 @@ theorem run_nonzero (s : State) (input : ByteArray)
  (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
  (hdata : s.executionEnv.calldata = input)
  (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
- (hsize : modulusSize input = 12) (hne : (rawWord input).toNat ≠ 0) :
+ (hsize : modulusSize input = 12) (hne : (probeWord input).toNat ≠ 0) :
  Stepper.runLocatedBlock blkZero12Nonzero (entry s input) = some (memo s) := by
- simp only [rawWord] at hne
+ simp only [probeWord] at hne
  have hoff : (96+(exponentSize input+baseSize input)) % 2^256 = 96+baseSize input+exponentSize input := by
   rw [Nat.mod_eq_of_lt (by omega)]
   omega
@@ -71,17 +79,17 @@ theorem run_nonzero (s : State) (input : ByteArray)
  have hx : UInt256.xor (UInt256.ofNat 12) (UInt256.ofNat 12) = UInt256.ofNat 0 := by decide
  simp (config := { maxSteps := 600000 }) [packedZero12PCs,blkZero12Nonzero,opAt,pushAt,wfOp,
   Stepper.runLocatedBlock,Stepper.runLocated,Stepper.runInstr,entry,memo,
-  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,rawWord,hne,
+  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,probeWord,hne,
   UInt256.isTrue,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
   Word.succ_ofNat_mod,Word.ofNat_add_mod,jumpDest698]
 theorem run_zero (s : State) (input : ByteArray)
  (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
  (hdata : s.executionEnv.calldata = input)
  (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
- (hsize : modulusSize input = 12) (hz : (rawWord input).toNat = 0)
+ (hsize : modulusSize input = 12) (hz : (probeWord input).toNat = 0)
  (hwords : s.activeWords.toNat ≤ 1) :
  Stepper.runLocatedBlock blkZero12Zero (entry s input) = some (finalState s) := by
- simp only [rawWord] at hz
+ simp only [probeWord] at hz
  have hoff : (96+(exponentSize input+baseSize input)) % 2^256 = 96+baseSize input+exponentSize input := by
   rw [Nat.mod_eq_of_lt (by omega)]
   omega
@@ -92,7 +100,7 @@ theorem run_zero (s : State) (input : ByteArray)
  have hx : UInt256.xor (UInt256.ofNat 12) (UInt256.ofNat 12) = UInt256.ofNat 0 := by decide
  simp (config := { maxSteps := 600000 }) [packedZero12PCs,blkZero12Zero,opAt,pushAt,wfOp,
   Stepper.runLocatedBlock,Stepper.runLocated,Stepper.runInstr,entry,finalState,memory,
-  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,rawWord,hz,
+  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,probeWord,hz,
   UInt256.isTrue,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
   Word.succ_ofNat_mod,Word.ofNat_add_mod,State.activeWordsAfterUInt256,
   State.activeWordsAfterUInt256_2,MachineState.activeWordsAfter]

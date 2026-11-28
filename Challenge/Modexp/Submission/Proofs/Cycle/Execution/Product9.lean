@@ -35,7 +35,7 @@ def pr9Newpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v4 : W := MachineState.readWord s.memory 128
   {s with pc := N 7122,memory := s.memory,stack := v4::x13::v3::v1::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
 theorem pr9Newpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart0Program {s with pc := N 7112,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
       some (pr9Newpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -60,7 +60,7 @@ def pr9Newpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v2 : W := v1 + x3
   {s with pc := N 7132,memory := s.memory,stack := v0::x0::x1::x2::v2::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr9Newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart1Program {s with pc := N 7122,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr9Newpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -86,7 +86,7 @@ def pr9Newpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v3 : W := MachineState.readWord s.memory 1824
   {s with pc := N 7143,memory := s.memory,stack := v3::x12::v3::v2::v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
 theorem pr9Newpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart2Program {s with pc := N 7132,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
       some (pr9Newpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -114,7 +114,7 @@ def pr9Newpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v3 : W := x5 + v1
   {s with pc := N 7153,memory := s.memory,stack := v3::v0::x4::v2::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
 theorem pr9Newpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart3Program {s with pc := N 7143,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
       some (pr9Newpart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -139,7 +139,7 @@ def pr9Newpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v2 : W := v1 + v0
   {s with pc := N 7161,memory := s.memory,stack := x3::x0::v2::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr9Newpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart4Program {s with pc := N 7153,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr9Newpart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -162,7 +162,7 @@ def pr9Newpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v2 : W := MachineState.readWord s.memory 1600
   {s with pc := N 7171,memory := s.memory,stack := x2::x11::v1::v2::x3::x4::x5::x6::x7::x8::x9::x10::v2::x12::x13::x14::x15::x16::rest}
 theorem pr9Newpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart5Program {s with pc := N 7161,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr9Newpart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -188,7 +188,7 @@ def pr9Newpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v3 : W := v2 + x2
   {s with pc := N 7179,memory := s.memory,stack := v3::v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr9Newpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart6Program {s with pc := N 7171,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr9Newpart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -212,7 +212,7 @@ def pr9Newpart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v3 : W := MachineState.readWord s.memory 192
   {s with pc := N 7190,memory := s.memory,stack := x3::v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem pr9Newpart7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart7Program {s with pc := N 7179,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (pr9Newpart7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -243,7 +243,7 @@ def pr9Newpart8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v5 : W := MachineState.readWord s.memory 224
   {s with pc := N 7200,memory := s.memory,stack := v5::v4::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr9Newpart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart8Program {s with pc := N 7190,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr9Newpart8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -272,7 +272,7 @@ def pr9Newpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v4 : W := v3 + v1
   {s with pc := N 7210,memory := s.memory,stack := v4::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr9Newpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart9Program {s with pc := N 7200,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr9Newpart9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -298,7 +298,7 @@ def pr9Newpart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v3 : W := MachineState.readWord s.memory 1280
   {s with pc := N 7222,memory := s.memory,stack := x11::v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem pr9Newpart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart10Program {s with pc := N 7210,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (pr9Newpart10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -326,7 +326,7 @@ def pr9Newpart11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v3 : W := UInt256.mulMod x10 v2 x11
   {s with pc := N 7232,memory := s.memory,stack := v3::x3::v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr9Newpart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart11Program {s with pc := N 7222,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr9Newpart11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -349,7 +349,7 @@ def pr9Newpart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v2 : W := UInt256.mulMod x4 v1 x10
   {s with pc := N 7239,memory := s.memory,stack := v2::v0::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr9Newpart12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9Newpart12Program {s with pc := N 7232,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr9Newpart12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
@@ -519,7 +519,7 @@ def pr9NewModel (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v51 : W := UInt256.mulMod w6 v50 w12
   {s with pc := N 7239,memory := s.memory,stack := v51::v49::v46::w5::w6::w7::w8::w9::w10::w11::w12::v21::w14::w15::w16::w17::w18::rest}
 theorem pr9New_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions pr9NewProgram {s with pc := N 7112,stack := carry::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::rest} =
       some (pr9NewModel s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   let v0 : W := w4 * carry
@@ -896,7 +896,7 @@ private theorem prepared_model_eq (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 
     {s with pc := N 7239,memory := s.memory,stack := n51::n49::n46::w5::w6::w7::w8::w9::w10::w11::w12::n21::w14::w15::w16::w17::w18::rest}
   simp only [eq_o47,eq_o50,eq_n0,eq_n1,eq_n2,eq_n3,eq_n4,eq_n5,eq_n6,eq_n7,eq_n8,eq_n9,eq_n10,eq_n11,eq_n12,eq_n13,eq_n14,eq_n15,eq_n16,eq_n17,eq_n18,eq_n19,eq_n20,eq_n21,eq_n22,eq_n23,eq_n24,eq_n25,eq_n26,eq_n27,eq_n28,eq_n29,eq_n30,eq_n31,eq_n32,eq_n33,eq_n34,eq_n35,eq_n36,eq_n37,eq_n38,eq_n39,eq_n40,eq_n41,eq_n42,eq_n43,eq_n44,eq_n45,eq_n46,eq_n47,eq_n48,eq_n49,eq_n50,eq_n51]
 theorem productColumn9_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions productColumn9Program {s with pc := N 7112,stack := carry::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::w17::w18::rest} =
       some (productColumn9Model s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   exact (pr9New_run s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest hcap hact).trans

@@ -12,7 +12,7 @@ open EvmSemantics EvmSemantics.EVM
 @[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2253 = 2954 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8132 = 10806 := by
+@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8131 = 10806 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 private theorem rho_clamp8_program :
@@ -29,7 +29,7 @@ private theorem rho_clamp8_layout :
     (hshift : (MachineState.readWord mem 1536).toNat = 0)
     (hkU : MachineState.readWord (uMem mem n) 1536 = UInt256.ofNat 0)
     (hxU : MachineState.readWord (uMem mem n) 1600 = UInt256.ofNat 256)
-    (hbs : bsize = 32*n) (hact : 88 ≤ s.activeWords.toNat)
+    (hbs : bsize = 32*n) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (blkZero8++blkEstimateSuffix8)
@@ -63,7 +63,7 @@ private theorem rho_clamp4_layout :
     (hshift : (MachineState.readWord mem 1536).toNat = 0)
     (hkU : MachineState.readWord (uMem mem n) 1536 = UInt256.ofNat 0)
     (hxU : MachineState.readWord (uMem mem n) 1600 = UInt256.ofNat 256)
-    (hbs : bsize = 32*n) (hact : 88 ≤ s.activeWords.toNat)
+    (hbs : bsize = 32*n) (hact : 87 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (blkZero4++blkEstimateSuffix4)

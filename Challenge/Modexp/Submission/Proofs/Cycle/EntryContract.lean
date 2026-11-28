@@ -26,7 +26,7 @@ theorem counter (s : State) (f : Caller) :
 structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   state : State
   inv : UInt256
-  inv_eq : inv = MachineState.readWord s.memory 2720
+  inv_eq : inv = MachineState.readWord s.memory 2624
   a : Nat → UInt256
   n : Nat → UInt256
   trace : GasSteps {s with pc := UInt256.ofNat 3335,stack := saved f} state
@@ -48,15 +48,15 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   small : value a + 2*N ≤ radix^9
 noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : f.tail.length ≤ 943) (hact : 87 ≤ s.activeWords.toNat)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
-    (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
+    (hinv : (N*(MachineState.readWord s.memory 2624).toNat+1) % 2^256 = 0)
     (hform : A ≡ x*2^2048 [MOD N]) (hsmall : A*2^112 + 2*N ≤ radix^9) : Outcome s f k N B x := by
   have hA := scaled_represents ha
   have hN := ordinary_represents hn
-  refine ⟨EntryBinding.entered s f,MachineState.readWord s.memory 2720,rfl,
+  refine ⟨EntryBinding.entered s f,MachineState.readWord s.memory 2624,rfl,
     scaled s.memory 2368,ordinary s.memory 0,
     EntryBinding.gasSteps s f env hcap hact,rfl,rfl,memory_output s f,
     rfl,rfl,rfl,?_,hA.1,hN.1,?_,hN.2,hinv,?_,?_,rfl,?_⟩

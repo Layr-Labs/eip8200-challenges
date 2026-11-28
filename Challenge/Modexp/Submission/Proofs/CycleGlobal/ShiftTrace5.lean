@@ -32,12 +32,12 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) (hpre : PreOK mem) :
     RepairFacts
-      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      (midMem (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n)))
       n mm
-      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) :=
-  (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
+      (negOf (macOf (uMem mem n) n (qhatV1 (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatV1 (uMem mem n))).carry (qhatV1 (uMem mem n))) :=
+  (step_specV1 mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
 /-- The estimator words survive the cache store, which writes at 1686 -- two bytes above
 `PRE_DINV`'s word, which ends at 1696. -/
 theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
@@ -49,13 +49,13 @@ theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (
     rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2688 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.s32
   minvW := by
-    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2720 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2624 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.minvW
   ml := by
-    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2752 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2720 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.ml
   tl := by
-    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2784 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2752 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
     rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2656 hn
@@ -136,7 +136,7 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 66 ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr))
-    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
+    (h2720 : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
     MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr := by
   have hpre : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr := by
     rcases hdisj.2.2.2.1 with h | h
@@ -156,14 +156,14 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
     (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix))) :
     StepInv (m2Of mem input n) n bsize mm minv := by
-  have hm2high : ∀ addr,2656 ≤ addr → (addr + 32 ≤ 2720 ∨ 2752 ≤ addr) →
+  have hm2high : ∀ addr,2656 ≤ addr → (addr + 32 ≤ 2624 ∨ 2656 ≤ addr) →
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr h2720 => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega),Or.inr (by omega),Or.inr (by omega)⟩ h2720
   -- `V_MINV` is no longer set up before the dispatcher: the hit arm stores `-n0⁻¹`
   -- (`preMem`) from the modulus low limb `n0 = mem[V_ML]`.
-  have hminvW : MachineState.readWord (m2Of mem input n) 2720 = UInt256.ofNat minv := by
+  have hminvW : MachineState.readWord (m2Of mem input n) 2624 = UInt256.ofNat minv := by
     have hX : ∀ addr,(addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) →
         (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) →
         (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) →
@@ -175,8 +175,8 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
       rw [negStep_readWord_disjoint _ n addr h2 n le_rfl]
       exact m1_readWord_disjoint mem input n addr (by omega) hn32 ⟨h1,h3,h5,h4⟩
     unfold m2Of
-    rw [ShiftCacheModel.read_disjoint _ n 2720 (Or.inr (by omega)),preMem_readWord_minv,
-      hX 2752 (Or.inr (by omega)) (Or.inr (by unfold NEG; omega)) (Or.inr (by omega))
+    rw [ShiftCacheModel.read_disjoint _ n 2624 (Or.inr (by omega)),preMem_readWord_minv,
+      hX 2720 (Or.inr (by omega)) (Or.inr (by unfold NEG; omega)) (Or.inr (by omega))
         (Or.inr (by omega)) (Or.inr (by omega)),
       hframe.ml,Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (show 32 * n - 32 < 2 ^ 256 by omega),
@@ -184,11 +184,11 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
         (Or.inl (by omega)) (Or.inl (by omega)),
       lowLimb_word mem n mm (by omega) hmod,newton8W_eq,Setup.neg_word,hminvDef]
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 2688 (by omega) (Or.inl (by omega))]; exact hframe.s32,
+    ⟨by rw [hm2high 2688 (by omega) (Or.inr (by omega))]; exact hframe.s32,
      hminvW,
-     by rw [hm2high 2752 (by omega) (Or.inr le_rfl)]; exact hframe.ml,
-     by rw [hm2high 2784 (by omega) (Or.inr (by omega))]; exact hframe.tl,
-     by rw [hm2high 2656 (by omega) (Or.inl (by omega))]; exact hframe.eoff⟩
+     by rw [hm2high 2720 (by omega) (Or.inr (by omega))]; exact hframe.ml,
+     by rw [hm2high 2752 (by omega) (Or.inr (by omega))]; exact hframe.tl,
+     by rw [hm2high 2656 (by omega) (Or.inr (by omega))]; exact hframe.eoff⟩
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi

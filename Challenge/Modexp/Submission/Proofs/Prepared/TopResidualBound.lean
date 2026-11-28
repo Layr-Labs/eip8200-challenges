@@ -8,18 +8,29 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.EvmProof.Word
 open Challenge.Modexp.Submission.Proofs.Fast.QHat
-theorem qhat_top_mul_le (mem : ByteArray) (n mm u : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (htop : Limbs.radix ^ n < 2 * mm)
-    (hmod : Model.FastRepresents mem 0 n mm)
-    (hpre : PreOK mem) (htv : tv mem n = u) (hu : u < mm * Limbs.radix) :
-    (qhatOf mem).toNat * (MachineState.readWord mem 0).toNat ≤
-      (MachineState.readWord mem 2080).toNat * 2^256 + (MachineState.readWord mem 2112).toNat := by
+/-- The estimator in `Nat`: what `qhat_top_mul_le` and the v1 estimator bounds share. -/
+theorem est_core (mem : ByteArray) (n mm : Nat)
+    (hn : 2 ≤ n) (htop : Limbs.radix ^ n < 2 * mm)
+    (hmod : Model.FastRepresents mem 0 n mm) (hpre : PreOK mem) :
+    ∃ v, v < 256 ∧ (preL (MachineState.readWord mem 0)).toNat = 2 ^ v ∧
+      2 ^ v * (preDodd (MachineState.readWord mem 0)).toNat = (MachineState.readWord mem 0).toNat ∧
+      0 < (preDodd (MachineState.readWord mem 0)).toNat ∧
+      (eHi mem).toNat = (MachineState.readWord mem 2080).toNat / 2 ^ v ∧
+      (eRho mem).toNat = (((MachineState.readWord mem 2080).toNat * 2 ^ 256 +
+        (MachineState.readWord mem 2112).toNat) / 2 ^ v) % (preDodd (MachineState.readWord mem 0)).toNat ∧
+      ((eHi mem).toNat < (preDodd (MachineState.readWord mem 0)).toNat →
+        (eQ mem).toNat = ((MachineState.readWord mem 2080).toNat * 2^256 +
+          (MachineState.readWord mem 2112).toNat) / (MachineState.readWord mem 0).toNat) ∧
+      (eDec mem).toNat =
+        (if (MachineState.readWord mem 2112 - MachineState.readWord mem 0 * eQ mem).toNat <
+          ((eQ mem).toNat / 2 ^ 128) * ((MachineState.readWord mem 32).toNat / 2 ^ 128)
+        then 1 else 0) ∧
+      (eDec mem).toNat ≤ (eQ mem).toNat := by
   obtain ⟨hPL,hPD,hPX,hPB,hPI⟩ := hpre
   have hR : Limbs.radix = 2 ^ 256 := rfl
   have hDne := top_limb_ne_zero mem n mm hn htop hmod
   obtain ⟨v,hv,hL,hmul,hodd,hdpos,hbmod,hXd⟩ :=
     pre_facts (MachineState.readWord mem 0) hDne
-  have hmpos : 0 < mm := by omega
   -- abbreviations
   have hspos : (0:Nat) < 2 ^ v := Nat.two_pow_pos v
   have hsdvd : (2:Nat) ^ v ∣ 2 ^ 256 := pow_dvd_pow 2 (by omega)
@@ -159,6 +170,16 @@ theorem qhat_top_mul_le (mem : ByteArray) (n mm u : Nat)
     · have := hdec1 (by omega)
       have h128 : (1:Nat) ≤ 2 ^ 128 := Nat.one_le_two_pow
       omega
+  exact ⟨v,hv,hL,hmul,hdpos,hHi,hRho,raw_q,hdecval,hdecle⟩
+theorem qhat_top_mul_le (mem : ByteArray) (n mm u : Nat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (htop : Limbs.radix ^ n < 2 * mm)
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (hpre : PreOK mem) (htv : tv mem n = u) (hu : u < mm * Limbs.radix) :
+    (qhatOf mem).toNat * (MachineState.readWord mem 0).toNat ≤
+      (MachineState.readWord mem 2080).toNat * 2^256 + (MachineState.readWord mem 2112).toNat := by
+  obtain ⟨v,hv,hL,hmul,hdpos,hHi,hRho,raw_q,-,hdecle⟩ := est_core mem n mm hn htop hmod hpre
+  obtain ⟨hPL,hPD,hPX,hPB,hPI⟩ := hpre
+  have hspos : (0:Nat) < 2 ^ v := Nat.two_pow_pos v
   by_cases hs : (eHi mem).toNat < (preDodd (MachineState.readWord mem 0)).toNat
   · have hb := qhatOf_branch mem hPD hdecle
     rw [if_pos hs] at hb

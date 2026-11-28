@@ -89,8 +89,8 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8250 1 10944 (StackPhaseRun.headProgram true)
-        (by change 8250+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8249 1 10944 (StackPhaseRun.headProgram true)
+        (by change 8249+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
@@ -102,23 +102,23 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8251 2 10945 (StackPhaseRun.transferProgram)
-        (by change 8251+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8250 2 10945 (StackPhaseRun.transferProgram)
+        (by change 8250+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-  commonHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7877 1 10417 (StackPhaseRun.commonHeadProgram)
-        (by change 7877+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  commonHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7876 1 10417 (StackPhaseRun.commonHeadProgram)
+        (by change 7876+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7878 12 10418 (StackPhaseRun.phaseSwitchProgram)
-        (by change 7878+12 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7877 12 10418 (StackPhaseRun.phaseSwitchProgram)
+        (by change 7877+12 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
 theorem jumpDestCommonSwitch : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10417 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 7877
+  have h := CycleSubmission.Global.Binding.jumpDest 7876
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
@@ -249,15 +249,15 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     unfold R1.TopBitSet at ht
     rw [h] at ht
     norm_num at ht
-  have hm1ml : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m1Of mem input n) 2752 = UInt256.ofNat (32 * n - 32) := by
-    rw [CycleSubmission.Global.Fast.Shift.m1_readWord_disjoint mem input n 2752 (by omega) hn8
+  have hm1ml : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m1Of mem input n) 2720 = UInt256.ofNat (32 * n - 32) := by
+    rw [CycleSubmission.Global.Fast.Shift.m1_readWord_disjoint mem input n 2720 (by omega) hn8
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]
     exact hframe.ml
   have heoff : MachineState.readWord (CycleSubmission.Global.Fast.Shift.m2Of mem input n) 2656 = UInt256.ofNat (96 + bsize) := by
     rw [CycleSubmission.Global.Fast.Shift.m2_readWord_disjoint mem input n 2656 (by omega) hn8
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega),Or.inr (by omega),Or.inr (by omega)⟩
-      (Or.inl (by omega))]
+      (Or.inr (by omega))]
     exact hframe.eoff
   have heoff' : MachineState.readWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 2656 =
       UInt256.ofNat (96 + bsize) :=

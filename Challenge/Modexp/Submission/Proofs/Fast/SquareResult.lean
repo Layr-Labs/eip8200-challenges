@@ -171,7 +171,7 @@ theorem sqRowsCarry_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 
     (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2624).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) (ham : a < mm) :
     (MachineState.readWord (sqRowsCarry m0 (p + 2) (p + 2)) 2080).toNat ≤ 1 := by
   rw [readWord_eq (sqRows_agree m0 (p + 2) (by omega) (p + 2) le_rfl) 2080 (Or.inr (by decide))]
@@ -182,7 +182,7 @@ theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2624).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) :
     Model.FastRepresents (Csub.csResultMemory (sqRowsCarry m0 (p + 2) (p + 2)) (p + 2) pdst)
       pdst (p + 2) (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
@@ -245,7 +245,7 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+      (MachineState.readWord mem 2624).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents (sqMem s mem (p + 2)) 512 (p + 2)
       (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
   rw [sqMem,if_pos he]
@@ -256,10 +256,10 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
   have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=
     (fastRepresents_inputMemory mem 2112 (p + 2) 0 (p + 2) mm (by omega)).2 hm
   have hminv' : ((MachineState.readWord prepared (32 * (p + 2) - 32)).toNat *
-      (MachineState.readWord prepared 2720).toNat + 1) % 2 ^ 256 = 0 := by
+      (MachineState.readWord prepared 2624).toNat + 1) % 2 ^ 256 = 0 := by
     simpa only [prepared,
       read_inputMemory_outside mem 2112 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
-      read_inputMemory_outside mem 2112 (p + 2) 2720 (Or.inr (by decide))] using hminv
+      read_inputMemory_outside mem 2112 (p + 2) 2624 (Or.inr (by decide))] using hminv
   have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 2368 (p + 2) a :=
     represents_zeroed_stage s prepared (p + 2) a hn8 ha'
   have hm0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 0 (p + 2) mm := by
@@ -267,9 +267,9 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
     intro j hj
     rw [readWord_mpZeroed s prepared (p + 2) (0 + 32 * j) hn32 (Or.inl (by omega))]
   have hminv0 : ((MachineState.readWord (mpZeroed s prepared (p + 2)) (32 * (p + 2) - 32)).toNat *
-      (MachineState.readWord (mpZeroed s prepared (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
+      (MachineState.readWord (mpZeroed s prepared (p + 2)) 2624).toNat + 1) % 2 ^ 256 = 0 := by
     rw [readWord_mpZeroed s prepared (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)),
-      readWord_mpZeroed s prepared (p + 2) 2720 hn32 (Or.inr (by omega))]
+      readWord_mpZeroed s prepared (p + 2) 2624 hn32 (Or.inr (by omega))]
     exact hminv'
   exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
     ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
@@ -294,14 +294,14 @@ theorem sqMem_readWord_high (s : State) (mem : ByteArray) (n addr : Nat)
     (Or.inr (by omega))
 theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     MachineState.readWord (sqMem s mem n) 2688 = MachineState.readWord mem 2688 ∧
+      MachineState.readWord (sqMem s mem n) 2624 = MachineState.readWord mem 2624 ∧
       MachineState.readWord (sqMem s mem n) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (sqMem s mem n) 2752 = MachineState.readWord mem 2752 ∧
-      MachineState.readWord (sqMem s mem n) 2784 = MachineState.readWord mem 2784 ∧
       MachineState.readWord (sqMem s mem n) 2656 = MachineState.readWord mem 2656 :=
   ⟨sqMem_readWord_high s mem n 2688 hn hn32 (by omega),
+   sqMem_readWord_high s mem n 2624 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2720 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2752 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 2784 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2656 hn hn32 (by omega)⟩
 theorem sqMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (n ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)

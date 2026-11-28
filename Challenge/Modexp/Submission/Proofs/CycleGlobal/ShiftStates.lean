@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftModel
+import Challenge.Modexp.Submission.Proofs.Prepared.QuotientV1
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftMath
 noncomputable section
 set_option warningAsError false
@@ -34,11 +35,11 @@ def pcNeg4 : Nat := 2501
 def pcNegT : Nat := 2612
 def pcNegDone : Nat := 2637
 def pcPreNewton : Nat := 2674
-def pcShiftLoop : Nat := 2862
-def pcShiftBody : Nat := 2863
-def pcEstimate : Nat := 2871
+def pcShiftLoop : Nat := 2866
+def pcShiftBody : Nat := 2867
+def pcEstimate : Nat := 2875
 def pcMacSetup : Nat := 2960   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
-def headPC (n : Nat) : Nat := if n = 4 then 10714 else 2862
+def headPC (n : Nat) : Nat := if n = 4 then 10718 else 2866
 def loopPC (mem : ByteArray) (n : Nat) : Nat :=
   CycleSubmission.Global.ZeroShiftMath.head n (MachineState.readWord mem 1536)
 def headWord (mem : ByteArray) (n : Nat) : UInt256 := UInt256.ofNat (loopPC mem n)
@@ -79,7 +80,24 @@ def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : U
     z::[]
 def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2727 + if n = 4 then 116 else 0)
 def aprevSlot (mem : ByteArray) : UInt256 := MachineState.readWord mem 1536
-def hdSlot (mem : ByteArray) : UInt256 := UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128)
+/-- The correction constant `(word 32 >> 128) >> K`: the even entry block shifts it once per
+conversion; for `K = 0` (the zero-shift heads) it is the unshifted value. -/
+def hdSlot (mem : ByteArray) : UInt256 :=
+  UInt256.shiftRight (UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128))
+    (MachineState.readWord mem 1536)
+theorem shr_of_toNat_zero (x w : UInt256) (h : w.toNat = 0) : UInt256.shiftRight x w = x := by
+  have hw : w = UInt256.ofNat 0 := Challenge.EvmProof.Word.word_ext h
+  subst hw
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.shiftRight_toNat _ (by decide)]
+  exact Nat.shiftRight_zero
+theorem hdSlot_of_zero (mem : ByteArray) (hk : MachineState.readWord mem 1536 = UInt256.ofNat 0) :
+    hdSlot mem = UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128) := by
+  unfold hdSlot
+  rw [hk]
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.shiftRight_toNat _ (by decide)]
+  exact Nat.shiftRight_zero
 def entrySlots (z : UInt256) (mem : ByteArray) (n bsize _esize : Nat) : List UInt256 :=
   headWord mem n::MachineState.readWord mem 1312::MachineState.readWord mem 1344 ::
     MachineState.readWord mem 1376::MachineState.readWord mem 1408 ::
@@ -156,7 +174,7 @@ def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msiz
              outer n bsize esize msize
            memory := M }
 def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
-  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2720
+  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2624
     (UInt256.ofNat 0 - preDodd d * newton8W (preDodd d * n0))
 def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
   UInt256.land
@@ -184,8 +202,8 @@ def estimateState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   { slotKState z s (uMem mem n) ((headPC n + 9)) k n bsize esize msize with memory := uMem0 mem n }
 def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat ((headPC n + 98))
-           stack := qhatOf (uMem mem n)::Monpro.maxWord::UInt256.ofNat k::entrySlots z (uMem mem n) n bsize esize ++
+  { s with pc := UInt256.ofNat ((headPC n + 94))
+           stack := qhatV1 (uMem mem n)::Monpro.maxWord::UInt256.ofNat k::entrySlots z (uMem mem n) n bsize esize ++
              outer n bsize esize msize
            memory := uMem0 mem n }
 def midState (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :

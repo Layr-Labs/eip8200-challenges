@@ -16,7 +16,7 @@ theorem stepMem_readWord_disjoint (mem : ByteArray) (n mm addr : Nat) (hn : 1 �
   split
   · rw [mac_readWord_disjoint _ n addr _ hn (by omega)]
     exact uMem_readWord_disjoint mem n addr hdisj.2.2
-  · exact Shift.stepMem_readWord_disjoint mem n mm addr hn hdisj
+  · exact Shift.stepMemV1_readWord_disjoint mem n mm addr hn hdisj
 theorem fastRepresents_stepMem (mem : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n)
     (hdisj : (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr) ∧
@@ -97,7 +97,7 @@ theorem stepMem_represents (mem : ByteArray) (n mm r : Nat)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) (hpre : PreOK mem) :
     Model.FastRepresents (next mem n mm) 2112 n (r * Limbs.radix % mm) := by
   have hrel := LazyTopStep.related_valid mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre
-  have hold := Shift.stepMem_represents mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre
+  have hold := Shift.stepMemV1_represents mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre
   refine (Model.fastRepresents_congr ?_ _).2 hold
   intro i hi
   exact TnCacheMemory.readWord_eq hrel.agree _ (Or.inr (by omega))
@@ -110,7 +110,7 @@ theorem stepMems_represents (mem : ByteArray) (n mm r : Nat)
     ∀ k,Model.FastRepresents (iter mem n mm k) 2112 n (r * Limbs.radix ^ k % mm) := by
   intro k
   have hrel := LazyTopStep.iter_valid mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre k
-  have hold := Shift.stepMems_represents mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre k
+  have hold := Shift.stepMemsV1_represents mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr hpre k
   refine (Model.fastRepresents_congr ?_ _).2 hold
   intro i hi
   exact TnCacheMemory.readWord_eq hrel.agree _ (Or.inr (by omega))
@@ -120,13 +120,13 @@ theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (
     rw [stepMem_readWord_disjoint mem n mm 2688 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.s32
   minvW := by
-    rw [stepMem_readWord_disjoint mem n mm 2720 hn
+    rw [stepMem_readWord_disjoint mem n mm 2624 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.minvW
   ml := by
-    rw [stepMem_readWord_disjoint mem n mm 2752 hn
+    rw [stepMem_readWord_disjoint mem n mm 2720 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.ml
   tl := by
-    rw [stepMem_readWord_disjoint mem n mm 2784 hn
+    rw [stepMem_readWord_disjoint mem n mm 2752 hn
       ⟨Or.inr (by omega),Or.inr (by omega),Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
     rw [stepMem_readWord_disjoint mem n mm 2656 hn

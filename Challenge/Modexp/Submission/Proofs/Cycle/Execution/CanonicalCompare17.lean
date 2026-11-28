@@ -23,7 +23,7 @@ def canonicalCompare17part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
   let v2 : UInt256 := UInt256.gt v1 v0
   {s with pc := UInt256.ofNat 8558,memory := s.memory,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem canonicalCompare17part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions canonicalCompare17part0Program {s with pc := UInt256.ofNat 8548,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (canonicalCompare17part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
@@ -48,7 +48,7 @@ def canonicalCompare17Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3
   let v2 : UInt256 := UInt256.gt v1 v0
   {s with pc := UInt256.ofNat 8558,memory := s.memory,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest}
 theorem canonicalCompare17_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 87 ≤ s.activeWords.toNat) :
     runInstructions canonicalCompare17Program {s with pc := UInt256.ofNat 8548,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (canonicalCompare17Model s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1344

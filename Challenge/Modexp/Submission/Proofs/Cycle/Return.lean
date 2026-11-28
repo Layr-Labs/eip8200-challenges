@@ -27,7 +27,7 @@ theorem cons_run (instruction : Instr) (program : List Instr) (s t u : State)
   rw [h]
   exact ht
 theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
-    (hact : 88 ≤ s.activeWords.toNat) (_hrun : s.halt = .Running) :
+    (hact : 87 ≤ s.activeWords.toNat) (_hrun : s.halt = .Running) :
     runInstructions program {s with pc := UInt256.ofNat 8617,stack := stack} =
       some (result s stack) := by
   have h0 : stack.length < 1024 := by omega
@@ -67,7 +67,7 @@ def block : Block Artifact.artifact .Osaka 8617 program :=
     (by decide)
 noncomputable def gasSteps (s : State) (stack : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : stack.length ≤ 1021) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : stack.length ≤ 1021) (hact : 87 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 8617,stack := stack} (result s stack) :=
   block.steps (env.transfer rfl rfl) rfl (run s stack hcap hact env.running)
 theorem returned_bytes (s : State) (stack : List UInt256) (A : Nat)
