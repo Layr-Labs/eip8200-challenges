@@ -6,7 +6,8 @@ namespace RipemdSubmission20261101.OrdinaryCertificate
 open EvmSemantics RipemdTableOrder20261027
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.GeneralMessageLayout
 abbrev Symbol := Sum Nat Nat
-def plan : List (Nat × Nat) := [(594, 146), (684, 266), (108, 258), (252, 142), (324, 232), (18, 266), (666, 180), (216, 172), (756, 134), (198, 142), (360, 258), (90, 224), (900, 138), (648, 142), (738, 262), (634, 180), (828, 236), (612, 180), (720, 262), (558, 134), (936, 134), (846, 146), (72, 258), (864, 236), (54, 168), (1008, 180), (414, 258), (548, 236), (522, 224), (512, 236), (396, 266), (486, 168), (972, 236), (468, 262), (450, 168), (792, 138)]
+def plan : List (Nat × Nat) := [(414, 258), (604, 156), (108, 258), (614, 182), (90, 224), (72, 258), (472, 266), (450, 168), (652, 198), (396, 266), (756, 134), (742, 266), (900, 138), (558, 134), (54, 168), (684, 266), (672, 168), (544, 232), (828, 236), (216, 172), (530, 232), (252, 142), (324, 232), (18, 266), (724, 266), (198, 142), (842, 142), (662, 138), (972, 236), (864, 236), (1008, 198), (500, 182), (936, 134), (360, 258), (518, 224), (792, 138)]
+def ordinaryBarriers : Array Nat := #[26, 22, 18, 14, 26, 22, 18, 14, 26, 22, 18, 14, 26, 18, 14, 14, 14, 26, 22, 22, 18, 18, 14, 14, 26, 26, 22, 22, 18, 14, 18, 26, 14, 14, 18, 26, 22, 14, 26, 22, 18, 14, 26, 14, 22, 14, 14, 14, 22, 22, 14, 14, 26, 26, 26, 14, 22, 14, 14, 18, 18, 22, 14, 18, 26, 22, 22, 14, 14, 14, 18, 16, 18, 22, 14, 14, 14]
 def source (a j : Nat) : Symbol :=
   if a=134 ∧ 9 ≤ j ∧ j<14 then .inr j else .inl (fan (a+j))
 def paint (m : Nat → Symbol) (w : Nat × Nat) (a : Nat) : Symbol :=
@@ -21,12 +22,12 @@ theorem high_sources : ∀ i : Fin 77, ∀ j : Fin 4,
       .inl (initial (wordAddress Crypto.Ripemd160.rP[i.val+3]!+j.val)) := by
   decide +kernel
 theorem barrier_sources : ∀ i : Fin 77,
-    14 ≤ barriers[i.val]! ∧ barriers[i.val]! ≤ 26 ∧
-    layout (addresses[Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableLayout.pairIndices[i.val]!]!+barriers[i.val]!) = .inl 0 := by
+    14 ≤ ordinaryBarriers[i.val]! ∧ ordinaryBarriers[i.val]! ≤ 26 ∧
+    layout (addresses[Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableLayout.pairIndices[i.val]!]!+ordinaryBarriers[i.val]!) = .inl 0 := by
   decide +kernel
 theorem clear_sources : ∀ a ∈ clearAddresses, layout a = .inl 0 := by decide +kernel
 theorem biased_sources : ∀ j : Fin 5, layout (945+j.val) = .inr (9+j.val) := by decide +kernel
-theorem unchanged_sources : ∀ a : Fin 1120, 666 ≤ a.val ∧ a.val < 945 →
+theorem unchanged_sources : ∀ a : Fin 1120, 918 ≤ a.val ∧ a.val < 945 →
     layout a.val = .inl (result selected a.val) := by decide +kernel
 #print axioms low_sources
 #print axioms high_sources

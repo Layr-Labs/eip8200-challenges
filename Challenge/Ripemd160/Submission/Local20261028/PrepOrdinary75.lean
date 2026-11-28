@@ -124,7 +124,7 @@ theorem read_add (s : State) (x : Nat → UInt256) (rho : List UInt256)
     have hidx : 918+j<1120 := by omega
     have hbefore : 918+j<945 := by omega
     have hc := OrdinaryCertificate.unchanged_sources (⟨918+j,hidx⟩ : Fin 1120)
-      ⟨show 666 ≤ 918+j by omega, hbefore⟩
+      ⟨show 918 ≤ 918+j by omega, hbefore⟩
     rw [OrdinaryBytes.actual_bytes s x rho hz,
       hc,
       reference_bytes s.memory hz]
