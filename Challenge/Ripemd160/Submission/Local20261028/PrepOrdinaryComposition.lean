@@ -27,7 +27,7 @@ theorem step0 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args1 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result0 s x rho).stack[j]?).getD 0
 def result1 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result0 s x rho) with pc := (UInt256.ofNat 623), stack := Ordinary1.outputs (args1 s x rho) rho (result0 s x rho), memory := Ordinary1.memory (args1 s x rho) (result0 s x rho)}
+  {(result0 s x rho) with pc := (UInt256.ofNat 613), stack := Ordinary1.outputs (args1 s x rho) rho (result0 s x rho), memory := Ordinary1.memory (args1 s x rho) (result0 s x rho)}
 theorem entry1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     {(result0 s x rho) with pc := (UInt256.ofNat 556), stack := Ordinary1.inputs (args1 s x rho) rho} = (result0 s x rho) := by
   simp [args1, result0, Ordinary0.outputs, Ordinary1.inputs]
@@ -41,9 +41,9 @@ theorem step1 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args2 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result1 s x rho).stack[j]?).getD 0
 def result2 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result1 s x rho) with pc := (UInt256.ofNat 648), stack := Ordinary2.outputs (args2 s x rho) rho (result1 s x rho), memory := Ordinary2.memory (args2 s x rho) (result1 s x rho)}
+  {(result1 s x rho) with pc := (UInt256.ofNat 643), stack := Ordinary2.outputs (args2 s x rho) rho (result1 s x rho), memory := Ordinary2.memory (args2 s x rho) (result1 s x rho)}
 theorem entry2 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result1 s x rho) with pc := (UInt256.ofNat 623), stack := Ordinary2.inputs (args2 s x rho) rho} = (result1 s x rho) := by
+    {(result1 s x rho) with pc := (UInt256.ofNat 613), stack := Ordinary2.inputs (args2 s x rho) rho} = (result1 s x rho) := by
   simp [args2, result1, Ordinary1.outputs, Ordinary2.inputs]
 theorem step2 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -55,9 +55,9 @@ theorem step2 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args3 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result2 s x rho).stack[j]?).getD 0
 def result3 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result2 s x rho) with pc := (UInt256.ofNat 680), stack := Ordinary3.outputs (args3 s x rho) rho (result2 s x rho), memory := Ordinary3.memory (args3 s x rho) (result2 s x rho)}
+  {(result2 s x rho) with pc := (UInt256.ofNat 669), stack := Ordinary3.outputs (args3 s x rho) rho (result2 s x rho), memory := Ordinary3.memory (args3 s x rho) (result2 s x rho)}
 theorem entry3 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result2 s x rho) with pc := (UInt256.ofNat 648), stack := Ordinary3.inputs (args3 s x rho) rho} = (result2 s x rho) := by
+    {(result2 s x rho) with pc := (UInt256.ofNat 643), stack := Ordinary3.inputs (args3 s x rho) rho} = (result2 s x rho) := by
   simp [args3, result2, Ordinary2.outputs, Ordinary3.inputs]
 theorem step3 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -69,9 +69,9 @@ theorem step3 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args4 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result3 s x rho).stack[j]?).getD 0
 def result4 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result3 s x rho) with pc := (UInt256.ofNat 707), stack := Ordinary4.outputs (args4 s x rho) rho (result3 s x rho), memory := Ordinary4.memory (args4 s x rho) (result3 s x rho)}
+  {(result3 s x rho) with pc := (UInt256.ofNat 695), stack := Ordinary4.outputs (args4 s x rho) rho (result3 s x rho), memory := Ordinary4.memory (args4 s x rho) (result3 s x rho)}
 theorem entry4 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result3 s x rho) with pc := (UInt256.ofNat 680), stack := Ordinary4.inputs (args4 s x rho) rho} = (result3 s x rho) := by
+    {(result3 s x rho) with pc := (UInt256.ofNat 669), stack := Ordinary4.inputs (args4 s x rho) rho} = (result3 s x rho) := by
   simp [args4, result3, Ordinary3.outputs, Ordinary4.inputs]
 theorem step4 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -83,9 +83,9 @@ theorem step4 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args5 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result4 s x rho).stack[j]?).getD 0
 def result5 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result4 s x rho) with pc := (UInt256.ofNat 735), stack := Ordinary5.outputs (args5 s x rho) rho (result4 s x rho), memory := Ordinary5.memory (args5 s x rho) (result4 s x rho)}
+  {(result4 s x rho) with pc := (UInt256.ofNat 719), stack := Ordinary5.outputs (args5 s x rho) rho (result4 s x rho), memory := Ordinary5.memory (args5 s x rho) (result4 s x rho)}
 theorem entry5 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result4 s x rho) with pc := (UInt256.ofNat 707), stack := Ordinary5.inputs (args5 s x rho) rho} = (result4 s x rho) := by
+    {(result4 s x rho) with pc := (UInt256.ofNat 695), stack := Ordinary5.inputs (args5 s x rho) rho} = (result4 s x rho) := by
   simp [args5, result4, Ordinary4.outputs, Ordinary5.inputs]
 theorem step5 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -97,9 +97,9 @@ theorem step5 (s : State) (x : Nat → UInt256) (rho : List UInt256)
 def args6 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result5 s x rho).stack[j]?).getD 0
 def result6 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {(result5 s x rho) with pc := (UInt256.ofNat 765), stack := Ordinary6.outputs (args6 s x rho) rho (result5 s x rho), memory := Ordinary6.memory (args6 s x rho) (result5 s x rho)}
+  {(result5 s x rho) with pc := (UInt256.ofNat 758), stack := Ordinary6.outputs (args6 s x rho) rho (result5 s x rho), memory := Ordinary6.memory (args6 s x rho) (result5 s x rho)}
 theorem entry6 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result5 s x rho) with pc := (UInt256.ofNat 735), stack := Ordinary6.inputs (args6 s x rho) rho} = (result5 s x rho) := by
+    {(result5 s x rho) with pc := (UInt256.ofNat 719), stack := Ordinary6.inputs (args6 s x rho) rho} = (result5 s x rho) := by
   simp [args6, result5, Ordinary5.outputs, Ordinary6.inputs]
 theorem step6 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -113,7 +113,7 @@ def args7 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UIn
 def result7 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
   {(result6 s x rho) with pc := (UInt256.ofNat 794), stack := Ordinary7.outputs (args7 s x rho) rho (result6 s x rho), memory := Ordinary7.memory (args7 s x rho) (result6 s x rho)}
 theorem entry7 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
-    {(result6 s x rho) with pc := (UInt256.ofNat 765), stack := Ordinary7.inputs (args7 s x rho) rho} = (result6 s x rho) := by
+    {(result6 s x rho) with pc := (UInt256.ofNat 758), stack := Ordinary7.inputs (args7 s x rho) rho} = (result6 s x rho) := by
   simp [args7, result6, Ordinary6.outputs, Ordinary7.inputs]
 theorem step7 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

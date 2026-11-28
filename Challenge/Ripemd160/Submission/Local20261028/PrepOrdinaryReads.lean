@@ -75,9 +75,9 @@ theorem raw_slack (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (CoreModel.load (OrdinaryTable.result7 s x rho).memory
       (18*StaggerTableLayout.pairIndices[i]!)).toNat % 2^144 + 2^40 ≤ 2^144 := by
   obtain ⟨hl,hu,hzero⟩ := OrdinaryCertificate.barrier_sources ⟨i,hi⟩
-  change 14 ≤ barriers[i]! at hl
-  change barriers[i]! ≤ 26 at hu
-  apply zero_byte_slack _ barriers[i]! hl hu
+  change 14 ≤ OrdinaryCertificate.ordinaryBarriers[i]! at hl
+  change OrdinaryCertificate.ordinaryBarriers[i]! ≤ 26 at hu
+  apply zero_byte_slack _ OrdinaryCertificate.ordinaryBarriers[i]! hl hu
   simp only [CoreModel.load, Nat.mul_div_cancel_left _ (by decide : 0 < 18)]
   rw [PoolByte.read _ _ _ (by omega), actual_bytes s x rho hz, hzero]
   rfl
